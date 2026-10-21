@@ -14,12 +14,12 @@ const getEnvVar = (name: string): string | undefined => {
   return undefined;
 };
 
-// Default to the provided Supabase project URL and anon public key
-export const SUPABASE_URL = 
-  getEnvVar('VITE_SUPABASE_URL') || getEnvVar('TEST_SUPABASE_URL') || 'https://refjawgovrmsyigtcfdl.supabase.co';
+// Fail closed when project configuration is absent. Never silently route local,
+// preview, or test builds to the live production database.
+export const SUPABASE_URL =
+  getEnvVar('VITE_SUPABASE_URL') || getEnvVar('TEST_SUPABASE_URL') || '';
 
-export const DEFAULT_SUPABASE_ANON_KEY = 
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
+const DEFAULT_SUPABASE_ANON_KEY = '';
 
 // Local storage key for runtime anon key input if not supplied in build env
 const RUNTIME_ANON_KEY_STORAGE = 'aks_hcd_supabase_anon_key';
@@ -72,8 +72,9 @@ export const isSupabaseReady = (): boolean => {
 
 // Safe diagnostic instructions referencing version-controlled database migrations
 export const MIGRATION_GUIDE_INSTRUCTIONS = `-- AKS-HCD Enterprise Database Migrations
--- Database policies and schemas are strictly version-controlled in:
--- supabase/migrations/20261008_fix_security_and_grants.sql
+-- Database policies and schemas are version-controlled in the ordered migrations:
+-- supabase/migrations/<14-digit-version>_<migration-name>.sql
+-- See docs/database-migration-recovery-2026-10-21.md for the recovered live history.
 --
 -- Row Level Security (RLS) is strictly enforced:
 -- - public.activities: Read published records (public); LGA sandboxed (lga_admin); State oversight (state_admin)
