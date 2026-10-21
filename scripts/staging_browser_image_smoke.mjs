@@ -8,8 +8,8 @@ const parsed = new URL(target);
 if (parsed.protocol !== 'https:') {
   throw new Error('The staging activity URL must use HTTPS.');
 }
-if (/refjawgovrmsyigtcfdl\.supabase\.co/i.test(target)) {
-  throw new Error('Refusing a production Supabase URL as the browser test target.');
+if (/refjawgovrmsyigtcfdl\.supabase\.co|aks-hcd\.ai\.studio/i.test(target)) {
+  throw new Error('Refusing a known production URL as the browser test target.');
 }
 
 const browser = await chromium.launch({ headless: true });
