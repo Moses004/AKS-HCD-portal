@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         const { data, error } = await client.auth.getSession();
         if (error) {
-          console.warn('Supabase getSession error:', error.message);
+          console.debug('Supabase getSession notice:', error.message);
           setCurrentUser(PUBLIC_GUEST_USER);
         } else if (data?.session?.user) {
           await loadUserProfile(data.session.user);
@@ -94,7 +94,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setCurrentUser(PUBLIC_GUEST_USER);
         }
       } catch (err) {
-        console.warn('Exception during Supabase session restoration:', err);
+        console.debug('Notice during Supabase session restoration:', err);
         setCurrentUser(PUBLIC_GUEST_USER);
       } finally {
         setAuthLoading(false);

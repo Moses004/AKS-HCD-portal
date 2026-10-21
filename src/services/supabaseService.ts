@@ -1,4 +1,4 @@
-import { getSupabaseClient, isSupabaseReady } from '../lib/supabase';
+import { getSupabaseClient, isSupabaseReady, isSupabaseUnreachable, resetSupabaseReachability } from '../lib/supabase';
 import {
   HCDActivity,
   AuditLog,
@@ -76,6 +76,29 @@ export function isPermissionDeniedError(error: any): boolean {
     message.includes('row-level security') ||
     message.includes('not authorized') ||
     message.includes('unauthorized')
+  );
+}
+
+/**
+ * Detects browser network fetch failures (e.g. "TypeError: Failed to fetch", offline host, DNS failure, or 503 synthetic offline response)
+ * so the application can seamlessly transition to local baseline/cache without surfacing noisy console warnings.
+ */
+export function isNetworkFetchError(error: any): boolean {
+  if (!error) return false;
+  const code = String(error.code || error.statusCode || error.status || '');
+  if (code === 'NETWORK_UNREACHABLE' || code === '503') {
+    return true;
+  }
+  const msg = String(error.message || error.details || error || '').toLowerCase();
+  return (
+    msg.includes('failed to fetch') ||
+    msg.includes('networkerror') ||
+    msg.includes('network request failed') ||
+    msg.includes('load failed') ||
+    msg.includes('fetch failed') ||
+    msg.includes('err_name_not_resolved') ||
+    msg.includes('cloud endpoint unreachable') ||
+    msg.includes('network fetch failed')
   );
 }
 
@@ -180,6 +203,7 @@ export const supabaseService = {
    * Diagnostic test verifying connection, tables, and function execution grants
    */
   async testConnection(): Promise<SupabaseConnectionStatus> {
+    resetSupabaseReachability();
     if (!isSupabaseReady()) {
       return {
         connected: false,
@@ -194,6 +218,12 @@ export const supabaseService = {
     try {
       const { data, error } = await client.from('activities').select('id').limit(1);
       if (error) {
+        if (isNetworkFetchError(error)) {
+          return {
+            connected: false,
+            message: 'Cloud database endpoint is currently offline or unreachable. Operating in resilient local dataset mode.',
+          };
+        }
         if (
           error.code === '42P01' || 
           error.code === 'PGRST204' || 
@@ -228,7 +258,9 @@ export const supabaseService = {
     } catch (err: any) {
       return {
         connected: false,
-        message: err.message || 'Unknown network error connecting to Supabase.',
+        message: isNetworkFetchError(err)
+          ? 'Cloud database endpoint is currently offline or unreachable. Operating in resilient local dataset mode.'
+          : err.message || 'Unknown network error connecting to Supabase.',
       };
     }
   },
@@ -237,6 +269,13 @@ export const supabaseService = {
    * Distinguishes SUCCESS (populated), EMPTY (0 records), AUTH_REQUIRED, SCHEMA_MISMATCH, NETWORK_ERROR
    */
   async fetchActivities(userSession?: UserSession): Promise<FetchActivitiesResult> {
+    if (isSupabaseUnreachable()) {
+      return {
+        status: 'NETWORK_ERROR',
+        error: 'Cloud database endpoint is currently unreachable; operating with verified local dataset.',
+      };
+    }
+
     const client = getSupabaseClient();
     if (!client) {
       return { status: 'NETWORK_ERROR', error: 'Supabase client not initialized' };
@@ -256,7 +295,14 @@ export const supabaseService = {
       const { data, error } = await query.order('updated_at', { ascending: false });
 
       if (error) {
-        console.warn('Supabase fetchActivities error:', error);
+        if (isNetworkFetchError(error)) {
+          return {
+            status: 'NETWORK_ERROR',
+            error: 'Cloud database endpoint is currently unreachable; operating with verified local dataset.',
+          };
+        }
+
+        console.debug('Supabase fetchActivities notice:', error.message || error);
         
         if (error.code === '42501' && error.message?.includes('aks_hcd_current_lga')) {
           return {
@@ -288,10 +334,12 @@ export const supabaseService = {
         count: data.length,
       };
     } catch (err: any) {
-      console.warn('Supabase fetchActivities network exception:', err);
+      if (!isNetworkFetchError(err)) {
+        console.debug('Supabase fetchActivities network notice:', err);
+      }
       return {
         status: 'NETWORK_ERROR',
-        error: err.message || 'Network connectivity error while contacting Supabase.',
+        error: 'Cloud database endpoint is currently unreachable; operating with verified local dataset.',
       };
     }
   },
@@ -317,10 +365,12 @@ export const supabaseService = {
         .single();
 
       if (error) {
-        console.warn('Supabase insertActivity error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase insertActivity notice:', error.message);
+        }
         return {
           success: false,
-          error: error.message,
+          error: isNetworkFetchError(error) ? 'Network unreachable: Failed to fetch' : error.message,
           code: error.code,
           details: error.details,
         };
@@ -407,10 +457,12 @@ export const supabaseService = {
         .single();
 
       if (error) {
-        console.warn('Supabase updateActivity error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase updateActivity notice:', error.message);
+        }
         return {
           success: false,
-          error: error.message,
+          error: isNetworkFetchError(error) ? 'Network unreachable: Failed to fetch' : error.message,
           code: error.code,
           details: error.details,
         };
@@ -441,7 +493,9 @@ export const supabaseService = {
         .eq('id', id);
 
       if (error) {
-        console.warn('Supabase deleteActivity error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase deleteActivity notice:', error.message);
+        }
         return {
           success: false,
           error: error.message,
@@ -486,7 +540,9 @@ export const supabaseService = {
         .single();
 
       if (error) {
-        console.warn('Supabase upsertActivity error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase upsertActivity notice:', error.message);
+        }
         return {
           success: false,
           error: error.message,
@@ -814,6 +870,7 @@ export const supabaseService = {
     onDelete: (id: string) => void;
     onStatusChange?: (status: 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR') => void;
   }): () => void {
+    if (isSupabaseUnreachable()) return () => {};
     const client = getSupabaseClient();
     if (!client) return () => {};
 
@@ -857,7 +914,7 @@ export const supabaseService = {
         client.removeChannel(channel);
       };
     } catch (err) {
-      console.warn('Failed to subscribe to Supabase Realtime activities:', err);
+      console.debug('Failed to subscribe to Supabase Realtime activities:', err);
       return () => {};
     }
   },
@@ -869,6 +926,7 @@ export const supabaseService = {
     onInsert: (log: AuditLog) => void,
     onStatusChange?: (status: 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR') => void
   ): () => void {
+    if (isSupabaseUnreachable()) return () => {};
     const client = getSupabaseClient();
     if (!client) return () => {};
 
@@ -907,7 +965,7 @@ export const supabaseService = {
         client.removeChannel(channel);
       };
     } catch (err) {
-      console.warn('Failed to subscribe to Supabase Realtime audit logs:', err);
+      console.debug('Failed to subscribe to Supabase Realtime audit logs:', err);
       return () => {};
     }
   },
@@ -984,6 +1042,7 @@ export const supabaseService = {
    * Fetch active pillars catalogue from Supabase live table hcd_pillars
    */
   async fetchPillars(): Promise<HCDPillar[]> {
+    if (isSupabaseUnreachable()) return DEFAULT_HCD_PILLARS;
     const client = getSupabaseClient();
     if (!client) return DEFAULT_HCD_PILLARS;
 
@@ -995,7 +1054,9 @@ export const supabaseService = {
         .order('sort_order', { ascending: true });
 
       if (error) {
-        console.warn('Supabase fetchPillars error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase fetchPillars notice:', error.message);
+        }
         return DEFAULT_HCD_PILLARS;
       }
       if (data && data.length > 0) {
@@ -1003,7 +1064,9 @@ export const supabaseService = {
       }
       return DEFAULT_HCD_PILLARS;
     } catch (err) {
-      console.warn('fetchPillars exception:', err);
+      if (!isNetworkFetchError(err)) {
+        console.debug('fetchPillars exception:', err);
+      }
       return DEFAULT_HCD_PILLARS;
     }
   },
@@ -1013,6 +1076,7 @@ export const supabaseService = {
    * avoiding PostgREST URL length limits
    */
   async fetchMeasurementsBatch(activityIds: string[]): Promise<ActivityMeasurement[]> {
+    if (isSupabaseUnreachable()) return [];
     const client = getSupabaseClient();
     if (!client || activityIds.length === 0) return [];
 
@@ -1028,7 +1092,8 @@ export const supabaseService = {
           .order('created_at', { ascending: true });
 
         if (error) {
-          console.warn('fetchMeasurementsBatch chunk error:', error);
+          if (isNetworkFetchError(error)) break;
+          console.debug('fetchMeasurementsBatch chunk notice:', error.message);
           continue;
         }
         if (data) {
@@ -1037,7 +1102,9 @@ export const supabaseService = {
       }
       return results;
     } catch (err) {
-      console.warn('fetchMeasurementsBatch exception:', err);
+      if (!isNetworkFetchError(err)) {
+        console.debug('fetchMeasurementsBatch exception:', err);
+      }
       return [];
     }
   },
@@ -1058,6 +1125,9 @@ export const supabaseService = {
     userSession?: UserSession;
     onProgress?: (loaded: number, total: number | null) => void;
   }): Promise<{ activities: HCDActivity[]; total: number; warning?: string }> {
+    if (isSupabaseUnreachable()) {
+      return { activities: [], total: 0, warning: 'Cloud endpoint unreachable' };
+    }
     const client = getSupabaseClient();
     if (!client) {
       return { activities: [], total: 0, warning: 'Supabase client unavailable' };
@@ -1128,7 +1198,9 @@ export const supabaseService = {
         const { data, count, error } = await query;
 
         if (error) {
-          console.warn('fetchActivitiesPaginated error:', error);
+          if (!isNetworkFetchError(error)) {
+            console.debug('fetchActivitiesPaginated notice:', error.message);
+          }
           return {
             activities: allActivities,
             total: allActivities.length,
@@ -1178,7 +1250,9 @@ export const supabaseService = {
         total: totalCount ?? allActivities.length,
       };
     } catch (err: any) {
-      console.warn('fetchActivitiesPaginated exception:', err);
+      if (!isNetworkFetchError(err)) {
+        console.debug('fetchActivitiesPaginated exception:', err);
+      }
       return {
         activities: [],
         total: 0,
@@ -1191,6 +1265,7 @@ export const supabaseService = {
    * Fetch active reporting indicators catalogue from Supabase live table
    */
   async fetchReportingIndicators(options?: { includeInactive?: boolean }): Promise<HCDReportingIndicator[]> {
+    if (isSupabaseUnreachable()) return [];
     const client = getSupabaseClient();
     if (!client) return [];
 
@@ -1202,12 +1277,16 @@ export const supabaseService = {
       const { data, error } = await query.order('indicator_code');
 
       if (error) {
-        console.warn('Supabase fetchReportingIndicators error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase fetchReportingIndicators notice:', error.message);
+        }
         return [];
       }
       return (data || []) as HCDReportingIndicator[];
     } catch (err) {
-      console.warn('fetchReportingIndicators exception:', err);
+      if (!isNetworkFetchError(err)) {
+        console.debug('fetchReportingIndicators exception:', err);
+      }
       return [];
     }
   },
@@ -1216,6 +1295,7 @@ export const supabaseService = {
    * Fetch activity measurements from Supabase live table
    */
   async fetchMeasurements(activityId?: string): Promise<ActivityMeasurement[]> {
+    if (isSupabaseUnreachable()) return [];
     const client = getSupabaseClient();
     if (!client) return [];
 
@@ -1227,12 +1307,16 @@ export const supabaseService = {
       const { data, error } = await query.order('created_at', { ascending: true });
 
       if (error) {
-        console.warn('Supabase fetchMeasurements error:', error);
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase fetchMeasurements notice:', error.message);
+        }
         return [];
       }
       return (data || []) as ActivityMeasurement[];
     } catch (err) {
-      console.warn('fetchMeasurements exception:', err);
+      if (!isNetworkFetchError(err)) {
+        console.debug('fetchMeasurements exception:', err);
+      }
       return [];
     }
   },

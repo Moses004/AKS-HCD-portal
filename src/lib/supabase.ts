@@ -15,14 +15,65 @@ const getEnvVar = (name: string): string | undefined => {
 };
 
 // Default to the provided Supabase project URL and anon public key
-export const SUPABASE_URL = 
+export const SUPABASE_URL =
   getEnvVar('VITE_SUPABASE_URL') || 'https://refjawgovrmsyigtcfdl.supabase.co';
 
-export const DEFAULT_SUPABASE_ANON_KEY = 
+export const DEFAULT_SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
 
 // Local storage key for runtime anon key input if not supplied in build env
 const RUNTIME_ANON_KEY_STORAGE = 'aks_hcd_supabase_anon_key';
+
+// Circuit-breaker state to prevent repeated "TypeError: Failed to fetch" console spam when cloud host is unreachable
+let unreachableSince = 0;
+const UNREACHABLE_COOLDOWN_MS = 60_000; // 60 seconds cooldown before automatic retry
+
+export const isSupabaseUnreachable = (): boolean => {
+  if (unreachableSince === 0) return false;
+  if (Date.now() - unreachableSince > UNREACHABLE_COOLDOWN_MS) {
+    unreachableSince = 0;
+    return false;
+  }
+  return true;
+};
+
+export const resetSupabaseReachability = (): void => {
+  unreachableSince = 0;
+};
+
+const createSyntheticOfflineResponse = (): Response => {
+  return new Response(
+    JSON.stringify({
+      code: 'NETWORK_UNREACHABLE',
+      message: 'Cloud endpoint unreachable; operating with verified local dataset.',
+      details: 'Network fetch failed or cloud instance paused',
+      hint: '',
+    }),
+    {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
+};
+
+const resilientSupabaseFetch: typeof fetch = async (input, init) => {
+  // Short-circuit background requests while circuit breaker cooldown is active
+  if (isSupabaseUnreachable()) {
+    return createSyntheticOfflineResponse();
+  }
+
+  try {
+    const response = await fetch(input, init);
+    // Successful HTTP connection means host is reachable
+    unreachableSince = 0;
+    return response;
+  } catch {
+    // Mark endpoint unreachable for cooldown window so subsequent queries don't spam Failed to fetch
+    unreachableSince = Date.now();
+    return createSyntheticOfflineResponse();
+  }
+};
 
 export const getSupabaseAnonKey = (): string => {
   return (
@@ -34,6 +85,8 @@ export const getSupabaseAnonKey = (): string => {
 
 export const setRuntimeAnonKey = (key: string): void => {
   if (typeof localStorage === 'undefined') return;
+  resetSupabaseReachability();
+  supabaseInstance = null;
   if (key) {
     localStorage.setItem(RUNTIME_ANON_KEY_STORAGE, key.trim());
   } else {
@@ -48,7 +101,7 @@ export const getSupabaseClient = (): SupabaseClient | null => {
   if (!SUPABASE_URL || !anonKey) {
     return null;
   }
-  
+
   if (!supabaseInstance) {
     try {
       supabaseInstance = createClient(SUPABASE_URL, anonKey, {
@@ -56,9 +109,12 @@ export const getSupabaseClient = (): SupabaseClient | null => {
           persistSession: true,
           autoRefreshToken: true,
         },
+        global: {
+          fetch: resilientSupabaseFetch,
+        },
       });
     } catch (err) {
-      console.warn('Failed to initialize Supabase client:', err);
+      console.debug('Failed to initialize Supabase client:', err);
       return null;
     }
   }

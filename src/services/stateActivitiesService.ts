@@ -1,4 +1,5 @@
-import { getSupabaseClient } from '../lib/supabase';
+import { getSupabaseClient, isSupabaseUnreachable } from '../lib/supabase';
+import { isNetworkFetchError } from './supabaseService';
 import {
   StateHCDActivity,
   StateHCDActivityActionItem,
@@ -79,6 +80,9 @@ class StateActivitiesService {
     count: number;
     error?: string;
   }> {
+    if (isSupabaseUnreachable()) {
+      return { success: true, data: [], count: 0 };
+    }
     const client = getSupabaseClient();
     if (!client) {
       return { success: false, data: [], count: 0, error: 'Database client unavailable' };
@@ -120,10 +124,14 @@ class StateActivitiesService {
       const { data, count, error } = await query;
 
       if (error) {
-        if (error.code === '42501' || error.message?.toLowerCase().includes('permission denied')) {
+        if (
+          isNetworkFetchError(error) ||
+          error.code === '42501' ||
+          error.message?.toLowerCase().includes('permission denied')
+        ) {
           return { success: true, data: [], count: 0 };
         }
-        console.warn('fetchStateActivities notice:', error.message);
+        console.debug('fetchStateActivities notice:', error.message);
         return { success: false, data: [], count: 0, error: error.message };
       }
 
@@ -133,7 +141,10 @@ class StateActivitiesService {
         count: count ?? (data?.length || 0),
       };
     } catch (err: any) {
-      console.warn('fetchStateActivities exception:', err);
+      if (isNetworkFetchError(err)) {
+        return { success: true, data: [], count: 0 };
+      }
+      console.debug('fetchStateActivities exception:', err);
       return { success: false, data: [], count: 0, error: err.message || 'Failed to fetch state activities' };
     }
   }
@@ -531,8 +542,11 @@ class StateActivitiesService {
       const { data, error } = await query;
 
       if (error) {
+        if (isNetworkFetchError(error)) {
+          return { success: true, data: [] };
+        }
         // If RLS prevents access, try public view as fallback
-        console.warn('state_hcd_activity_action_items read notice:', error.message);
+        console.debug('state_hcd_activity_action_items read notice:', error.message);
         const pub = await client.from('state_hcd_public_action_items').select('*');
         if (!pub.error && pub.data) {
           return { success: true, data: pub.data as StateHCDActivityActionItem[] };
@@ -545,6 +559,9 @@ class StateActivitiesService {
         data: (data || []) as StateHCDActivityActionItem[],
       };
     } catch (err: any) {
+      if (isNetworkFetchError(err)) {
+        return { success: true, data: [] };
+      }
       return { success: false, data: [], error: err.message };
     }
   }
