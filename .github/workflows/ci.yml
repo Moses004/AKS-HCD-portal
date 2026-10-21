@@ -16,30 +16,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Lint, type-check, and production build
+  frontend:
+    name: Frontend dependency, type-check, and production build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Install dependencies
-        # package-lock.json is absent from the current repository snapshot.
-        # Commit a reviewed lockfile, then change this step to npm ci.
-        run: npm install --no-audit --no-fund
-
-      - name: TypeScript check and lint
+      # Transitional only: generates a lockfile artifact until the reviewed
+      # package-lock.json is committed. Do not bypass npm peer dependency checks.
+      - name: Generate lockfile when repository lock is absent
+        if: hashFiles('package-lock.json') == ''
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Upload generated lockfile for review
+        if: always() && hashFiles('package-lock.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: aks-hcd-generated-package-lock
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 3
+      - name: Install from lockfile
+        run: npm ci --no-audit --no-fund
+      - name: TypeScript check
         run: npm run lint
-
       - name: Production build
         run: npm run build
 
-  # Integration tests are intentionally excluded from this job. Existing
-  # test scripts make live Supabase requests and some simulate upload/write
-  # attempts. Run them only after they are guarded and configured for staging.
+  backend-migration-safety:
+    name: Backend migration and secret-safety checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Verify migration inventory and reject obvious service-role secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d supabase/migrations
+          test "$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | wc -l)" -gt 0
+          if grep -RIn 'SUPABASE_SERVICE_ROLE_KEY=' src scripts .github; then
+            echo '::error::Potential service-role credential committed to source.'
+            exit 1
+          fi
+          echo 'Migration inventory exists; no obvious service-role environment assignment found.'
