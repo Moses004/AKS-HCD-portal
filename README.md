@@ -36,7 +36,7 @@ npm install
 Create a local `.env` file using the environment variable names consumed by the existing application. For a Vite client, these may include:
 
 ```env
-VITE_SUPABASE_URL=https://refjawgovrmsyigtcfdl.supabase.co
+VITE_SUPABASE_URL=https://YOUR_STAGING_PROJECT_REF.supabase.co
 VITE_SUPABASE_ANON_KEY=your_supabase_publishable_or_anon_key
 ```
 
@@ -55,7 +55,7 @@ npm run lint
 npm run build
 ```
 
-The repository's current `npm test` command includes Supabase integration checks. Do not run that command against the production project; see the testing section below.
+The repository's current `npm test` command includes Supabase integration checks. Do not run that command against the production project; see the testing section below. The example environment above is a placeholder: use a dedicated staging project, not production.
 
 ## Database setup and migrations
 
