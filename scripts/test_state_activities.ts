@@ -11,6 +11,14 @@ import {
 import { stateActivitiesService } from '../src/services/stateActivitiesService';
 
 async function runStateActivitiesSuite() {
+  const testUrl = process.env.TEST_SUPABASE_URL;
+  const testKey = process.env.TEST_SUPABASE_ANON_KEY;
+  if (!testUrl || !testKey) {
+    throw new Error('Refusing integration tests without TEST_SUPABASE_URL and TEST_SUPABASE_ANON_KEY for a dedicated staging project.');
+  }
+  if (testUrl.includes('refjawgovrmsyigtcfdl.supabase.co')) {
+    throw new Error('Safety stop: integration tests must never run against the AKS-HCD production Supabase project.');
+  }
   console.log('======================================================================');
   console.log('STATE-LEVEL ACTIVITIES REPORTING MODULE AUDIT & TEST SUITE');
   console.log('======================================================================\n');
