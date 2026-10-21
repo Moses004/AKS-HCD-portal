@@ -4,7 +4,9 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches:
+      - main
+      - "audit/**"
 
 permissions:
   contents: read
@@ -26,11 +28,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
-        # The repository currently has no package-lock.json; switch to npm ci
-        # after committing a reviewed lockfile.
+        # package-lock.json is absent from the current repository snapshot.
+        # Commit a reviewed lockfile, then change this step to npm ci.
         run: npm install --no-audit --no-fund
 
       - name: TypeScript check and lint
@@ -39,5 +40,6 @@ jobs:
       - name: Production build
         run: npm run build
 
-  # Integration tests intentionally are not run here. The existing test
-  # scripts include live Supabase calls and must first be isolated to staging.
+  # Integration tests are intentionally excluded from this job. Existing
+  # test scripts make live Supabase requests and some simulate upload/write
+  # attempts. Run them only after they are guarded and configured for staging.
