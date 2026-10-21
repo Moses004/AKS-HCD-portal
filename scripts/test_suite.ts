@@ -25,10 +25,14 @@ import {
   evaluateDataCompleteness,
 } from '../src/services/lgaReportExportService';
 
-const SUPABASE_URL = 'https://refjawgovrmsyigtcfdl.supabase.co';
-const ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
-
+const SUPABASE_URL = process.env.TEST_SUPABASE_URL;
+const ANON_KEY = process.env.TEST_SUPABASE_ANON_KEY;
+if (!SUPABASE_URL || !ANON_KEY) {
+  throw new Error('Refusing integration tests without TEST_SUPABASE_URL and TEST_SUPABASE_ANON_KEY for a dedicated staging project.');
+}
+if (SUPABASE_URL.includes('refjawgovrmsyigtcfdl.supabase.co')) {
+  throw new Error('Safety stop: integration tests must never run against the AKS-HCD production Supabase project.');
+}
 const client = createClient(SUPABASE_URL, ANON_KEY);
 
 interface TestResult {
