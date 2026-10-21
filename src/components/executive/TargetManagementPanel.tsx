@@ -385,9 +385,6 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   // Target approval handler
   const handleApproveTarget = async (id: string, targetName: string) => {
     if (!isStateAdmin) return;
-    if (!window.confirm(`Are you sure you want to approve this annual target for ${targetName}? Once approved, it will be published to the LGA Desk Officer and used for official performance calculations.`)) {
-      return;
-    }
 
     try {
       const res = await supabaseService.approveTarget(id, currentUser);
@@ -406,9 +403,6 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   // Target retirement handler
   const handleRetireTarget = async (id: string, targetName: string) => {
     if (!isStateAdmin) return;
-    if (!window.confirm(`Are you sure you want to retire this target (${targetName})? It will no longer apply to ongoing active reporting periods.`)) {
-      return;
-    }
 
     try {
       const res = await supabaseService.retireTarget(id, currentUser);
@@ -427,9 +421,6 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   // Target deletion handler (Drafts only)
   const handleDeleteDraft = async (id: string, targetName: string) => {
     if (!isStateAdmin) return;
-    if (!window.confirm(`Are you sure you want to delete this draft target (${targetName})? This action cannot be undone.`)) {
-      return;
-    }
 
     try {
       const res = await supabaseService.deleteTarget(id, currentUser);

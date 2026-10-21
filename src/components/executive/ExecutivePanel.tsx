@@ -254,14 +254,16 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       setActionFeedback(`Approved and published "${title}" to the state public portal.`);
       setTimeout(() => setActionFeedback(null), 4000);
     } else {
-      alert(res.error);
+      setActionFeedback(res.error || 'Failed to approve activity.');
+      setTimeout(() => setActionFeedback(null), 5000);
     }
   };
 
   const handleConfirmReject = async () => {
     if (!rejectingId) return;
     if (!rejectReason.trim()) {
-      alert('Please specify the feedback or rejection reason for the LGA desk officer.');
+      setActionFeedback('Please specify the feedback or rejection reason for the LGA desk officer.');
+      setTimeout(() => setActionFeedback(null), 4000);
       return;
     }
     const res = await rejectActivity(rejectingId, rejectReason.trim());
@@ -271,17 +273,19 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       setRejectReason('');
       setTimeout(() => setActionFeedback(null), 4000);
     } else {
-      alert(res.error);
+      setActionFeedback(res.error || 'Failed to return draft.');
+      setTimeout(() => setActionFeedback(null), 5000);
     }
   };
 
   const handleRevert = async (id: string) => {
-    if (window.confirm('Revert this published record back to Draft for LGA modifications?')) {
-      const res = await revertToDraft(id);
-      if (res.success) {
-        setActionFeedback('Record unlocked and returned to LGA draft state.');
-        setTimeout(() => setActionFeedback(null), 4000);
-      }
+    const res = await revertToDraft(id);
+    if (res.success) {
+      setActionFeedback('Record unlocked and returned to LGA draft state.');
+      setTimeout(() => setActionFeedback(null), 4000);
+    } else if (res.error) {
+      setActionFeedback(res.error);
+      setTimeout(() => setActionFeedback(null), 5000);
     }
   };
 

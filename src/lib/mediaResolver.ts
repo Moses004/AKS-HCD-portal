@@ -94,6 +94,11 @@ interface RetryTracker {
 // Memoization cache for resolved signed URLs
 const signedUrlCache = new Map<string, CacheEntry>();
 
+// Negative resolution cache for missing files (404) or unauthorized objects (401/403)
+// Prevents repeated network calls and retry-throttling floods for non-existent storage paths
+const NEGATIVE_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const negativeResolutionCache = new Map<string, { result: ResolvedMediaResult; expiresAt: number }>();
+
 // In-flight promise deduplication map to prevent duplicate simultaneous requests
 const inFlightRequests = new Map<string, Promise<ResolvedMediaResult>>();
 
@@ -494,6 +499,16 @@ export async function resolveActivityMedia(
           );
           signedUrlCache.delete(cacheKey);
         }
+
+        const negCached = negativeResolutionCache.get(cacheKey);
+        if (negCached) {
+          if (Date.now() < negCached.expiresAt) {
+            return negCached.result;
+          }
+          negativeResolutionCache.delete(cacheKey);
+        }
+      } else {
+        negativeResolutionCache.delete(cacheKey);
       }
 
       // 2. Check retry circuit breaker
@@ -563,7 +578,7 @@ export async function resolveActivityMedia(
             ) {
               const missingMsg = 'Evidence file not found in storage vault. Re-upload required.';
               logMediaResolutionIssue('missing_file', storagePath, `${missingMsg} (Supabase: ${errMsg})`);
-              return createFallbackMediaResult({
+              const missingResult = createFallbackMediaResult({
                 status: 'missing_file',
                 storagePath,
                 fileName,
@@ -573,6 +588,11 @@ export async function resolveActivityMedia(
                 error: missingMsg,
                 isGeotagValid,
               });
+              negativeResolutionCache.set(cacheKey, {
+                result: missingResult,
+                expiresAt: Date.now() + NEGATIVE_CACHE_TTL_MS,
+              });
+              return missingResult;
             }
 
             // Distinguish Expired Token vs Unauthorized / RLS Permission Denied (401 / 403)
@@ -580,7 +600,7 @@ export async function resolveActivityMedia(
               const expiredMsg =
                 'Access denied or token expired: session or storage token has expired while requesting signed URL.';
               logMediaResolutionIssue('expired_token', storagePath, `${expiredMsg} (Supabase: ${errMsg})`);
-              return createFallbackMediaResult({
+              const expiredResult = createFallbackMediaResult({
                 status: 'unauthorized',
                 storagePath,
                 fileName,
@@ -590,6 +610,11 @@ export async function resolveActivityMedia(
                 error: expiredMsg,
                 isGeotagValid,
               });
+              negativeResolutionCache.set(cacheKey, {
+                result: expiredResult,
+                expiresAt: Date.now() + NEGATIVE_CACHE_TTL_MS,
+              });
+              return expiredResult;
             }
 
             if (
@@ -601,7 +626,7 @@ export async function resolveActivityMedia(
               const authMsg =
                 'Access denied or token expired: caller does not have authorization to view this evidence dossier.';
               logMediaResolutionIssue('unauthorized', storagePath, `${authMsg} (Supabase: ${errMsg})`);
-              return createFallbackMediaResult({
+              const authResult = createFallbackMediaResult({
                 status: 'unauthorized',
                 storagePath,
                 fileName,
@@ -611,6 +636,11 @@ export async function resolveActivityMedia(
                 error: authMsg,
                 isGeotagValid,
               });
+              negativeResolutionCache.set(cacheKey, {
+                result: authResult,
+                expiresAt: Date.now() + NEGATIVE_CACHE_TTL_MS,
+              });
+              return authResult;
             }
 
             logMediaResolutionIssue('storage_error', storagePath, errMsg);
@@ -773,12 +803,14 @@ export async function resolveActivityMediaUrl(
 export function invalidateMediaCache(storagePath?: string | null): void {
   if (!storagePath) {
     signedUrlCache.clear();
+    negativeResolutionCache.clear();
     retryTrackers.clear();
     return;
   }
   const clean = cleanStoragePath(storagePath);
   const cacheKey = `${EVIDENCE_BUCKET}:${clean}`;
   signedUrlCache.delete(cacheKey);
+  negativeResolutionCache.delete(cacheKey);
   retryTrackers.delete(cacheKey);
 }
 

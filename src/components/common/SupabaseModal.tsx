@@ -81,20 +81,6 @@ export const SupabaseModal: React.FC<SupabaseModalProps> = ({ isOpen, onClose })
       return;
     }
 
-    const previewMsg = `Official Baseline Ingestion Preview & Confirmation:
-
-- Dataset: 31 verified ARISE Agenda baseline activities (1 per LGA)
-- Sectors: Education and Life long learning, Health, Skill and labour participation, Agriculture, Cross-cutting Enablers, and Values, Ethics and Social Behaviour
-- Cloud Target: public.activities (PostgreSQL)
-- Authenticated Actor: ${currentUser.name} (${currentUser.email})
-- Authority: State Super-Administrator
-
-Do you explicitly confirm this official ingestion?`;
-
-    if (!window.confirm(previewMsg)) {
-      return;
-    }
-
     setIsSeeding(true);
     setFeedback(null);
     try {

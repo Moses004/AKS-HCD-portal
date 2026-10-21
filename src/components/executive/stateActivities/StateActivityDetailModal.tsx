@@ -71,7 +71,13 @@ export const StateActivityDetailModal: React.FC<StateActivityDetailModalProps> =
     try {
       const signedUrl = await stateActivitiesService.getEvidenceSignedUrl(storagePath);
       if (signedUrl) {
-        window.open(signedUrl, '_blank', 'noopener,noreferrer');
+        const link = document.createElement('a');
+        link.href = signedUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } else {
         setEvidenceError('Unable to generate secure access token for this evidence file. Object may be missing.');
       }

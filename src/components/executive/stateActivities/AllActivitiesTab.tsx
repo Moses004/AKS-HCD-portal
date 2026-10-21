@@ -77,6 +77,7 @@ export const AllActivitiesTab: React.FC<AllActivitiesTabProps> = ({
   // Review modal state
   const [rejectingActivity, setRejectingActivity] = useState<StateHCDActivity | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionError, setRejectionError] = useState<string | null>(null);
 
   // Pagination calculation
   const totalPages = Math.ceil(activities.length / pageSize) || 1;
@@ -86,9 +87,10 @@ export const AllActivitiesTab: React.FC<AllActivitiesTabProps> = ({
   const handleConfirmReject = () => {
     if (!rejectingActivity) return;
     if (!rejectionReason.trim()) {
-      alert('Please state a reason for returning this draft for revision.');
+      setRejectionError('Please state a reason for returning this draft for revision.');
       return;
     }
+    setRejectionError(null);
     onRejectActivity(rejectingActivity, rejectionReason.trim());
     setRejectingActivity(null);
     setRejectionReason('');
@@ -423,10 +425,16 @@ export const AllActivitiesTab: React.FC<AllActivitiesTabProps> = ({
               <textarea
                 rows={4}
                 value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
+                onChange={(e) => {
+                  setRejectionReason(e.target.value);
+                  if (rejectionError) setRejectionError(null);
+                }}
                 placeholder="State clearly the required corrections, missing evidence files, or updates needed before this activity can be officially published..."
                 className="w-full text-xs p-3 rounded-lg border border-slate-300 focus:outline-hidden focus:ring-1 focus:ring-rose-500"
               />
+              {rejectionError && (
+                <p className="text-xs font-semibold text-rose-600 mt-1.5">{rejectionError}</p>
+              )}
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
@@ -434,6 +442,7 @@ export const AllActivitiesTab: React.FC<AllActivitiesTabProps> = ({
                 onClick={() => {
                   setRejectingActivity(null);
                   setRejectionReason('');
+                  setRejectionError(null);
                 }}
                 className="px-4 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
               >

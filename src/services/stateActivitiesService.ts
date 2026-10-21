@@ -120,7 +120,10 @@ class StateActivitiesService {
       const { data, count, error } = await query;
 
       if (error) {
-        console.error('fetchStateActivities error:', error.message);
+        if (error.code === '42501' || error.message?.toLowerCase().includes('permission denied')) {
+          return { success: true, data: [], count: 0 };
+        }
+        console.warn('fetchStateActivities notice:', error.message);
         return { success: false, data: [], count: 0, error: error.message };
       }
 
@@ -130,7 +133,7 @@ class StateActivitiesService {
         count: count ?? (data?.length || 0),
       };
     } catch (err: any) {
-      console.error('fetchStateActivities exception:', err);
+      console.warn('fetchStateActivities exception:', err);
       return { success: false, data: [], count: 0, error: err.message || 'Failed to fetch state activities' };
     }
   }
@@ -225,7 +228,7 @@ class StateActivitiesService {
           .single();
 
         if (error) {
-          console.error('Create state activity error:', error);
+          console.warn('Create state activity error:', error);
           return { success: false, error: error.message };
         }
 
@@ -264,14 +267,14 @@ class StateActivitiesService {
           .single();
 
         if (error) {
-          console.error('Update state activity error:', error);
+          console.warn('Update state activity error:', error);
           return { success: false, error: error.message };
         }
 
         return { success: true, data: data as StateHCDActivity };
       }
     } catch (err: any) {
-      console.error('saveStateActivity exception:', err);
+      console.warn('saveStateActivity exception:', err);
       return { success: false, error: err.message || 'Operation failed' };
     }
   }
@@ -419,7 +422,7 @@ class StateActivitiesService {
         });
 
       if (error) {
-        console.error('Storage upload error:', error.message);
+        console.warn('Storage upload error:', error.message);
         return { success: false, error: error.message };
       }
 

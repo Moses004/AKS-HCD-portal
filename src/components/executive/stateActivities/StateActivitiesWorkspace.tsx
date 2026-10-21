@@ -130,10 +130,10 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
         showFeedback(`Activity "${activity.title}" submitted for review successfully.`);
         loadData();
       } else {
-        alert(res.error || 'Failed to submit activity.');
+        setError(res.error || 'Failed to submit activity.');
       }
     } catch {
-      alert('Error submitting activity.');
+      setError('Error submitting activity.');
     }
   };
 
@@ -148,10 +148,10 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
         showFeedback(`Activity "${activity.title}" published successfully to official state transparency.`);
         loadData();
       } else {
-        alert(res.error || 'Failed to publish activity.');
+        setError(res.error || 'Failed to publish activity.');
       }
     } catch {
-      alert('Error publishing activity.');
+      setError('Error publishing activity.');
     }
   };
 
@@ -167,10 +167,10 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
         showFeedback(`Activity "${activity.title}" returned for revision.`);
         loadData();
       } else {
-        alert(res.error || 'Failed to return activity.');
+        setError(res.error || 'Failed to return activity.');
       }
     } catch {
-      alert('Error returning activity.');
+      setError('Error returning activity.');
     }
   };
 

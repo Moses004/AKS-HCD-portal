@@ -1128,7 +1128,7 @@ export const supabaseService = {
         const { data, count, error } = await query;
 
         if (error) {
-          console.error('fetchActivitiesPaginated error:', error);
+          console.warn('fetchActivitiesPaginated error:', error);
           return {
             activities: allActivities,
             total: allActivities.length,
@@ -1178,7 +1178,7 @@ export const supabaseService = {
         total: totalCount ?? allActivities.length,
       };
     } catch (err: any) {
-      console.error('fetchActivitiesPaginated exception:', err);
+      console.warn('fetchActivitiesPaginated exception:', err);
       return {
         activities: [],
         total: 0,

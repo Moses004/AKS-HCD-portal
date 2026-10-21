@@ -215,7 +215,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
       setGenerationTimestamp(timestamp);
       setProgressText('');
     } catch (err: any) {
-      console.error('Error in fetchReportData:', err);
+      console.warn('Error in fetchReportData:', err);
       setErrorNotice(err.message || 'Failed to retrieve report data');
       setProgressText('');
     } finally {

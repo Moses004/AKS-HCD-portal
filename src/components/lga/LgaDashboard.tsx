@@ -87,11 +87,9 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this activity record?')) {
-      const res = await deleteActivity(id);
-      if (!res.success) {
-        setCrossTenantAlert(res.error || 'Failed to delete record.');
-      }
+    const res = await deleteActivity(id);
+    if (!res.success) {
+      setCrossTenantAlert(res.error || 'Failed to delete record.');
     }
   };
 

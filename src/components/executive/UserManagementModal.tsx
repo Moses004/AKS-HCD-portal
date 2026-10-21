@@ -113,10 +113,6 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   };
 
   const handleRevokeProfile = async (userId: string) => {
-    if (!window.confirm('Revoke Access: Are you sure you want to remove this officer profile?')) {
-      return;
-    }
-
     try {
       const res = await supabaseService.deleteUserProfile(userId);
       if (res.success) {

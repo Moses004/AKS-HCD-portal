@@ -708,7 +708,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             <button
               onClick={() => {
                 if (activity.attendanceRegistryUrl && activity.attendanceRegistryUrl.startsWith('http')) {
-                  window.open(activity.attendanceRegistryUrl, '_blank');
+                  const link = document.createElement('a');
+                  link.href = activity.attendanceRegistryUrl;
+                  link.target = '_blank';
+                  link.rel = 'noopener noreferrer';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
                 } else {
                   setToastMessage(
                     `Beneficiary registry "${activity.attendanceSheetFileName || 'Registry.pdf'}" is safely encrypted in the State Evidence Vault. Official copies require authorized clearance.`
