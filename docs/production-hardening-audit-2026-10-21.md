@@ -1,35 +1,39 @@
 # Production Hardening Audit — 2026-10-21
 
-Repository: https://github.com/Moses004/AKS-HCD-portal
-Working branch: audit/production-hardening-2026-10-21
+Repository: https://github.com/Moses004/AKS-HCD-portal  
+Working branch: audit/production-hardening-2026-10-21  
+Pull request: https://github.com/Moses004/AKS-HCD-portal/pull/1 (draft; do not merge yet)
 
-## Changes made in this branch
-- Replaced legacy README database setup instructions that created broad public write policies and made hcd-evidence-vault public.
-- Updated clone instructions to this repository.
-- Added .github/workflows/ci.yml to run TypeScript/lint checks and a production build.
-- Integration tests are deliberately excluded from CI because current scripts make live Supabase calls and some simulate Storage upload/write attempts.
-- CI temporarily uses npm install because package-lock.json was not found in the repository snapshot. Add and review a lockfile, then switch to npm ci.
+## Implemented in this branch
 
-## Confirmed risks requiring follow-up
-1. scripts/test_suite.ts hard-codes the production Supabase URL and anon key and performs live Storage/database probes. It also invokes audit-log and PTR logging service methods with a synthetic session; whether these persist depends on service implementation and production RLS.
-2. scripts/test_image_reliability.ts hard-codes the production Supabase URL and anon key. It attempts evidence uploads and queries production activities, action items, and target tables. Do not run it against production.
-3. scripts/test_state_activities.ts uses the application's default Supabase client, whose fallback URL points to production. Its checks are primarily reads, but it should still require explicit staging configuration.
-4. src/lib/supabase.ts falls back to the production project URL and embeds the public anon key. An anon key is not a service-role secret, but the production fallback makes accidental production calls from scripts easier. Tests should fail closed unless a staging URL is explicitly provided.
-5. package-lock.json was not found in the repository snapshot. A lockfile is needed for reliable npm ci installs.
-6. Supabase Auth leaked-password protection and the authorization/grants review for review_hcd_access_request(...) remain dashboard/security-review actions.
-7. Image resolution should be verified in a real browser against the published activity. The underlying object was previously confirmed present and stale signed URL metadata was normalized, but a successful browser image request has not yet been established.
+- Replaced unsafe legacy README SQL instructions that created broad public write policies and made `hcd-evidence-vault` public.
+- Added separate CI jobs so frontend dependency/type/build validation and backend migration inventory/secret-pattern checks can run concurrently.
+- Fixed the observed npm peer-dependency conflict by aligning `esbuild` with Vite 8's supported peer range (`^0.28.0`); do not use `--force` or `--legacy-peer-deps`.
+- CI generates a temporary lockfile artifact if the repository lockfile is absent, then uses `npm ci`. The generated lockfile still needs to be downloaded, reviewed, and committed as `package-lock.json`; this transitional generation step should then be removed.
+- Added a manual staging-only integration workflow requiring `TEST_SUPABASE_URL` and `TEST_SUPABASE_ANON_KEY` as secrets in the GitHub `staging` environment. It refuses the known production Supabase URL.
+- Added a manual staging browser image smoke workflow and browser script. It requires `STAGING_PUBLISHED_ACTIVITY_URL` to point to a published activity page in the staging deployment; it checks image load state, uncaught page errors, page content, and uploads a short-retention screenshot artifact without logging signed URLs.
+- Existing integration scripts now require explicit staging environment variables and refuse the known production Supabase URL.
 
-## Checks performed
-- Read package.json, README, media resolver, and the image-reliability, master, and state-activity test scripts from the audit branch.
-- Confirmed package scripts: lint runs tsc --noEmit; build runs vite build; test runs all three test scripts.
-- Confirmed no package-lock.json or existing .github/workflows/ci.yml was found before the workflow was added.
-- Added a CI workflow but have not executed GitHub Actions, installed dependencies in a build runner, or verified lint/build results in this session.
+## Current validation status
 
-## Release gates
-- [ ] Require explicit staging environment variables in all integration test scripts and refuse the production project.
-- [ ] Separate pure/unit tests from integration tests; configure staging secrets only for trusted workflow contexts.
-- [ ] Add a reviewed lockfile and switch CI to npm ci.
-- [ ] Run CI and fix actual lint/build failures.
-- [ ] Verify image signed-URL resolution in a browser without logging tokens or exposing private evidence.
-- [ ] Address Supabase Auth and security-advisor findings.
-- [ ] Review branch diff, then open a pull request. Do not merge until release gates are met.
+- The previous CI runs failed during `npm install` with an `ERESOLVE` peer dependency conflict: Vite 8 requires `esbuild ^0.27.0 || ^0.28.0`, while the project requested `esbuild ^0.25.0`. The branch now updates the esbuild range.
+- Follow-up GitHub Actions runs have been created, but the latest runs were still queued when this audit was updated. Therefore lint/type-check, production build, backend static checks, and lockfile generation are **not yet verified as passing**.
+- The reviewed lockfile has not yet been committed. The CI artifact must be downloaded/reviewed and committed before considering dependency reproducibility complete.
+- Integration tests and browser smoke tests have **not** been run because no dedicated staging Supabase project credentials or staging published-activity URL are configured in the available context. Do not use production for these tests.
+
+## Remaining release gates
+
+1. **Lockfile:** wait for CI to generate `aks-hcd-generated-package-lock`, inspect dependency versions and peer resolutions, commit the reviewed `package-lock.json`, then remove the transitional lock-generation step and keep `npm ci`.
+2. **CI:** confirm frontend type-check/build and backend migration-safety job pass on the final PR head. Fix any new failures from actual logs.
+3. **Staging database:** configure GitHub Actions environment `staging` with `TEST_SUPABASE_URL` and `TEST_SUPABASE_ANON_KEY` for a dedicated non-production Supabase project. Apply the reviewed migrations to staging, seed only synthetic test data, and run the staging integration workflow.
+4. **Browser media:** set `STAGING_PUBLISHED_ACTIVITY_URL` to a published staging activity that contains evidence images, then run the staging browser smoke workflow. Confirm image loads and inspect the screenshot artifact.
+5. **Supabase Auth:** enable leaked-password protection in the Supabase Dashboard at https://supabase.com/dashboard/project/refjawgovrmsyigtcfdl/auth/providers?provider=Email and verify the security advisor no longer reports `auth_leaked_password_protection`. This is an Auth configuration setting, not a SQL migration; it has not been changed from this GitHub workflow.
+6. **Authorization RPC:** review `public.review_hcd_access_request(...)`. The security advisor warns authenticated users can execute this SECURITY DEFINER function. Confirm the function performs robust role/authorization checks; then revoke inappropriate execute grants or change its security model without breaking the legitimate State Executive approval flow. Do not blindly revoke access without checking callers.
+7. **Final release:** review the complete branch diff and all green checks. Keep the PR draft and do not merge/deploy until the above gates pass.
+
+## Security and operational notes
+
+- Never use production credentials for integration or browser testing. Never put a service-role key in client-side variables or repository files.
+- `hcd-evidence-vault` must remain private; public UI must use appropriately scoped signed URLs and avoid logging signed URL query strings.
+- Do not remove indexes solely because an advisor calls them unused; evaluate workload and query plans first.
+- The staging workflows are manual and use the GitHub `staging` environment to keep credentials out of ordinary pull-request jobs.
