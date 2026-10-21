@@ -1,210 +1,112 @@
 # Akwa Ibom State Human Capital Development (AKS-HCD) Platform
 
-> **Official Monitoring, Tracking, and Impact Analytics Portal for Akwa Ibom State's ARISE Agenda**
+Official monitoring, tracking, and impact analytics portal for Akwa Ibom State's Human Capital Development initiatives and ARISE Agenda.
 
-The **AKS-HCD Platform** is an enterprise-grade Progressive Web Application (PWA) designed to track, audit, and analyze Human Capital Development initiatives across all 31 Local Government Areas (LGAs) of Akwa Ibom State. Built with offline-first capabilities, real-time Supabase cloud synchronization, cryptographic audit logging, and geospatial intelligence.
+## Key capabilities
 
----
+- Public transparency portal for published activities and approved impact reporting.
+- Role-based LGA Desk Worker and State Executive workspaces.
+- HCD indicator catalogue, annual targets, baselines, reporting periods, and performance calculations.
+- State-Level Activities, action points, publication workflow, and consolidated reporting.
+- Private evidence uploads through Supabase Storage.
+- Offline-first drafts and synchronization, subject to authenticated scope and authorization.
+- Reporting and export workflows.
 
-## 🌟 Key Features
+## Technology
 
-### 1. Multi-Tier Role-Based Architecture
-- **Public Portal**: Transparent citizen dashboard featuring governor's address, verified state impact metrics, sectoral drill-downs, and interactive LGA map.
-- **Field Officer Mode**: On-ground data collection with 5-stage validation wizard, offline draft storage, and automatic queueing.
-- **LGA Supervisor Review**: Quality assurance desk with granular audit trails, return-for-correction capabilities, and one-click approvals.
-- **Executive Council Panel**: High-level ministerial insights, comparative LGA performance charts, budget allocation vs. impact analysis, and PDF/CSV report generation.
+- React, TypeScript, Vite, Tailwind CSS
+- Supabase Auth, PostgreSQL, Row Level Security (RLS), and private Storage
+- Progressive Web App and offline support
+- Recharts and export utilities
 
-### 2. Robust Offline-First PWA & Synchronization
-- Seamless offline operation in low-connectivity rural LGAs.
-- IndexedDB and localStorage persistent queues with collision handling.
-- Automatic background synchronization when network connectivity restores.
-- Post-Transaction Reconciliation (PTR) verification engine for data integrity.
+## Getting started
 
-### 3. Real-Time Cloud Persistence (Supabase)
-- Pre-configured for Supabase PostgreSQL database (`https://refjawgovrmsyigtcfdl.supabase.co`).
-- Automated data schemas for `activities`, `audit_logs`, and `ptr_test_logs`.
-- In-app Supabase Connection & Schema Management Modal with one-click test and data seeding.
+### Requirements
 
-### 4. Interactive Geospatial Mapping
-- Custom SVG map of Akwa Ibom State showing all 31 LGAs.
-- Dynamic color-coding based on active project status and beneficiary coverage.
-- Detailed modal inspection for each LGA's healthcare, education, agriculture, and skills development programs.
+Use a Node.js version supported by the installed Vite and TypeScript versions (Node.js 22 LTS is the recommended CI baseline).
 
----
+### Install
 
-## 🚀 Tech Stack
-
-- **Frontend**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS
-- **Database & Sync**: Supabase (`@supabase/supabase-js`), REST APIs
-- **Icons**: Lucide React
-- **PWA & Offline**: Vite PWA Plugin, Workbox Service Worker
-- **Visualizations**: Custom SVG Cartography, Recharts / HTML5 Canvas trends
-
----
-
-## 🛠️ Getting Started
-
-### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm or bun
-
-### Installation
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Moses004/Aks-HCD.git
-   cd Aks-HCD
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Configure environment variables:
-   Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   Configure your Supabase credentials:
-   ```env
-   VITE_SUPABASE_URL="https://refjawgovrmsyigtcfdl.supabase.co"
-   VITE_SUPABASE_ANON_KEY="your-anon-public-key-here"
-   ```
-
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Build for production:
-   ```bash
-   npm run build
-   ```
-
----
-
-## 🗄️ Database Setup (Supabase)
-
-To enable live persistence with your Supabase database, run the following SQL script in your [Supabase SQL Editor](https://app.supabase.com):
-
-```sql
--- 0. Function Execution Grants for Helper Functions
-GRANT EXECUTE ON FUNCTION public.aks_hcd_current_role() TO anon, authenticated, service_role;
-GRANT EXECUTE ON FUNCTION public.aks_hcd_current_lga() TO anon, authenticated, service_role;
-
--- 1. AKS-HCD Activities Table
-CREATE TABLE IF NOT EXISTS public.activities (
-  id TEXT PRIMARY KEY,
-  lga_id TEXT NOT NULL,
-  lga_name TEXT NOT NULL,
-  title TEXT NOT NULL,
-  pillar TEXT NOT NULL,
-  sub_category TEXT,
-  community TEXT,
-  lat DOUBLE PRECISION DEFAULT 5.0377,
-  lng DOUBLE PRECISION DEFAULT 7.9128,
-  beneficiaries_total INTEGER DEFAULT 0,
-  beneficiaries_male INTEGER DEFAULT 0,
-  beneficiaries_female INTEGER DEFAULT 0,
-  youth_beneficiaries INTEGER DEFAULT 0,
-  budget_ngn NUMERIC DEFAULT 0,
-  start_date DATE,
-  completion_date DATE,
-  lead_officer TEXT,
-  officer_contact TEXT,
-  status TEXT DEFAULT 'DRAFT',
-  overall_progress INTEGER DEFAULT 0,
-  milestones JSONB DEFAULT '[]'::jsonb,
-  media_assets JSONB DEFAULT '[]'::jsonb,
-  submission_notes TEXT,
-  rejection_reason TEXT,
-  reviewed_by TEXT,
-  reviewed_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 2. Audit Trail Table
-CREATE TABLE IF NOT EXISTS public.audit_logs (
-  id TEXT PRIMARY KEY,
-  timestamp TIMESTAMPTZ DEFAULT NOW(),
-  activity_id TEXT,
-  activity_title TEXT,
-  lga_id TEXT,
-  performed_by TEXT NOT NULL,
-  role TEXT NOT NULL,
-  action TEXT NOT NULL,
-  notes TEXT
-);
-
--- 3. PTR Security & Ledger Test Runs
-CREATE TABLE IF NOT EXISTS public.ptr_test_logs (
-  id TEXT PRIMARY KEY,
-  timestamp TIMESTAMPTZ DEFAULT NOW(),
-  test_vector TEXT NOT NULL,
-  passed BOOLEAN NOT NULL,
-  summary TEXT NOT NULL,
-  payload JSONB DEFAULT '{}'::jsonb,
-  executed_by TEXT
-);
-
--- Enable Row Level Security (RLS)
-ALTER TABLE public.activities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ptr_test_logs ENABLE ROW LEVEL SECURITY;
-
--- Allow public read & write access with anon key
-DROP POLICY IF EXISTS "Allow public read activities" ON public.activities;
-CREATE POLICY "Allow public read activities" ON public.activities FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Allow public insert activities" ON public.activities;
-CREATE POLICY "Allow public insert activities" ON public.activities FOR INSERT WITH CHECK (true);
-DROP POLICY IF EXISTS "Allow public update activities" ON public.activities;
-CREATE POLICY "Allow public update activities" ON public.activities FOR UPDATE USING (true);
-DROP POLICY IF EXISTS "Allow public delete activities" ON public.activities;
-CREATE POLICY "Allow public delete activities" ON public.activities FOR DELETE USING (true);
-
-DROP POLICY IF EXISTS "Allow public read audit_logs" ON public.audit_logs;
-CREATE POLICY "Allow public read audit_logs" ON public.audit_logs FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Allow public insert audit_logs" ON public.audit_logs;
-CREATE POLICY "Allow public insert audit_logs" ON public.audit_logs FOR INSERT WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Allow public read ptr_test_logs" ON public.ptr_test_logs;
-CREATE POLICY "Allow public read ptr_test_logs" ON public.ptr_test_logs FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Allow public insert ptr_test_logs" ON public.ptr_test_logs;
-CREATE POLICY "Allow public insert ptr_test_logs" ON public.ptr_test_logs FOR INSERT WITH CHECK (true);
-
--- 4. Enable Supabase Realtime for instant multi-user synchronization
-ALTER PUBLICATION supabase_realtime ADD TABLE public.activities;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.audit_logs;
-
--- 5. Supabase Storage Bucket for Field Evidence & Media
-INSERT INTO storage.buckets (id, name, public) 
-VALUES ('hcd-evidence-vault', 'hcd-evidence-vault', true)
-ON CONFLICT (id) DO UPDATE SET public = true;
-
-DROP POLICY IF EXISTS "Allow public read evidence vault" ON storage.objects;
-CREATE POLICY "Allow public read evidence vault" ON storage.objects 
-FOR SELECT USING (bucket_id = 'hcd-evidence-vault');
-
-DROP POLICY IF EXISTS "Allow public upload evidence vault" ON storage.objects;
-CREATE POLICY "Allow public upload evidence vault" ON storage.objects 
-FOR INSERT WITH CHECK (bucket_id = 'hcd-evidence-vault');
+```bash
+git clone https://github.com/Moses004/AKS-HCD-portal.git
+cd AKS-HCD-portal
+npm install
 ```
 
----
+Create a local `.env` file using the environment variable names consumed by the existing application. For a Vite client, these may include:
 
-## 🏛️ Akwa Ibom State ARISE Agenda
+```env
+VITE_SUPABASE_URL=https://refjawgovrmsyigtcfdl.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_publishable_or_anon_key
+```
 
-The Human Capital Development initiatives in this portal directly support Governor Umo Eno's ARISE Agenda pillars:
-- **A** - Agricultural Revolution
-- **R** - Rural Development
-- **I** - Infrastructural Maintenance
-- **S** - Security Management
-- **E** - Educational Advancement & Economic Empowerment
+Use the project's actual expected variable names if they differ. Never put a Supabase service-role key, database password, or other privileged secret in a frontend variable, committed file, or client bundle.
 
----
+Start the development server:
 
-## 📄 License
-Government of Akwa Ibom State & Project Contributors.
+```bash
+npm run dev
+```
+
+Validate the production bundle:
+
+```bash
+npm run lint
+npm run build
+```
+
+The repository's current `npm test` command includes Supabase integration checks. Do not run that command against the production project; see the testing section below.
+
+## Database setup and migrations
+
+**Do not run legacy SQL snippets that grant anonymous/public write access to activities, audit logs, test telemetry, or make the evidence bucket public.** Those examples do not reflect the current production security model and may expose or corrupt government reporting data.
+
+Use version-controlled Supabase migrations as the source of truth for schema, grants, RLS policies, functions, views, and Storage policies.
+
+1. Review migration files and confirm they match the intended change.
+2. Back up the database and verify a recovery procedure before production changes.
+3. Apply migrations to a dedicated staging Supabase project first.
+4. Validate schema, authentication, RLS, Storage policies, activity workflows, targets, state-level reporting, and exports in staging.
+5. Apply reviewed migrations to production through a controlled deployment process.
+6. Verify application health and security advisor findings after deployment.
+
+Do not recreate existing production tables from README examples, run ad hoc broad grants, or replace established policies with sample policies. Do not expose private evidence by changing the `hcd-evidence-vault` bucket to public.
+
+### Evidence and media
+
+The `hcd-evidence-vault` bucket is private. Persist canonical object paths (such as `storagePath`) rather than permanent signed URLs. Signed URLs expire and should be generated when an authorized user needs to view a file. Public pages must not expose draft evidence, beneficiary documents, or other private records.
+
+LGA uploads must remain scoped to the authenticated user's assigned LGA. State-level evidence uses the established `state-level/<activity-uuid>/...` path convention. Never put service-role credentials in browser code.
+
+## Automated checks and testing
+
+The GitHub Actions workflow should run dependency installation, lint/type checks, and a production build for pull requests and pushes to `main`.
+
+Integration tests must use a dedicated staging/test Supabase project with synthetic data. They must not create, update, upload, or delete production records. Store staging credentials in GitHub Actions secrets; never commit them. Do not expose service-role credentials to pull-request workflows from untrusted forks.
+
+Before enabling the repository's full integration test command in CI:
+
+- Replace hard-coded production Supabase URLs and keys in test scripts with environment variables.
+- Add a fail-closed guard that refuses to run if the configured project is the production project.
+- Confirm all tests clean up only the synthetic records they create.
+- Separate pure unit tests from integration tests that contact Supabase.
+- Ensure CI jobs without staging credentials run only static checks and the production build.
+
+## Release security checklist
+
+- [ ] Active and approved profile checks are enforced; database RLS remains the security boundary.
+- [ ] Anonymous users can read only explicitly public/published data.
+- [ ] LGA users cannot read or modify another LGA's restricted records or evidence.
+- [ ] State administrators can manage state-level activities only through authorized policies.
+- [ ] Evidence storage remains private and signed URLs are short-lived.
+- [ ] CI, type checks, lint, build, and staging integration tests pass.
+- [ ] Supabase Auth settings and security-advisor findings have been reviewed.
+- [ ] No secrets, real beneficiary data, or signed URLs are committed to Git.
+
+## ARISE Agenda
+
+The portal supports the Akwa Ibom State ARISE Agenda and Human Capital Development monitoring. Public reporting must be based on authorized, published data rather than demo or fallback records.
+
+## License
+
+Government of Akwa Ibom State and project contributors.
