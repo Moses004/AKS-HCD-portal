@@ -1,0 +1,43 @@
+name: AKS-HCD CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aks-hcd-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, type-check, and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        # The repository currently has no package-lock.json; switch to npm ci
+        # after committing a reviewed lockfile.
+        run: npm install --no-audit --no-fund
+
+      - name: TypeScript check and lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+  # Integration tests intentionally are not run here. The existing test
+  # scripts include live Supabase calls and must first be isolated to staging.
