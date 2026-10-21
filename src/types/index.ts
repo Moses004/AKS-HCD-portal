@@ -187,6 +187,21 @@ export interface UserSession {
   isDemo?: boolean;
 }
 
+export type AuditActionType =
+  | 'CREATED_DRAFT'
+  | 'SUBMITTED'
+  | 'APPROVED_PUBLISHED'
+  | 'REJECTED'
+  | 'REVERTED_TO_DRAFT'
+  | 'DELETED'
+  | 'MODIFIED'
+  | 'TARGET_CONFIGURED'
+  | 'TARGET_APPROVED'
+  | 'TARGET_RETIRED'
+  | 'USER_ACCESS_CHANGED'
+  | 'STATE_ACTIVITY_GOVERNANCE'
+  | 'CROSS_TENANT_VIOLATION_BLOCKED';
+
 export interface AuditLog {
   id: string;
   timestamp: string;
@@ -196,9 +211,11 @@ export interface AuditLog {
   performedBy: string;
   actorUserId?: string;
   role: Role;
-  action: 'CREATED_DRAFT' | 'SUBMITTED' | 'APPROVED_PUBLISHED' | 'REJECTED' | 'MODIFIED' | 'CROSS_TENANT_VIOLATION_BLOCKED';
+  action: AuditActionType | string;
   notes?: string;
   persistedToCloud?: boolean;
+  changeCategory?: 'activity_lifecycle' | 'budget_demographics' | 'target_governance' | 'access_control' | 'state_executive' | 'security_policy';
+  severity?: 'info' | 'elevated' | 'critical';
 }
 
 export interface HCDReportingIndicator {

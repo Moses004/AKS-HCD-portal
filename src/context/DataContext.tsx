@@ -6,6 +6,7 @@ import {
   HCDReportingIndicator,
   ActivityMeasurement,
   HCDPillar,
+  Role,
 } from '../types';
 import { INITIAL_ACTIVITIES } from '../data/initialActivities';
 import { DEFAULT_HCD_PILLARS } from '../data/lgas';
@@ -78,10 +79,53 @@ interface DataContextType {
   realtimeStatus: 'connected' | 'connecting' | 'disconnected' | 'error';
   lastDatabaseSyncTime: string;
   revalidateActivities: () => Promise<void>;
+  recordAuditEvent: (
+    action: AuditLog['action'],
+    details?: {
+      activityId?: string;
+      activityTitle?: string;
+      lgaId?: string;
+      notes?: string;
+      performedBy?: string;
+      role?: Role;
+    }
+  ) => Promise<{ success: boolean; persistedToCloud: boolean; error?: string }>;
+  refreshAuditLogs: () => Promise<{ success: boolean; count: number; error?: string }>;
 }
 
 const STORAGE_KEY_LAST_PTR_SYNC = 'aks_hcd_last_ptr_sync_v2';
 const STORAGE_KEY_AUTO_SYNC_ENABLED = 'aks_hcd_auto_sync_enabled_v2';
+const STORAGE_KEY_LOCAL_AUDIT_LOGS = 'aks_hcd_local_audit_logs_v1';
+
+const loadLocalAuditLogs = (): AuditLog[] => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_LOCAL_AUDIT_LOGS);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveLocalAuditLogs = (logs: AuditLog[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY_LOCAL_AUDIT_LOGS, JSON.stringify(logs.slice(0, 300)));
+  } catch {}
+};
+
+const mergeAuditLogs = (cloudLogs: AuditLog[], existingOrLocal: AuditLog[]): AuditLog[] => {
+  const byId = new Map<string, AuditLog>();
+  for (const log of existingOrLocal) {
+    if (log && log.id) byId.set(log.id, log);
+  }
+  for (const log of cloudLogs) {
+    if (log && log.id) byId.set(log.id, { ...log, persistedToCloud: true });
+  }
+  return Array.from(byId.values()).sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+};
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
@@ -89,7 +133,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { currentUser, assertTenantAccess, isSimulatedOffline } = useAuth();
 
   const [activities, setActivities] = useState<HCDActivity[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() => loadLocalAuditLogs());
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dataError, setDataError] = useState<string | null>(null);
   const [diagnosticNotice, setDiagnosticNotice] = useState<string | null>(null);
@@ -313,10 +357,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               currentUser
             );
             if (isMounted && logsResult.success) {
-              setAuditLogs(logsResult.data);
+              setAuditLogs((prev) => {
+                const merged = mergeAuditLogs(logsResult.data, prev);
+                saveLocalAuditLogs(merged);
+                return merged;
+              });
             }
-          } else if (isMounted) {
-            setAuditLogs([]);
           }
 
           // Fetch active reporting indicators catalogue from Supabase live table
@@ -409,7 +455,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           currentUser
         );
         if (logsResult.success) {
-          setAuditLogs(logsResult.data);
+          setAuditLogs((prev) => {
+            const merged = mergeAuditLogs(logsResult.data, prev);
+            saveLocalAuditLogs(merged);
+            return merged;
+          });
         }
       }
     } catch (err) {
@@ -507,7 +557,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [isEffectiveOnline, currentUser]);
 
   // Audit logging helper - structured return and authentic actor assignment
-  const logAction = async (
+  const logAction = useCallback(async (
     action: AuditLog['action'],
     performedBy: string,
     role: AuditLog['role'],
@@ -527,29 +577,85 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       role: currentUser.isAuthenticated ? currentUser.role : role,
       activityId: details?.activityId,
       activityTitle: details?.activityTitle,
-      lgaId: details?.lgaId,
+      lgaId: details?.lgaId || (currentUser.role === 'lga_admin' ? currentUser.assignedLgaId : undefined),
       notes: details?.notes,
       persistedToCloud: false,
     };
 
-    // If sandbox demo mode or offline or unauthenticated: keep in local state only
+    const appendAndPersistLocal = (logEntry: AuditLog) => {
+      setAuditLogs((prev) => {
+        const next = [logEntry, ...prev.filter((l) => l.id !== logEntry.id)];
+        saveLocalAuditLogs(next);
+        return next;
+      });
+    };
+
+    // If sandbox demo mode or offline or unauthenticated: keep in local state + localStorage
     if (currentUser.isDemo || !isEffectiveOnline || !isSupabaseReady() || !currentUser.isAuthenticated) {
-      setAuditLogs((prev) => [newLog, ...prev]);
+      appendAndPersistLocal(newLog);
       return { success: true, persistedToCloud: false };
     }
 
     try {
       const res = await supabaseService.insertAuditLog(newLog, currentUser);
       newLog.persistedToCloud = res.persistedToCloud;
-      setAuditLogs((prev) => [newLog, ...prev]);
+      appendAndPersistLocal(newLog);
       return res;
     } catch (err: any) {
       console.warn('Audit log write error:', err);
       newLog.persistedToCloud = false;
-      setAuditLogs((prev) => [newLog, ...prev]);
+      appendAndPersistLocal(newLog);
       return { success: false, persistedToCloud: false, error: err.message };
     }
-  };
+  }, [currentUser, isEffectiveOnline]);
+
+  // Public helper for recording sensitive actions from child panels (Targets, RBAC, State Activities)
+  const recordAuditEvent = useCallback(
+    async (
+      action: AuditLog['action'],
+      details?: {
+        activityId?: string;
+        activityTitle?: string;
+        lgaId?: string;
+        notes?: string;
+        performedBy?: string;
+        role?: Role;
+      }
+    ) => {
+      return logAction(
+        action,
+        details?.performedBy || currentUser.name,
+        details?.role || currentUser.role,
+        details
+      );
+    },
+    [logAction, currentUser]
+  );
+
+  const refreshAuditLogs = useCallback(async (): Promise<{ success: boolean; count: number; error?: string }> => {
+    if (!isEffectiveOnline || !isSupabaseReady()) {
+      return { success: true, count: auditLogs.length };
+    }
+    try {
+      const res = await supabaseService.fetchAuditLogs(
+        currentUser.role === 'lga_admin' ? currentUser.assignedLgaId : undefined,
+        currentUser
+      );
+      if (res.success) {
+        let finalCount = 0;
+        setAuditLogs((prev) => {
+          const merged = mergeAuditLogs(res.data, prev);
+          saveLocalAuditLogs(merged);
+          finalCount = merged.length;
+          return merged;
+        });
+        return { success: true, count: finalCount };
+      }
+      return { success: false, count: auditLogs.length, error: res.error };
+    } catch (err: any) {
+      return { success: false, count: auditLogs.length, error: err.message };
+    }
+  }, [isEffectiveOnline, currentUser, auditLogs.length]);
 
   // Add Activity (Strict persistence & durable offline queue)
   const addActivity = async (
@@ -728,10 +834,47 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return { success: true, id: newId, offlineQueued: true };
   };
 
+  // Compute human-readable field diff for audit accountability
+  const buildActivityDiffSummary = (existing: HCDActivity, updates: Partial<HCDActivity>): string => {
+    const diffs: string[] = [];
+    if (updates.title !== undefined && updates.title !== existing.title) {
+      diffs.push(`Title: "${existing.title}" → "${updates.title}"`);
+    }
+    if (updates.status !== undefined && updates.status !== existing.status) {
+      diffs.push(`Status: ${existing.status} → ${updates.status}`);
+    }
+    if (updates.beneficiariesTotal !== undefined && Number(updates.beneficiariesTotal) !== Number(existing.beneficiariesTotal)) {
+      diffs.push(`Total Beneficiaries: ${existing.beneficiariesTotal.toLocaleString()} → ${Number(updates.beneficiariesTotal).toLocaleString()}`);
+    }
+    if (updates.beneficiariesMale !== undefined && Number(updates.beneficiariesMale) !== Number(existing.beneficiariesMale)) {
+      diffs.push(`Male Split: ${existing.beneficiariesMale.toLocaleString()} → ${Number(updates.beneficiariesMale).toLocaleString()}`);
+    }
+    if (updates.beneficiariesFemale !== undefined && Number(updates.beneficiariesFemale) !== Number(existing.beneficiariesFemale)) {
+      diffs.push(`Female Split: ${existing.beneficiariesFemale.toLocaleString()} → ${Number(updates.beneficiariesFemale).toLocaleString()}`);
+    }
+    if (updates.budgetNgn !== undefined && Number(updates.budgetNgn) !== Number(existing.budgetNgn)) {
+      diffs.push(`Budget: ₦${existing.budgetNgn.toLocaleString()} → ₦${Number(updates.budgetNgn).toLocaleString()}`);
+    }
+    if (updates.overallProgress !== undefined && Number(updates.overallProgress) !== Number(existing.overallProgress)) {
+      diffs.push(`Progress: ${existing.overallProgress || 0}% → ${updates.overallProgress}%`);
+    }
+    if (updates.community !== undefined && updates.community !== existing.community) {
+      diffs.push(`Community: "${existing.community}" → "${updates.community}"`);
+    }
+    if (updates.leadOfficer !== undefined && updates.leadOfficer !== existing.leadOfficer) {
+      diffs.push(`Lead Officer: "${existing.leadOfficer}" → "${updates.leadOfficer}"`);
+    }
+    if (updates.mediaAssets !== undefined && updates.mediaAssets.length !== (existing.mediaAssets?.length || 0)) {
+      diffs.push(`Evidence Assets: ${existing.mediaAssets?.length || 0} → ${updates.mediaAssets.length} files`);
+    }
+    return diffs.length > 0 ? diffs.join(' · ') : 'Updated activity metadata and verification attributes.';
+  };
+
   // Update Activity
   const updateActivity = async (
     id: string,
-    updates: Partial<HCDActivity>
+    updates: Partial<HCDActivity>,
+    options?: { skipAuditLog?: boolean }
   ): Promise<{ success: boolean; error?: string }> => {
     const existing = activities.find((a) => a.id === id);
     if (!existing) {
@@ -742,6 +885,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!check.allowed) {
       await logAction('CROSS_TENANT_VIOLATION_BLOCKED', currentUser.name, currentUser.role, {
         activityId: id,
+        activityTitle: existing.title,
         lgaId: existing.lgaId,
         notes: check.error,
       });
@@ -801,15 +945,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updatedAt: new Date().toISOString(),
     };
 
+    const diffNotes = buildActivityDiffSummary(existing, sanitizedUpdates);
+
     // Demo Mode: sandbox isolation
     if (currentUser.isDemo) {
       setActivities((prev) => prev.map((a) => (a.id === id ? updatedItem : a)));
-      await logAction('MODIFIED', currentUser.name, currentUser.role, {
-        activityId: id,
-        activityTitle: updatedItem.title,
-        lgaId: updatedItem.lgaId,
-        notes: 'Updated in local demonstration sandbox.',
-      });
+      if (!options?.skipAuditLog) {
+        await logAction('MODIFIED', currentUser.name, currentUser.role, {
+          activityId: id,
+          activityTitle: updatedItem.title,
+          lgaId: updatedItem.lgaId,
+          notes: `${diffNotes} (Sandbox Mode)`,
+        });
+      }
       return { success: true };
     }
 
@@ -827,12 +975,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setActivities((prev) => prev.map((a) => (a.id === id ? committed : a)));
       cacheActivitiesLocally(activities.map((a) => (a.id === id ? committed : a)), currentUser);
 
-      await logAction('MODIFIED', currentUser.name, currentUser.role, {
-        activityId: id,
-        activityTitle: updatedItem.title,
-        lgaId: updatedItem.lgaId,
-        notes: `Activity updated successfully in cloud repository.`,
-      });
+      if (!options?.skipAuditLog) {
+        await logAction('MODIFIED', currentUser.name, currentUser.role, {
+          activityId: id,
+          activityTitle: updatedItem.title,
+          lgaId: updatedItem.lgaId,
+          notes: diffNotes,
+        });
+      }
 
       return { success: true };
     }
@@ -855,12 +1005,31 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setActivities((prev) => prev.map((a) => (a.id === id ? updatedItem : a)));
     await refreshPendingQueue();
 
+    if (!options?.skipAuditLog) {
+      await logAction('MODIFIED', currentUser.name, currentUser.role, {
+        activityId: id,
+        activityTitle: updatedItem.title,
+        lgaId: updatedItem.lgaId,
+        notes: `${diffNotes} (Queued in offline sync ledger)`,
+      });
+    }
+
     return { success: true };
   };
 
   // Submit Activity for Review
   const submitActivityForReview = async (id: string): Promise<{ success: boolean; error?: string }> => {
-    return updateActivity(id, { status: 'PENDING_APPROVAL' });
+    const existing = activities.find((a) => a.id === id);
+    const res = await updateActivity(id, { status: 'PENDING_APPROVAL' }, { skipAuditLog: true });
+    if (res.success && existing) {
+      await logAction('SUBMITTED', currentUser.name, currentUser.role, {
+        activityId: id,
+        activityTitle: existing.title,
+        lgaId: existing.lgaId,
+        notes: `Submitted for State Executive review · Beneficiaries: ${existing.beneficiariesTotal.toLocaleString()} · Budget: ₦${existing.budgetNgn.toLocaleString()}`,
+      });
+    }
+    return res;
   };
 
   // Approve Activity (State Super-Admin only)
@@ -868,17 +1037,28 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (currentUser.role !== 'state_admin') {
       return { success: false, error: 'Unauthorized: Only State Super-Admins can approve and publish activities.' };
     }
+    const existing = activities.find((a) => a.id === id);
     const now = new Date().toISOString();
-    const res = await updateActivity(id, {
-      status: 'PUBLISHED',
-      reviewedBy: currentUser.name,
-      reviewedAt: now,
-      submissionNotes: notes,
-    });
+    const res = await updateActivity(
+      id,
+      {
+        status: 'PUBLISHED',
+        reviewedBy: currentUser.name,
+        reviewedAt: now,
+        submissionNotes: notes,
+      },
+      { skipAuditLog: true }
+    );
     if (res.success) {
       await logAction('APPROVED_PUBLISHED', currentUser.name, currentUser.role, {
         activityId: id,
-        notes: notes || 'Activity approved and published to official state register.',
+        activityTitle: existing?.title,
+        lgaId: existing?.lgaId,
+        notes:
+          notes ||
+          `Executive validation complete. Published "${existing?.title || id}" (${existing?.lgaName || 'LGA'}) to official state register · Beneficiaries: ${
+            existing?.beneficiariesTotal?.toLocaleString() || 0
+          } · Budget: ₦${existing?.budgetNgn?.toLocaleString() || 0}.`,
       });
     }
     return res;
@@ -892,17 +1072,24 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!reason.trim()) {
       return { success: false, error: 'A specific feedback note or correction reason is required.' };
     }
+    const existing = activities.find((a) => a.id === id);
     const now = new Date().toISOString();
-    const res = await updateActivity(id, {
-      status: 'REJECTED_DRAFT',
-      rejectionReason: reason.trim(),
-      reviewedBy: currentUser.name,
-      reviewedAt: now,
-    });
+    const res = await updateActivity(
+      id,
+      {
+        status: 'REJECTED_DRAFT',
+        rejectionReason: reason.trim(),
+        reviewedBy: currentUser.name,
+        reviewedAt: now,
+      },
+      { skipAuditLog: true }
+    );
     if (res.success) {
       await logAction('REJECTED', currentUser.name, currentUser.role, {
         activityId: id,
-        notes: `Activity rejected with feedback: ${reason.trim()}`,
+        activityTitle: existing?.title,
+        lgaId: existing?.lgaId,
+        notes: `Returned to ${existing?.lgaName || 'LGA'} desk officer for correction · Reason: "${reason.trim()}"`,
       });
     }
     return res;
@@ -914,7 +1101,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!existing) return { success: false, error: 'Activity not found.' };
 
     const check = assertTenantAccess(existing.lgaId);
-    if (!check.allowed) return { success: false, error: check.error };
+    if (!check.allowed) {
+      await logAction('CROSS_TENANT_VIOLATION_BLOCKED', currentUser.name, currentUser.role, {
+        activityId: id,
+        activityTitle: existing.title,
+        lgaId: existing.lgaId,
+        notes: check.error,
+      });
+      return { success: false, error: check.error };
+    }
 
     if (currentUser.role !== 'state_admin' && existing.status === 'PUBLISHED') {
       return { success: false, error: 'Published activities can only be deleted or archived by State Super-Admin.' };
@@ -923,11 +1118,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Demo Mode: local sandbox delete
     if (currentUser.isDemo) {
       setActivities((prev) => prev.filter((a) => a.id !== id));
-      await logAction('MODIFIED', currentUser.name, currentUser.role, {
+      await logAction('DELETED', currentUser.name, currentUser.role, {
         activityId: id,
         activityTitle: existing.title,
         lgaId: existing.lgaId,
-        notes: 'Deleted in local demonstration sandbox.',
+        notes: `Deleted record "${existing.title}" (${existing.status}) in sandbox mode · Beneficiaries: ${existing.beneficiariesTotal.toLocaleString()} · Budget: ₦${existing.budgetNgn.toLocaleString()}.`,
       });
       return { success: true };
     }
@@ -953,11 +1148,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     setActivities((prev) => prev.filter((a) => a.id !== id));
-    await logAction('MODIFIED', currentUser.name, currentUser.role, {
+    await logAction('DELETED', currentUser.name, currentUser.role, {
       activityId: id,
       activityTitle: existing.title,
       lgaId: existing.lgaId,
-      notes: `Record deleted from repository.`,
+      notes: `Permanently removed record "${existing.title}" (Status prior to deletion: ${existing.status}) · Beneficiaries: ${existing.beneficiariesTotal.toLocaleString()} · Budget: ₦${existing.budgetNgn.toLocaleString()}.`,
     });
 
     return { success: true };
@@ -967,7 +1162,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (currentUser.role !== 'state_admin') {
       return { success: false, error: 'Unauthorized: Only State Super-Admin can unlock published activities.' };
     }
-    return updateActivity(id, { status: 'DRAFT' });
+    const existing = activities.find((a) => a.id === id);
+    const res = await updateActivity(id, { status: 'DRAFT' }, { skipAuditLog: true });
+    if (res.success) {
+      await logAction('REVERTED_TO_DRAFT', currentUser.name, currentUser.role, {
+        activityId: id,
+        activityTitle: existing?.title,
+        lgaId: existing?.lgaId,
+        notes: `Executive Immutability Override: Unlocked published record "${existing?.title || id}" (${existing?.lgaName || 'LGA'}) and reverted status from PUBLISHED → DRAFT for revision.`,
+      });
+    }
+    return res;
   };
 
   // Seed baseline 31 LGA activities to cloud
@@ -1305,6 +1510,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         realtimeStatus,
         lastDatabaseSyncTime,
         revalidateActivities,
+        recordAuditEvent,
+        refreshAuditLogs,
       }}
     >
       {children}

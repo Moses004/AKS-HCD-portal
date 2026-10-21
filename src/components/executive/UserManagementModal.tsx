@@ -29,7 +29,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   onClose,
 }) => {
   const { currentUser } = useAuth();
-  const { isOnline } = useData();
+  const { isOnline, recordAuditEvent } = useData();
 
   const [profiles, setProfiles] = useState<UserProfileRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -95,6 +95,12 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     try {
       const res = await supabaseService.upsertUserProfile(newRecord);
       if (res.success) {
+        await recordAuditEvent('USER_ACCESS_CHANGED', {
+          activityId: newRecord.user_id,
+          activityTitle: `RBAC Provisioning: ${newRecord.display_name}`,
+          lgaId: newRole === 'lga_admin' ? newLgaId : undefined,
+          notes: `Provisioned officer UID "${newRecord.user_id}" with role ${newRole}${newRole === 'lga_admin' ? ` (${lga?.name || newLgaId} LGA)` : ' (State-Wide Executive)'} · Dept: ${targetDept}.`,
+        });
         setFeedback({
           type: 'success',
           message: `Officer successfully provisioned with ${newRole === 'state_admin' ? 'State Administrator' : `${lga?.name} LGA Desk Officer`} credentials.`,
@@ -113,9 +119,16 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   };
 
   const handleRevokeProfile = async (userId: string) => {
+    const existingProfile = profiles.find((p) => p.user_id === userId);
     try {
       const res = await supabaseService.deleteUserProfile(userId);
       if (res.success) {
+        await recordAuditEvent('USER_ACCESS_CHANGED', {
+          activityId: userId,
+          activityTitle: `RBAC Revocation: ${existingProfile?.display_name || userId}`,
+          lgaId: existingProfile?.lga_id || undefined,
+          notes: `Revoked platform access for officer "${existingProfile?.display_name || userId}" (Previous role: ${existingProfile?.role || 'unknown'}).`,
+        });
         setFeedback({ type: 'success', message: 'Officer profile access revoked successfully.' });
         setProfiles((prev) => prev.filter((p) => p.user_id !== userId));
       } else {

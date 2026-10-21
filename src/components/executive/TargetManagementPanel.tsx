@@ -45,7 +45,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   onTargetUpdated,
 }) => {
   const { currentUser } = useAuth();
-  const { indicators, pillars, getPillarDisplayName } = useData();
+  const { indicators, pillars, getPillarDisplayName, recordAuditEvent } = useData();
 
   const isStateAdmin =
     currentUser.isAuthenticated && currentUser.isPrivileged && currentUser.role === 'state_admin';
@@ -332,6 +332,12 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
         if (!res.success) {
           setFormError(res.error || 'Failed to update target');
         } else {
+          await recordAuditEvent('TARGET_CONFIGURED', {
+            activityId: editingTarget.id,
+            activityTitle: `${formIndicatorCode} Annual Target (${formReportingYear})`,
+            lgaId: formLgaId,
+            notes: `Updated annual target for ${lgaName} (${formIndicatorCode}, Year ${formReportingYear}) · Target Value: ${targetVal} ${formMeasurementUnit.trim()} (${formTargetDirection}).`,
+          });
           setSuccessNotice(`Target for ${lgaName} (${formIndicatorCode}) updated successfully.`);
           setIsCreateModalOpen(false);
           resetForm();
@@ -368,6 +374,12 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
             setFormError(res.error || 'Failed to create target');
           }
         } else {
+          await recordAuditEvent('TARGET_CONFIGURED', {
+            activityId: res.data?.id || `target-${formLgaId}-${formIndicatorCode}`,
+            activityTitle: `${formIndicatorCode} Annual Target (${formReportingYear})`,
+            lgaId: formLgaId,
+            notes: `Created new draft target for ${lgaName} (${formIndicatorCode}, Year ${formReportingYear}) · Target Value: ${targetVal} ${formMeasurementUnit.trim()}${baselineVal !== null ? ` · Baseline: ${baselineVal}` : ''}.`,
+          });
           setSuccessNotice(`New draft target for ${lgaName} (${formIndicatorCode}) saved successfully.`);
           setIsCreateModalOpen(false);
           resetForm();
@@ -385,12 +397,19 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   // Target approval handler
   const handleApproveTarget = async (id: string, targetName: string) => {
     if (!isStateAdmin) return;
+    const targetObj = targets.find((t) => t.id === id);
 
     try {
       const res = await supabaseService.approveTarget(id, currentUser);
       if (!res.success) {
         setErrorNotice(res.error || 'Failed to approve target');
       } else {
+        await recordAuditEvent('TARGET_APPROVED', {
+          activityId: id,
+          activityTitle: targetName,
+          lgaId: targetObj?.lga_id,
+          notes: `Approved official HCD target ${targetName} · Target Value: ${targetObj?.target_value ?? ''} ${targetObj?.measurement_unit ?? ''} for reporting year ${targetObj?.reporting_year ?? ''}.`,
+        });
         setSuccessNotice(`Target ${targetName} approved successfully and published to official performance reports.`);
         loadTargets();
         onTargetUpdated?.();
@@ -403,12 +422,19 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   // Target retirement handler
   const handleRetireTarget = async (id: string, targetName: string) => {
     if (!isStateAdmin) return;
+    const targetObj = targets.find((t) => t.id === id);
 
     try {
       const res = await supabaseService.retireTarget(id, currentUser);
       if (!res.success) {
         setErrorNotice(res.error || 'Failed to retire target');
       } else {
+        await recordAuditEvent('TARGET_RETIRED', {
+          activityId: id,
+          activityTitle: targetName,
+          lgaId: targetObj?.lga_id,
+          notes: `Retired annual indicator target ${targetName} from active performance evaluation.`,
+        });
         setSuccessNotice(`Target ${targetName} retired successfully.`);
         loadTargets();
         onTargetUpdated?.();
@@ -421,12 +447,19 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
   // Target deletion handler (Drafts only)
   const handleDeleteDraft = async (id: string, targetName: string) => {
     if (!isStateAdmin) return;
+    const targetObj = targets.find((t) => t.id === id);
 
     try {
       const res = await supabaseService.deleteTarget(id, currentUser);
       if (!res.success) {
         setErrorNotice(res.error || 'Failed to delete draft target');
       } else {
+        await recordAuditEvent('DELETED', {
+          activityId: id,
+          activityTitle: targetName,
+          lgaId: targetObj?.lga_id,
+          notes: `Deleted unapproved draft target ${targetName}.`,
+        });
         setSuccessNotice(`Draft target ${targetName} deleted.`);
         loadTargets();
         onTargetUpdated?.();

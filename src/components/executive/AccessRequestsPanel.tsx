@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 import { ALL_31_LGAS, getLgaById } from '../../data/lgas';
 import { UserProfileRecord, Role, ApprovalStatus } from '../../types';
 import { getSupabaseClient } from '../../lib/supabase';
@@ -29,6 +30,7 @@ import {
 
 export const AccessRequestsPanel: React.FC = () => {
   const { currentUser, reviewAccessRequest } = useAuth();
+  const { recordAuditEvent } = useData();
 
   const [profiles, setProfiles] = useState<UserProfileRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -164,6 +166,12 @@ export const AccessRequestsPanel: React.FC = () => {
       if (!res.success) {
         setReviewError(res.error || 'Server rejected access review decision.');
       } else {
+        await recordAuditEvent('USER_ACCESS_CHANGED', {
+          activityId: reviewingProfile.user_id,
+          activityTitle: `Personnel Access Decision: ${reviewingProfile.display_name}`,
+          lgaId: p_approved_lga_id || reviewingProfile.lga_id || undefined,
+          notes: `Executed ${decision.toUpperCase()} for officer "${reviewingProfile.display_name}"${p_approved_role ? ` · Role: ${p_approved_role}` : ''}${p_approved_lga_id ? ` · LGA: ${p_approved_lga_id}` : ''}${reviewNotes.trim() ? ` · Notes: "${reviewNotes.trim()}"` : ''}.`,
+        });
         setFeedbackSuccess(
           `Successfully executed ${decision.toUpperCase()} for ${reviewingProfile.display_name}.`
         );

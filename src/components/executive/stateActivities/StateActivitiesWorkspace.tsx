@@ -7,6 +7,7 @@ import {
 } from '../../../types';
 import { stateActivitiesService } from '../../../services/stateActivitiesService';
 import { useAuth } from '../../../context/AuthContext';
+import { useData } from '../../../context/DataContext';
 import { OverviewTab } from './OverviewTab';
 import { AllActivitiesTab } from './AllActivitiesTab';
 import { CreateEditActivityTab } from './CreateEditActivityTab';
@@ -37,6 +38,7 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
   initialSubTab = 'overview',
 }) => {
   const { currentUser } = useAuth();
+  const { recordAuditEvent } = useData();
 
   const [activeSubTab, setActiveSubTab] = useState<StateWorkspaceTab>(initialSubTab);
   const [activities, setActivities] = useState<StateHCDActivity[]>([]);
@@ -113,6 +115,12 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
   };
 
   const handleSavedActivity = (activity: StateHCDActivity, message: string) => {
+    recordAuditEvent('STATE_ACTIVITY_GOVERNANCE', {
+      activityId: activity.id,
+      activityTitle: activity.title,
+      lgaId: 'state-level',
+      notes: `${message} · Code: ${activity.activity_code} · Lead Institution: ${activity.lead_institution} · Status: ${activity.status}.`,
+    });
     showFeedback(message);
     setEditingActivity(null);
     setActiveSubTab('all');
@@ -127,6 +135,12 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
         currentUser
       );
       if (res.success) {
+        await recordAuditEvent('STATE_ACTIVITY_GOVERNANCE', {
+          activityId: activity.id,
+          activityTitle: activity.title,
+          lgaId: 'state-level',
+          notes: `Submitted State-Level Activity "${activity.title}" (${activity.activity_code}) for Executive Publication Review.`,
+        });
         showFeedback(`Activity "${activity.title}" submitted for review successfully.`);
         loadData();
       } else {
@@ -145,6 +159,12 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
         userSession: currentUser,
       });
       if (res.success) {
+        await recordAuditEvent('STATE_ACTIVITY_GOVERNANCE', {
+          activityId: activity.id,
+          activityTitle: activity.title,
+          lgaId: 'state-level',
+          notes: `Published State-Level Activity "${activity.title}" (${activity.activity_code}) to official state transparency register.`,
+        });
         showFeedback(`Activity "${activity.title}" published successfully to official state transparency.`);
         loadData();
       } else {
@@ -164,6 +184,12 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
         userSession: currentUser,
       });
       if (res.success) {
+        await recordAuditEvent('STATE_ACTIVITY_GOVERNANCE', {
+          activityId: activity.id,
+          activityTitle: activity.title,
+          lgaId: 'state-level',
+          notes: `Returned State-Level Activity "${activity.title}" (${activity.activity_code}) for revision · Feedback: "${reason}"`,
+        });
         showFeedback(`Activity "${activity.title}" returned for revision.`);
         loadData();
       } else {

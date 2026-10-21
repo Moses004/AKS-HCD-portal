@@ -39,14 +39,16 @@ import {
   Database,
   Target,
   Layers,
+  History,
 } from 'lucide-react';
 import { StateActivitiesWorkspace } from './stateActivities/StateActivitiesWorkspace';
+import { AuditLogPanel } from './AuditLogPanel';
 
 interface ExecutivePanelProps {
   onOpenReportExport: () => void;
   onViewActivity: (activity: HCDActivity) => void;
   onOpenRoleSwitcher: () => void;
-  initialTab?: 'trends' | 'barchart' | 'queue' | 'published' | 'comparative' | 'ptr' | 'targets' | 'hcd-settings' | 'state-activities';
+  initialTab?: 'trends' | 'barchart' | 'queue' | 'published' | 'comparative' | 'ptr' | 'targets' | 'hcd-settings' | 'state-activities' | 'audit';
 }
 
 export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
@@ -58,6 +60,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
   const { currentUser } = useAuth();
   const {
     activities,
+    auditLogs,
     pillars,
     getPillarDisplayName,
     approveActivity,
@@ -82,7 +85,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
   const [isSeeding, setIsSeeding] = useState(false);
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'trends' | 'barchart' | 'queue' | 'published' | 'comparative' | 'ptr' | 'targets' | 'hcd-settings' | 'state-activities'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'trends' | 'barchart' | 'queue' | 'published' | 'comparative' | 'ptr' | 'targets' | 'hcd-settings' | 'state-activities' | 'audit'>(initialTab);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -371,6 +374,18 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
           >
             <Download className="w-4 h-4" />
             Generate Executive Briefing
+          </button>
+
+          <button
+            onClick={() => setActiveTab('audit')}
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-colors whitespace-nowrap cursor-pointer ${
+              activeTab === 'audit'
+                ? 'bg-white text-emerald-950 border-white shadow-sm'
+                : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
+            }`}
+          >
+            <History className="w-4 h-4 text-[#D4AF37]" />
+            <span>Audit Trail Ledger</span>
           </button>
 
           <button
@@ -746,6 +761,21 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
             <span>State-Level Activities</span>
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
               Module
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('audit')}
+            className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-2 shrink-0 whitespace-nowrap cursor-pointer ${
+              activeTab === 'audit'
+                ? 'bg-white text-emerald-950 shadow-xs font-bold ring-1 ring-emerald-400'
+                : 'hover:text-slate-900 text-slate-600'
+            }`}
+          >
+            <History className="w-4 h-4 text-emerald-800" />
+            <span>Audit Trail & Change Log</span>
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tabular-nums bg-emerald-100 text-emerald-900 border border-emerald-300">
+              {auditLogs.length + activities.length}
             </span>
           </button>
 
@@ -1245,6 +1275,13 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       {activeTab === 'state-activities' && (
         <div className="space-y-4">
           <StateActivitiesWorkspace />
+        </div>
+      )}
+
+      {/* SUB-PANEL: EXECUTIVE AUDIT LOGGING & SENSITIVE CHANGE LEDGER */}
+      {activeTab === 'audit' && (
+        <div className="space-y-4">
+          <AuditLogPanel onViewActivity={onViewActivity} />
         </div>
       )}
 
