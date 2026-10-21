@@ -16,7 +16,7 @@ const getEnvVar = (name: string): string | undefined => {
 
 // Default to the provided Supabase project URL and anon public key
 export const SUPABASE_URL = 
-  getEnvVar('VITE_SUPABASE_URL') || 'https://refjawgovrmsyigtcfdl.supabase.co';
+  getEnvVar('VITE_SUPABASE_URL') || getEnvVar('TEST_SUPABASE_URL') || 'https://refjawgovrmsyigtcfdl.supabase.co';
 
 export const DEFAULT_SUPABASE_ANON_KEY = 
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
@@ -27,6 +27,7 @@ const RUNTIME_ANON_KEY_STORAGE = 'aks_hcd_supabase_anon_key';
 export const getSupabaseAnonKey = (): string => {
   return (
     getEnvVar('VITE_SUPABASE_ANON_KEY') ||
+    getEnvVar('TEST_SUPABASE_ANON_KEY') ||
     (typeof localStorage !== 'undefined' ? localStorage.getItem(RUNTIME_ANON_KEY_STORAGE) : null) ||
     DEFAULT_SUPABASE_ANON_KEY
   );
