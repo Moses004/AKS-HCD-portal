@@ -60,14 +60,20 @@ jobs:
           test -d supabase/migrations
           migration_count="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | wc -l)"
           test "$migration_count" -ge 27
-          invalid_names="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' ! -regex '.*/[0-9]{14}_.+\\.sql' -print)"
-          if [ -n "$invalid_names" ]; then
-            printf '::error::Migration filenames must start with a 14-digit version and underscore:\\n%s\\n' "$invalid_names"
+          invalid_names="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | grep -Ev '^[0-9]{14}_.+\.sql
+          if grep -RInE 'SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=[[:space:]]*["\x27]?[A-Za-z0-9_./+=-]{20,}' src scripts; then
+            echo '::error::Potential service-role credential committed to source.'
             exit 1
           fi
-          duplicate_versions="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\\n' | sed -E 's/^([0-9]{14})_.*/\\1/' | sort | uniq -d)"
+          echo "Validated $migration_count ordered migration files; no obvious service-role environment assignment found."
+ || true)"
+          if [ -n "$invalid_names" ]; then
+            printf '::error::Migration filenames must start with a 14-digit version and underscore:\n%s\n' "$invalid_names"
+            exit 1
+          fi
+          duplicate_versions="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sed -E 's/^([0-9]{14})_.*/\1/' | sort | uniq -d)"
           if [ -n "$duplicate_versions" ]; then
-            printf '::error::Duplicate migration version(s): %s\\n' "$duplicate_versions"
+            printf '::error::Duplicate migration version(s): %s\n' "$duplicate_versions"
             exit 1
           fi
           if grep -RInE 'SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=[[:space:]]*["\x27]?[A-Za-z0-9_./+=-]{20,}' src scripts; then
