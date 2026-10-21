@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#0B4619"/>
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#D4AF37" stroke-width="10" stroke-dasharray="24 12"/>
+  <circle cx="256" cy="256" r="180" fill="#063211"/>
+  <!-- HCD Emblems / Rising Sun -->
+  <path d="M 170 326 C 170 256, 342 256, 342 326 Z" fill="#D4AF37"/>
+  <circle cx="256" cy="216" r="48" fill="#F8F9FA"/>
+  <path d="M 256 126 L 256 152 M 190 146 L 212 168 M 322 146 L 300 168 M 154 210 L 180 216 M 358 210 L 332 216" stroke="#D4AF37" stroke-width="8" stroke-linecap="round"/>
+  <!-- Text AKS HCD -->
+  <text x="256" y="390" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-weight="900" font-size="42" letter-spacing="4">AKS-HCD</text>
+  <text x="256" y="426" text-anchor="middle" fill="#D4AF37" font-family="sans-serif" font-weight="700" font-size="24" letter-spacing="3">ARISE AGENDA · 31 LGAS</text>
+</svg>

@@ -1,0 +1,6 @@
+{
+  "name": "AKS-HCD Multi-Tenant Platform",
+  "description": "Akwa Ibom State Human Capital Development Portal tracking grassroots capacity building, offline reporting, and verified impacts across all 31 LGAs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="36" fill="#0B4619"/>
+  <circle cx="96" cy="96" r="76" fill="none" stroke="#D4AF37" stroke-width="4" stroke-dasharray="8 4"/>
+  <circle cx="96" cy="96" r="64" fill="#063211"/>
+  <!-- HCD Emblems / Rising Sun -->
+  <path d="M 64 122 C 64 96, 128 96, 128 122 Z" fill="#D4AF37"/>
+  <circle cx="96" cy="80" r="18" fill="#F8F9FA"/>
+  <path d="M 96 46 L 96 56 M 72 54 L 80 62 M 120 54 L 112 62 M 58 78 L 68 80 M 134 78 L 124 80" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+  <!-- Text AKS HCD -->
+  <text x="96" y="146" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-weight="900" font-size="16" letter-spacing="2">AKS-HCD</text>
+  <text x="96" y="160" text-anchor="middle" fill="#D4AF37" font-family="sans-serif" font-weight="700" font-size="9" letter-spacing="1">31 LGAS</text>
+</svg>

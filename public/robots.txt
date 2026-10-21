@@ -1,0 +1,13 @@
+# Akwa Ibom State Human Capital Development Portal (AKS-HCD)
+# https://hcd.akwaibomstate.gov.ng
+
+User-agent: *
+Allow: /
+Allow: /reports
+Disallow: /lga
+Disallow: /executive
+Disallow: /executive/*
+Disallow: /reset-password
+Disallow: /access-pending
+
+Sitemap: https://hcd.akwaibomstate.gov.ng/sitemap.xml

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        // Intercept and isolate third-party browser extension anomalies (e.g. MetaMask, Talisman, or Web3 wallet content scripts)
+        function isExtensionNoise(msg, filename) {
+          try {
+            var str = ((msg || '') + ' ' + (filename || '')).toLowerCase();
+            return (
+              str.indexOf('chrome-extension://') !== -1 ||
+              str.indexOf('moz-extension://') !== -1 ||
+              str.indexOf('safari-web-extension://') !== -1 ||
+              str.indexOf('talisman') !== -1 ||
+              str.indexOf('metamask') !== -1 ||
+              str.indexOf('nkbihfbeogaeaoehlefnkodbefgpgknn') !== -1 ||
+              str.indexOf('inpage.js') !== -1 ||
+              str.indexOf('failed to connect to metamask') !== -1 ||
+              (str.indexOf('error restoring session') !== -1 &&
+                (str.indexOf('metamask') !== -1 || str.indexOf('inpage.js') !== -1 || str.indexOf('extension') !== -1))
+            );
+          } catch (e) {
+            return false;
+          }
+        }
+
+        function serializeArgs(args) {
+          var parts = [];
+          for (var i = 0; i < args.length; i++) {
+            var a = args[i];
+            if (!a) continue;
+            if (typeof a === 'string') {
+              parts.push(a);
+            } else if (typeof a === 'object') {
+              if (a.message) parts.push(String(a.message));
+              if (a.stack) parts.push(String(a.stack));
+              try {
+                parts.push(String(a));
+              } catch (e) {}
+            } else {
+              parts.push(String(a));
+            }
+          }
+          return parts.join(' ');
+        }
+
+        var origWarn = console.warn;
+        var origError = console.error;
+
+        console.warn = function() {
+          if (isExtensionNoise(serializeArgs(arguments), '')) {
+            return;
+          }
+          return origWarn.apply(console, arguments);
+        };
+
+        console.error = function() {
+          if (isExtensionNoise(serializeArgs(arguments), '')) {
+            return;
+          }
+          return origError.apply(console, arguments);
+        };
+
+        window.addEventListener('error', function(event) {
+          var err = event.error;
+          var msg = (event.message || '') + (err ? ' ' + (err.message || '') + ' ' + (err.stack || '') : '');
+          if (isExtensionNoise(msg, event.filename)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var reason = event.reason;
+          var msg = '';
+          if (reason) {
+            msg = (reason.message || '') + ' ' + (reason.stack || '') + ' ' + String(reason);
+          }
+          if (isExtensionNoise(msg, '')) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+    <title>AKS-HCD Multi-Tenant Platform</title>
+    <meta name="description" content="Akwa Ibom State Human Capital Development Portal tracking grassroots capacity building, offline reporting, and verified impacts across all 31 LGAs." />
+    <meta property="og:title" content="AKS-HCD Multi-Tenant Platform" />
+    <meta property="og:description" content="Akwa Ibom State Human Capital Development Portal tracking grassroots capacity building, offline reporting, and verified impacts across all 31 LGAs." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Akwa Ibom State Government HCD Portal" />
+    <meta property="og:image" content="/akwa_ibom_crest.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_NG" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AKS-HCD Multi-Tenant Platform" />
+    <meta name="twitter:description" content="Akwa Ibom State Human Capital Development Portal tracking grassroots capacity building, offline reporting, and verified impacts across all 31 LGAs." />
+    <meta name="twitter:image" content="/akwa_ibom_crest.jpg" />
+    <meta name="theme-color" content="#0B4619" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="AKS-HCD" />
+    <link rel="icon" type="image/svg+xml" href="/pwa-192x192.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="canonical" href="https://hcd.akwaibomstate.gov.ng/" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "GovernmentService",
+      "name": "Akwa Ibom State Human Capital Development Portal",
+      "alternateName": "AKS-HCD",
+      "serviceType": "Human Capital Development & Grassroots Capacity Building Tracking",
+      "provider": {
+        "@type": "GovernmentOrganization",
+        "name": "Government of Akwa Ibom State",
+        "url": "https://akwaibomstate.gov.ng"
+      },
+      "areaServed": {
+        "@type": "AdministrativeArea",
+        "name": "Akwa Ibom State, Nigeria"
+      },
+      "description": "State digital infrastructure tracking capacity building investments in Education, Healthcare, Vocational Skills, and Agriculture across all 31 Local Government Areas under the ARISE Agenda."
+    }
+    </script>
+  </head>
+  <body class="bg-[#F8F9FA] text-slate-800 antialiased font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
