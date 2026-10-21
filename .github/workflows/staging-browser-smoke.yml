@@ -31,7 +31,7 @@ jobs:
           set -euo pipefail
           test -n "$STAGING_PUBLISHED_ACTIVITY_URL" || { echo 'Missing staging secret STAGING_PUBLISHED_ACTIVITY_URL'; exit 1; }
           case "$STAGING_PUBLISHED_ACTIVITY_URL" in https://*) ;; *) echo 'Activity URL must use HTTPS.'; exit 1 ;; esac
-          case "$STAGING_PUBLISHED_ACTIVITY_URL" in *refjawgovrmsyigtcfdl.supabase.co*) echo 'Do not use a production Supabase URL.'; exit 1 ;; esac
+          case "$STAGING_PUBLISHED_ACTIVITY_URL" in *refjawgovrmsyigtcfdl.supabase.co*|*aks-hcd.ai.studio*) echo 'Do not use a known production URL.'; exit 1 ;; esac
       - name: Install browser test runtime
         run: npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
       - name: Install Chromium
