@@ -1,0 +1,43 @@
+name: AKS-HCD Staging Integration Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aks-hcd-staging-integration
+  cancel-in-progress: false
+
+jobs:
+  integration:
+    name: Staging-only database, storage, and authorization checks
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 30
+    env:
+      TEST_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+      TEST_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+      # Ensure imported app clients use the exact same staging project as the guard.
+      VITE_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate dedicated staging configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$TEST_SUPABASE_URL" || { echo 'Missing staging secret TEST_SUPABASE_URL'; exit 1; }
+          test -n "$TEST_SUPABASE_ANON_KEY" || { echo 'Missing staging secret TEST_SUPABASE_ANON_KEY'; exit 1; }
+          case "$TEST_SUPABASE_URL" in https://refjawgovrmsyigtcfdl.supabase.co*) echo 'Refusing to run integration tests against production.'; exit 1 ;; esac
+          case "$TEST_SUPABASE_URL" in https://*.supabase.co) ;; *) echo 'TEST_SUPABASE_URL must be a Supabase project URL.'; exit 1 ;; esac
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run integration suites against staging
+        run: npm test

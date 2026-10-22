@@ -1,0 +1,81 @@
+name: AKS-HCD CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aks-hcd-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend dependency, type-check, and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Transitional only: generates a lockfile artifact until the reviewed
+      # package-lock.json is committed. Do not bypass npm peer dependency checks.
+      - name: Generate lockfile when repository lock is absent
+        if: hashFiles('package-lock.json') == ''
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Upload generated lockfile for review
+        if: always() && hashFiles('package-lock.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: aks-hcd-generated-package-lock
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 3
+      - name: Install from lockfile
+        run: npm ci --no-audit --no-fund
+      - name: TypeScript check
+        run: npm run lint
+      - name: Production build
+        run: npm run build
+
+  backend-migration-safety:
+    name: Backend migration and secret-safety checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Verify migration inventory and reject obvious service-role secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d supabase/migrations
+          migration_count="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' | wc -l)"
+          test "$migration_count" -ge 27
+          invalid_names="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | grep -Ev '^[0-9]{14}_.+\.sql$' || true)"
+          if [ -n "$invalid_names" ]; then
+            printf '::error::Migration filenames must start with a 14-digit version and underscore:\n%s\n' "$invalid_names"
+            exit 1
+          fi
+          duplicate_versions="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sed -E 's/^([0-9]{14})_.*/\1/' | sort | uniq -d)"
+          if [ -n "$duplicate_versions" ]; then
+            printf '::error::Duplicate migration version(s): %s\n' "$duplicate_versions"
+            exit 1
+          fi
+          if grep -RInE 'SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=[[:space:]]*["\x27]?[A-Za-z0-9_./+=-]{20,}' src scripts; then
+            echo '::error::Potential service-role credential committed to source.'
+            exit 1
+          fi
+          if grep -Eq 'refjawgovrmsyigtcfdl\.supabase\.co|DEFAULT_SUPABASE_ANON_KEY[[:space:]]*=[[:space:]]*["\x27][A-Za-z0-9_-]{30,}' src/lib/supabase.ts; then
+            echo '::error::Client Supabase configuration must not silently default to production.'
+            exit 1
+          fi
+          echo "Validated $migration_count ordered migration files; no obvious service-role secret or production client fallback found."
