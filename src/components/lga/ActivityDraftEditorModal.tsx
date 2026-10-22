@@ -51,6 +51,7 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
   const [notice, setNotice] = useState('');
   const [saving, setSaving] = useState(false);
   const [pendingOldPaths, setPendingOldPaths] = useState<string[]>([]);
+  const [pendingNewPaths, setPendingNewPaths] = useState<string[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const assignedLga = ALL_31_LGAS.find((l) => l.id === activity.lgaId);
@@ -79,6 +80,7 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
     try {
       const upload = await uploadEvidenceToSupabase(file, file.name, activity.lgaId, activity.id);
       if (!upload.success || !upload.storagePath) throw new Error(upload.error || 'Upload did not return a canonical storage path.');
+      setPendingNewPaths((prev) => [...prev, upload.storagePath!]);
       const preview = URL.createObjectURL(file);
       setPreviewUrls((prev) => [...prev, preview]);
       const asset: VerificationMedia = {
@@ -94,6 +96,7 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
         uploadTimestamp: new Date().toISOString(),
       };
       if (isAttendance) {
+        if (attendanceRegistryUrl && attendanceRegistryUrl !== '#attendance-registry-file' && !attendanceRegistryUrl.startsWith('http')) setPendingOldPaths((prev) => [...prev, attendanceRegistryUrl]);
         setAttendanceSheetFileName(file.name);
         setAttendanceRegistryUrl(upload.storagePath);
         setMediaAssets((prev) => [...prev.filter((m) => m.caption !== 'Attendance registry'), { ...asset, caption: 'Attendance registry', type: 'document' }]);
@@ -153,10 +156,14 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
       const cleanupResults = await Promise.all(paths.map((path) => deleteEvidenceFromStorage(path)));
       const failedCleanup = cleanupResults.filter((r) => !r.success).length;
       setPendingOldPaths([]);
+      setPendingNewPaths([]);
       setNotice(failedCleanup ? 'Draft saved. Some superseded storage files could not be cleaned up and may need administrator cleanup.' : 'Draft saved successfully. All changes are persisted.');
       onSaved?.();
       window.setTimeout(onClose, 500);
     } catch (e) {
+      // The database record was not confirmed saved; remove newly uploaded objects to avoid orphaned evidence.
+      await Promise.all(pendingNewPaths.map((path) => deleteEvidenceFromStorage(path).catch(() => ({ success: false }))));
+      setPendingNewPaths([]);
       setError(e instanceof Error ? e.message : 'Could not save draft changes.');
     } finally { setSaving(false); }
   };
