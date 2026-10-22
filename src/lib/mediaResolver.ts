@@ -13,7 +13,7 @@
  * 5. Retry circuit-breaker (max 3 attempts per 30s window) to prevent infinite retry loops.
  */
 
-import { getSupabaseClient } from './supabase';
+import { getSupabaseClient, isSupabaseUnreachable } from './supabase';
 import { VerificationMedia, StateEvidenceFile } from '../types';
 
 export const EVIDENCE_BUCKET = 'hcd-evidence-vault';
@@ -541,8 +541,25 @@ export async function resolveActivityMedia(
         retryTrackers.set(cacheKey, tracker);
 
         const client = getSupabaseClient();
-        if (!client) {
-          const clientErr = 'Supabase client unavailable.';
+        if (!client || isSupabaseUnreachable()) {
+          if (rawUrl && (rawUrl.startsWith('https://') || rawUrl.startsWith('http://')) && !isSignedUrlTokenExpired(rawUrl)) {
+            return {
+              status: isDoc ? 'document' : 'resolved',
+              url: rawUrl,
+              signedUrl: rawUrl,
+              storagePath,
+              fallbackPlaceholder: null,
+              useFallbackPlaceholder: false,
+              fileName,
+              caption,
+              isDocument: isDoc,
+              isPrivateStorage: false,
+              isGeotagValid,
+              coordinates,
+              exifVerified,
+            };
+          }
+          const clientErr = 'Supabase storage offline — using local fallback.';
           logMediaResolutionIssue('network_error', storagePath, clientErr);
           return createFallbackMediaResult({
             status: 'network_error',
