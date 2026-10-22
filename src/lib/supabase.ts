@@ -14,12 +14,10 @@ const getEnvVar = (name: string): string | undefined => {
   return undefined;
 };
 
-// Default to the provided Supabase project URL and anon public key
-export const SUPABASE_URL =
-  getEnvVar('VITE_SUPABASE_URL') || 'https://refjawgovrmsyigtcfdl.supabase.co';
-
-export const DEFAULT_SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
+// Fail closed unless the deployment explicitly configures the Supabase project.
+// Keep the anon key public, but never embed a project URL or key as a fallback.
+export const SUPABASE_URL = getEnvVar('VITE_SUPABASE_URL') || '';
+export const DEFAULT_SUPABASE_ANON_KEY = getEnvVar('VITE_SUPABASE_ANON_KEY') || '';
 
 // Local storage key for runtime anon key input if not supplied in build env
 const RUNTIME_ANON_KEY_STORAGE = 'aks_hcd_supabase_anon_key';
