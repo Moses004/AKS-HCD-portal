@@ -33,7 +33,7 @@ Pull request: https://github.com/Moses004/AKS-HCD-portal/pull/1 (draft; do not m
 4. **Browser media:** set `STAGING_PUBLISHED_ACTIVITY_URL` to a published staging activity that contains evidence images, then run the staging browser smoke workflow. Confirm image loads and inspect the screenshot artifact.
 5. **Supabase Auth:** enable leaked-password protection in the Supabase Dashboard at https://supabase.com/dashboard/project/refjawgovrmsyigtcfdl/auth/providers?provider=Email and verify the security advisor no longer reports `auth_leaked_password_protection`. This is an Auth configuration setting, not a SQL migration; it has not been changed from this GitHub workflow.
 6. **Authorization RPC:** reviewed the live function definition read-only. It uses an empty `search_path`, fully qualified table references, rejects anonymous callers, requires `private.aks_hcd_current_role()` to equal `state_admin`, prevents self-review, validates decisions and role assignments, and applies explicit LGA assignment for LGA Desk Workers. The generic advisor warning remains because `authenticated` can invoke a `SECURITY DEFINER` RPC; revoking that grant would break the intended frontend call unless the approval flow is redesigned. Verify this authorization with staging tests and retain the finding as reviewed/mitigated rather than blindly changing function privileges.
-7. **Final release:** review the complete branch diff, fresh CI results after migration validation changes, successful staging migration replay, integration tests, browser media smoke test, and all remaining security-advisor findings. The PR remains draft and must not be merged yet.. Keep the PR draft and do not merge/deploy until the above gates pass.
+7. **Final release:** review the complete branch diff, fresh CI results after migration validation changes, successful staging migration replay, integration tests, browser media smoke test, and all remaining security-advisor findings. The pull request must not be merged or deployed until the above applicable validation gates pass.
 
 ## Security and operational notes
 
@@ -41,3 +41,10 @@ Pull request: https://github.com/Moses004/AKS-HCD-portal/pull/1 (draft; do not m
 - `hcd-evidence-vault` must remain private; public UI must use appropriately scoped signed URLs and avoid logging signed URL query strings.
 - Do not remove indexes solely because an advisor calls them unused; evaluate workload and query plans first.
 - The staging workflows are manual and use the GitHub `staging` environment to keep credentials out of ordinary pull-request jobs.
+
+
+## Branch reconciliation — 2026-10-22
+
+- Reconciled `audit/production-hardening-2026-10-21` with the latest `main` commit using a two-parent merge commit. The latest `main` tree was retained as the baseline so newer editor, EXIF, media-resolution, state-activity, and data-provider work is preserved.
+- Restored the production-hardening workflows and documentation, the reviewed esbuild version adjustment, and the 27 migration files recovered from the production migration ledger. The legacy unmatched SQL files remain archived under `docs/legacy-migrations/` rather than being treated as pending migrations.
+- This reconciliation did not apply SQL to production. A fresh CI run and build verification are required on the reconciled head before merge.
