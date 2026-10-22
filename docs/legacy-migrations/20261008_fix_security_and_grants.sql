@@ -1,3 +1,5 @@
+<!-- Archived from the legacy repository migration directory on 2026-10-21. This file is retained for audit/reference only and must not be applied by Supabase CLI. The authoritative applied migration history is in supabase/migrations/ using the exact versions recorded by the live project. -->
+
 -- ==============================================================================
 -- AKWA IBOM STATE HUMAN CAPITAL DEVELOPMENT (AKS-HCD) PLATFORM
 -- SECURITY, ROLE-BASED ACCESS CONTROL, RLS AND FUNCTION PERMISSION MIGRATION
