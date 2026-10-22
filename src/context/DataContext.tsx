@@ -37,7 +37,11 @@ interface DataContextType {
   fetchMeasurementsForActivity: (activityId: string) => Promise<ActivityMeasurement[]>;
   addMeasurement: (
     measurement: ActivityMeasurement
-  ) => Promise<{ success: boolean; data?: ActivityMeasurement; error?: string }>;
+  ) => Promise<{ success: boolean; data?: ActivityMeasurement; error?: string; persistedToCloud?: boolean }>;
+  updateMeasurement: (
+    id: string,
+    updates: Partial<ActivityMeasurement>
+  ) => Promise<{ success: boolean; data?: ActivityMeasurement; error?: string; persistedToCloud?: boolean }>;
   deleteMeasurement: (id: string) => Promise<{ success: boolean; error?: string }>;
   isOnline: boolean;
   isLoading: boolean;
@@ -51,7 +55,10 @@ interface DataContextType {
     activity: Omit<HCDActivity, 'id' | 'createdAt' | 'updatedAt' | 'status'>,
     submitForApproval?: boolean
   ) => Promise<{ success: boolean; id?: string; error?: string; offlineQueued?: boolean }>;
-  updateActivity: (id: string, updates: Partial<HCDActivity>) => Promise<{ success: boolean; error?: string }>;
+  updateActivity: (
+    id: string,
+    updates: Partial<HCDActivity>
+  ) => Promise<{ success: boolean; error?: string; persistedToCloud?: boolean; offlineQueued?: boolean }>;
   submitActivityForReview: (id: string) => Promise<{ success: boolean; error?: string }>;
   approveActivity: (id: string, notes?: string) => Promise<{ success: boolean; error?: string }>;
   rejectActivity: (id: string, reason: string) => Promise<{ success: boolean; error?: string }>;
@@ -76,6 +83,9 @@ interface DataContextType {
     lgaId: string,
     activityId: string
   ) => Promise<{ success: boolean; storagePath?: string; signedUrl?: string; error?: string }>;
+  deleteEvidenceFromSupabase: (
+    storagePath: string
+  ) => Promise<{ success: boolean; policyRestricted?: boolean; demoBlocked?: boolean; error?: string }>;
   realtimeStatus: 'connected' | 'connecting' | 'disconnected' | 'error';
   lastDatabaseSyncTime: string;
   revalidateActivities: () => Promise<void>;
@@ -247,15 +257,33 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Add a measurement
   const addMeasurement = useCallback(async (
     measurement: ActivityMeasurement
-  ): Promise<{ success: boolean; data?: ActivityMeasurement; error?: string }> => {
-    if (!isEffectiveOnline || !isSupabaseReady()) {
+  ): Promise<{ success: boolean; data?: ActivityMeasurement; error?: string; persistedToCloud?: boolean }> => {
+    const parentAct = activities.find((a) => a.id === measurement.activity_id);
+    if (parentAct) {
+      const check = assertTenantAccess(parentAct.lgaId);
+      if (!check.allowed) {
+        return { success: false, error: check.error };
+      }
+      if (
+        (parentAct.status === 'PUBLISHED' || parentAct.status === 'PENDING_APPROVAL') &&
+        currentUser.role === 'lga_admin'
+      ) {
+        return {
+          success: false,
+          error: `Measurements cannot be added while the parent activity is in ${parentAct.status} status.`,
+        };
+      }
+    }
+
+    if (currentUser.isDemo || !isEffectiveOnline || !isSupabaseReady() || isSupabaseUnreachable()) {
       const localMeasurement: ActivityMeasurement = {
         ...measurement,
-        id: measurement.id || `meas-${Date.now()}`,
+        id: measurement.id || `meas-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       setMeasurements((prev) => [...prev, localMeasurement]);
-      return { success: true, data: localMeasurement };
+      return { success: true, data: localMeasurement, persistedToCloud: false };
     }
 
     const res = await supabaseService.insertMeasurement(measurement, currentUser);
@@ -265,24 +293,123 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (exists) return prev.map((m) => (m.id === res.data!.id ? res.data! : m));
         return [...prev, res.data!];
       });
-      return { success: true, data: res.data };
+      return { success: true, data: res.data, persistedToCloud: true };
+    }
+    if (isNetworkFetchError(res.error)) {
+      const localMeasurement: ActivityMeasurement = {
+        ...measurement,
+        id: measurement.id || `meas-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setMeasurements((prev) => [...prev, localMeasurement]);
+      return { success: true, data: localMeasurement, persistedToCloud: false };
     }
     return { success: false, error: res.error || 'Failed to record measurement' };
-  }, [isEffectiveOnline, currentUser]);
+  }, [activities, assertTenantAccess, isEffectiveOnline, currentUser]);
+
+  // Update an existing measurement
+  const updateMeasurement = useCallback(async (
+    id: string,
+    updates: Partial<ActivityMeasurement>
+  ): Promise<{ success: boolean; data?: ActivityMeasurement; error?: string; persistedToCloud?: boolean }> => {
+    const existing = measurements.find((m) => m.id === id);
+    const activityId = updates.activity_id || existing?.activity_id;
+    const parentAct = activityId ? activities.find((a) => a.id === activityId) : undefined;
+
+    if (parentAct) {
+      const check = assertTenantAccess(parentAct.lgaId);
+      if (!check.allowed) {
+        return { success: false, error: check.error };
+      }
+      if (
+        (parentAct.status === 'PUBLISHED' || parentAct.status === 'PENDING_APPROVAL') &&
+        currentUser.role === 'lga_admin'
+      ) {
+        return {
+          success: false,
+          error: `Measurements cannot be modified while the parent activity is in ${parentAct.status} status.`,
+        };
+      }
+    }
+
+    if (
+      currentUser.isDemo ||
+      !isEffectiveOnline ||
+      !isSupabaseReady() ||
+      isSupabaseUnreachable() ||
+      id.startsWith('meas-')
+    ) {
+      const updatedLocal: ActivityMeasurement = {
+        ...(existing || {
+          activity_id: activityId || '',
+          indicator_code: updates.indicator_code || '',
+          reporting_period_start: updates.reporting_period_start || '',
+          reporting_period_end: updates.reporting_period_end || '',
+        }),
+        ...updates,
+        id,
+        updated_at: new Date().toISOString(),
+      };
+      setMeasurements((prev) => prev.map((m) => (m.id === id ? updatedLocal : m)));
+      return { success: true, data: updatedLocal, persistedToCloud: false };
+    }
+
+    const res = await supabaseService.updateMeasurement(id, updates, currentUser);
+    if (res.success && res.data) {
+      setMeasurements((prev) => prev.map((m) => (m.id === id ? res.data! : m)));
+      return { success: true, data: res.data, persistedToCloud: true };
+    }
+    if (isNetworkFetchError(res.error)) {
+      const updatedLocal: ActivityMeasurement = {
+        ...(existing as ActivityMeasurement),
+        ...updates,
+        id,
+        updated_at: new Date().toISOString(),
+      };
+      setMeasurements((prev) => prev.map((m) => (m.id === id ? updatedLocal : m)));
+      return { success: true, data: updatedLocal, persistedToCloud: false };
+    }
+    return { success: false, error: res.error || 'Failed to update measurement' };
+  }, [measurements, activities, assertTenantAccess, currentUser, isEffectiveOnline]);
 
   // Delete a measurement
   const deleteMeasurement = useCallback(async (
     id: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (isEffectiveOnline && isSupabaseReady()) {
+    const existing = measurements.find((m) => m.id === id);
+    const parentAct = existing?.activity_id ? activities.find((a) => a.id === existing.activity_id) : undefined;
+    if (parentAct) {
+      const check = assertTenantAccess(parentAct.lgaId);
+      if (!check.allowed) {
+        return { success: false, error: check.error };
+      }
+      if (
+        (parentAct.status === 'PUBLISHED' || parentAct.status === 'PENDING_APPROVAL') &&
+        currentUser.role === 'lga_admin'
+      ) {
+        return {
+          success: false,
+          error: `Measurements cannot be deleted while the parent activity is in ${parentAct.status} status.`,
+        };
+      }
+    }
+
+    if (
+      !currentUser.isDemo &&
+      isEffectiveOnline &&
+      isSupabaseReady() &&
+      !isSupabaseUnreachable() &&
+      !id.startsWith('meas-')
+    ) {
       const res = await supabaseService.deleteMeasurement(id);
-      if (!res.success) {
+      if (!res.success && !isNetworkFetchError(res.error)) {
         return { success: false, error: res.error };
       }
     }
     setMeasurements((prev) => prev.filter((m) => m.id !== id));
     return { success: true };
-  }, [isEffectiveOnline]);
+  }, [measurements, activities, assertTenantAccess, currentUser, isEffectiveOnline]);
 
   // Unified pillar display name resolver
   const getPillarDisplayName = useCallback(
@@ -924,7 +1051,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     id: string,
     updates: Partial<HCDActivity>,
     options?: { skipAuditLog?: boolean }
-  ): Promise<{ success: boolean; error?: string }> => {
+  ): Promise<{ success: boolean; error?: string; persistedToCloud?: boolean; offlineQueued?: boolean }> => {
     const existing = activities.find((a) => a.id === id);
     if (!existing) {
       return { success: false, error: 'Activity not found.' };
@@ -1007,40 +1134,44 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           notes: `${diffNotes} (Sandbox Mode)`,
         });
       }
-      return { success: true };
+      return { success: true, persistedToCloud: false, offlineQueued: false };
     }
 
-    if (isEffectiveOnline && isSupabaseReady() && currentUser.isAuthenticated) {
+    if (isEffectiveOnline && isSupabaseReady() && !isSupabaseUnreachable() && currentUser.isAuthenticated) {
       const res = await supabaseService.updateActivity(id, sanitizedUpdates, currentUser);
 
       if (!res.success) {
-        return {
-          success: false,
-          error: `Database update failed: ${res.error || 'Permission error'}`,
-        };
+        if (!isNetworkFetchError(res.error)) {
+          return {
+            success: false,
+            error: `Database update failed: ${res.error || 'Permission error'}`,
+            persistedToCloud: false,
+          };
+        }
+        // Network error during update: fall through to offline queue
+      } else {
+        const committed = res.data || { ...updatedItem, syncStatus: 'synced' as const };
+        setActivities((prev) => prev.map((a) => (a.id === id ? committed : a)));
+        cacheActivitiesLocally(activities.map((a) => (a.id === id ? committed : a)), currentUser);
+
+        if (!options?.skipAuditLog) {
+          await logAction('MODIFIED', currentUser.name, currentUser.role, {
+            activityId: id,
+            activityTitle: updatedItem.title,
+            lgaId: updatedItem.lgaId,
+            notes: diffNotes,
+          });
+        }
+
+        return { success: true, persistedToCloud: true, offlineQueued: false };
       }
-
-      const committed = res.data || updatedItem;
-      setActivities((prev) => prev.map((a) => (a.id === id ? committed : a)));
-      cacheActivitiesLocally(activities.map((a) => (a.id === id ? committed : a)), currentUser);
-
-      if (!options?.skipAuditLog) {
-        await logAction('MODIFIED', currentUser.name, currentUser.role, {
-          activityId: id,
-          activityTitle: updatedItem.title,
-          lgaId: updatedItem.lgaId,
-          notes: diffNotes,
-        });
-      }
-
-      return { success: true };
     }
 
     // Offline update: queue in IndexedDB
     await enqueueOperation({
       recordId: id,
       operationType: 'UPDATE',
-      payload: updates,
+      payload: sanitizedUpdates,
       userContext: {
         id: currentUser.id,
         name: currentUser.name,
@@ -1052,6 +1183,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     updatedItem.syncStatus = 'pending_sync';
     setActivities((prev) => prev.map((a) => (a.id === id ? updatedItem : a)));
+    cacheActivitiesLocally(activities.map((a) => (a.id === id ? updatedItem : a)), currentUser);
     await refreshPendingQueue();
 
     if (!options?.skipAuditLog) {
@@ -1063,7 +1195,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
     }
 
-    return { success: true };
+    return { success: true, persistedToCloud: false, offlineQueued: true };
   };
 
   // Submit Activity for Review
@@ -1501,6 +1633,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return supabaseService.uploadEvidenceFile(file, fileName, lgaId, activityId, currentUser);
   };
 
+  const deleteEvidenceFromSupabase = async (storagePath: string) => {
+    return supabaseService.deleteEvidenceFile(storagePath, currentUser);
+  };
+
   const resetToInitialData = () => {
     revalidateActivities();
   };
@@ -1526,6 +1662,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         fetchIndicators,
         fetchMeasurementsForActivity,
         addMeasurement,
+        updateMeasurement,
         deleteMeasurement,
         isOnline: isEffectiveOnline,
         isLoading,
@@ -1556,6 +1693,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         supabaseUrl: SUPABASE_URL,
         triggerSupabaseCloudSync,
         uploadEvidenceToSupabase,
+        deleteEvidenceFromSupabase,
         realtimeStatus,
         lastDatabaseSyncTime,
         revalidateActivities,

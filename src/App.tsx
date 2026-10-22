@@ -11,6 +11,7 @@ import { LgaDashboard } from './components/lga/LgaDashboard';
 import { ExecutivePanel } from './components/executive/ExecutivePanel';
 import { AccessRequestsPanel } from './components/executive/AccessRequestsPanel';
 import { ReportingWizardModal } from './components/lga/ReportingWizardModal';
+import { ActivityDraftEditorModal } from './components/lga/ActivityDraftEditorModal';
 import { ReportExportModal } from './components/executive/ReportExportModal';
 import { ProjectDetailModal } from './components/public/ProjectDetailModal';
 import { SignUpPage } from './components/auth/SignUpPage';
@@ -78,6 +79,12 @@ function AppContent() {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isReportExportOpen, setIsReportExportOpen] = useState(false);
   const [inspectedActivity, setInspectedActivity] = useState<HCDActivity | null>(null);
+  const [editingDraftActivityId, setEditingDraftActivityId] = useState<string | null>(null);
+  const [editingDraftSection, setEditingDraftSection] = useState<'evidence' | undefined>(undefined);
+
+  const editingDraftActivity = editingDraftActivityId
+    ? activities.find((a) => a.id === editingDraftActivityId) || null
+    : null;
 
   // Sync route on popstate (browser back/forward navigation)
   useEffect(() => {
@@ -327,8 +334,27 @@ function AppContent() {
       />
 
       <ProjectDetailModal
-        activity={inspectedActivity}
+        activity={
+          inspectedActivity
+            ? activities.find((a) => a.id === inspectedActivity.id) || inspectedActivity
+            : null
+        }
         onClose={() => setInspectedActivity(null)}
+        onEditDraft={(act, section) => {
+          setInspectedActivity(null);
+          setEditingDraftSection(section);
+          setEditingDraftActivityId(act.id);
+        }}
+      />
+
+      <ActivityDraftEditorModal
+        activity={editingDraftActivity}
+        isOpen={Boolean(editingDraftActivity)}
+        initialSection={editingDraftSection}
+        onClose={() => {
+          setEditingDraftActivityId(null);
+          setEditingDraftSection(undefined);
+        }}
       />
     </div>
   );

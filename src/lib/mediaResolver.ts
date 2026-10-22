@@ -14,7 +14,7 @@
  */
 
 import { getSupabaseClient, isSupabaseUnreachable } from './supabase';
-import { VerificationMedia, StateEvidenceFile } from '../types';
+import { VerificationMedia, StateEvidenceFile, HCDActivity, UserSession } from '../types';
 
 export const EVIDENCE_BUCKET = 'hcd-evidence-vault';
 export const DEFAULT_SIGNED_URL_EXPIRY_SECONDS = 3600; // 1 hour short-lived signed URL
@@ -833,10 +833,10 @@ export function invalidateMediaCache(storagePath?: string | null): void {
 
 /**
  * Pure, idempotent utility to repair legacy media assets metadata:
- * - Strips expired signed URLs from `url` field
+ * - Strips expired signed URLs and temporary blob: URLs from `url` field
  * - Strips `/src/...` legacy local paths
  * - Recovers `storagePath` if embedded in legacy signed URL
- * - Preserves all metadata (caption, fileName, coordinates, uploadTimestamp, exifVerified, etc.)
+ * - Preserves all metadata (caption, fileName, coordinates, coordinateSource, uploadTimestamp, exifVerified, etc.)
  */
 export function repairActivityMediaMetadata(
   mediaList?: VerificationMedia[] | null
@@ -854,9 +854,14 @@ export function repairActivityMediaMetadata(
       }
     }
 
-    // Never persist expired signed URLs or /src/... development paths
+    // Never persist temporary browser blob URLs, expired signed URLs, or /src/... development paths
     if (url) {
-      if (isLegacyLocalAssetPath(url) || url.includes('/storage/v1/object/sign/') || url.includes('token=')) {
+      if (
+        url.startsWith('blob:') ||
+        isLegacyLocalAssetPath(url) ||
+        url.includes('/storage/v1/object/sign/') ||
+        url.includes('token=')
+      ) {
         url = '';
       }
     }
@@ -871,18 +876,275 @@ export function repairActivityMediaMetadata(
 }
 
 /**
- * Delete an evidence object from Supabase storage (for cleanup on failed database writes)
+ * Validate a replacement or newly uploaded Beneficiary Attendance Registry PDF file.
+ * Strictly requires PDF format (.pdf extension and application/pdf MIME type) within the 25MB limit.
+ */
+export function validateAttendanceRegistryPdf(
+  file: File | Blob,
+  customFileName?: string
+): { valid: boolean; error?: string } {
+  const baseValidation = validateMediaFile(file, customFileName);
+  if (!baseValidation.valid) {
+    return baseValidation;
+  }
+
+  const name = (customFileName || ('name' in file ? (file as File).name : '') || '').toLowerCase();
+  const mime = (file.type || '').toLowerCase();
+
+  if (name && !name.endsWith('.pdf')) {
+    return {
+      valid: false,
+      error: 'Attendance Registry must be a PDF document (.pdf extension required).',
+    };
+  }
+
+  if (mime && mime !== 'application/pdf') {
+    return {
+      valid: false,
+      error: `Attendance Registry must be an authentic PDF document (received ${file.type}).`,
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Extracts a canonical private vault storagePath from an attendanceRegistryUrl or path string.
+ * Returns null if the reference is a placeholder ('#attendance-registry-file'), blob URL, or empty.
+ */
+export function extractCanonicalAttendanceStoragePath(ref?: string | null): string | null {
+  if (!ref || typeof ref !== 'string') return null;
+  const trimmed = ref.trim();
+  if (
+    !trimmed ||
+    trimmed.startsWith('#') ||
+    trimmed.startsWith('blob:') ||
+    isLegacyLocalAssetPath(trimmed)
+  ) {
+    return null;
+  }
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return extractStoragePathFromSignedUrl(trimmed);
+  }
+
+  const cleaned = cleanStoragePath(trimmed);
+  // Canonical paths have at least "{scope}/{activityId}/{filename}"
+  if (cleaned.includes('/') && !cleaned.startsWith('http')) {
+    return cleaned;
+  }
+  return null;
+}
+
+/**
+ * Checks whether an attendance registry URL or storage reference points to a canonical object in hcd-evidence-vault.
+ */
+export function isCanonicalStorageReference(ref?: string | null): boolean {
+  return extractCanonicalAttendanceStoragePath(ref) !== null;
+}
+
+/**
+ * Pure helper to replace ONLY the selected attachment in an activity's mediaAssets array,
+ * preserving all unrelated attachments in their exact order and sanitizing temporary URLs.
+ */
+export function replaceVerificationAssetInList(
+  currentAssets: VerificationMedia[],
+  targetAssetId: string,
+  replacementAsset: VerificationMedia
+): {
+  updatedAssets: VerificationMedia[];
+  supersededAsset: VerificationMedia | null;
+  replaced: boolean;
+} {
+  let supersededAsset: VerificationMedia | null = null;
+  let replaced = false;
+
+  const updatedAssets = (currentAssets || []).map((asset) => {
+    if (asset.id === targetAssetId && !replaced) {
+      supersededAsset = asset;
+      replaced = true;
+      return {
+        ...replacementAsset,
+        id: targetAssetId, // Preserve stable slot ID or use replacement ID
+        storagePath: replacementAsset.storagePath
+          ? cleanStoragePath(replacementAsset.storagePath)
+          : undefined,
+        url: '', // Never persist temporary blob or signed URLs in the database payload
+      };
+    }
+    return {
+      ...asset,
+      storagePath: asset.storagePath ? cleanStoragePath(asset.storagePath) : undefined,
+      url:
+        asset.url &&
+        (asset.url.startsWith('blob:') ||
+          asset.url.includes('/storage/v1/object/sign/') ||
+          asset.url.includes('token=') ||
+          isLegacyLocalAssetPath(asset.url))
+          ? ''
+          : asset.url,
+    };
+  });
+
+  return { updatedAssets, supersededAsset, replaced };
+}
+
+/**
+ * Pure helper to remove a single obsolete attachment from an activity's mediaAssets array
+ * while preserving all unrelated attachments.
+ */
+export function removeVerificationAssetFromList(
+  currentAssets: VerificationMedia[],
+  targetAssetId: string
+): {
+  updatedAssets: VerificationMedia[];
+  removedAsset: VerificationMedia | null;
+} {
+  let removedAsset: VerificationMedia | null = null;
+  const updatedAssets = (currentAssets || []).filter((asset) => {
+    if (asset.id === targetAssetId && !removedAsset) {
+      removedAsset = asset;
+      return false;
+    }
+    return true;
+  });
+  return { updatedAssets, removedAsset };
+}
+
+export interface ActivityEditPermission {
+  canEdit: boolean;
+  reasonCode:
+    | 'ALLOWED'
+    | 'UNAUTHENTICATED'
+    | 'UNPRIVILEGED'
+    | 'CROSS_LGA'
+    | 'STATUS_PENDING_APPROVAL'
+    | 'STATUS_PUBLISHED';
+  title: string;
+  explanation: string;
+}
+
+/**
+ * Evaluates whether a user is authorized to edit an activity draft or returned report.
+ * Enforces:
+ * 1. Approved & active LGA Desk Worker can edit only records belonging to their assigned LGA.
+ * 2. State Executive users may edit records as permitted by authorization rules.
+ * 3. Only DRAFT and REJECTED_DRAFT records may be edited through the draft editor.
+ * 4. PENDING_APPROVAL and PUBLISHED records are strictly read-only in the draft editor.
+ */
+export function evaluateActivityEditPermission(
+  activity: Pick<HCDActivity, 'id' | 'lgaId' | 'lgaName' | 'status'>,
+  user?: UserSession | null
+): ActivityEditPermission {
+  if (!user || !user.isAuthenticated) {
+    return {
+      canEdit: false,
+      reasonCode: 'UNAUTHENTICATED',
+      title: 'Authentication Required (Read-Only)',
+      explanation:
+        'You must be signed in with an approved government account to edit LGA activity drafts or verification evidence.',
+    };
+  }
+
+  if (!user.isPrivileged || (user.role !== 'lga_admin' && user.role !== 'state_admin')) {
+    return {
+      canEdit: false,
+      reasonCode: 'UNPRIVILEGED',
+      title: 'Clearance Pending (Read-Only)',
+      explanation:
+        'Your government account does not have active desk editing clearance. Contact the State Executive Secretariat.',
+    };
+  }
+
+  if (user.role === 'lga_admin' && user.assignedLgaId !== activity.lgaId) {
+    return {
+      canEdit: false,
+      reasonCode: 'CROSS_LGA',
+      title: `Cross-LGA Jurisdiction Lock (${activity.lgaName} LGA)`,
+      explanation: `You are assigned to ${user.assignedLgaName || user.assignedLgaId} LGA. Tenant isolation policy strictly prohibits editing drafts or replacing verification files belonging to ${activity.lgaName} LGA.`,
+    };
+  }
+
+  if (activity.status === 'PENDING_APPROVAL') {
+    return {
+      canEdit: false,
+      reasonCode: 'STATUS_PENDING_APPROVAL',
+      title: 'Record Locked — In State Executive Review Queue',
+      explanation:
+        'This report has been submitted for State Executive review (PENDING_APPROVAL) and is read-only in the draft editor so the dossier remains consistent during cabinet verification.',
+    };
+  }
+
+  if (activity.status === 'PUBLISHED') {
+    return {
+      canEdit: false,
+      reasonCode: 'STATUS_PUBLISHED',
+      title: 'Record Locked — Published & Immutable',
+      explanation:
+        'Published records (PUBLISHED) are cryptographically and policy-locked on the State Transparency Portal. To revise this entry, a State Super-Administrator must first unlock and revert it to DRAFT.',
+    };
+  }
+
+  return {
+    canEdit: true,
+    reasonCode: 'ALLOWED',
+    title:
+      activity.status === 'REJECTED_DRAFT'
+        ? 'Editable Returned Report (Correction Mode)'
+        : 'Editable LGA Activity Draft',
+    explanation:
+      activity.status === 'REJECTED_DRAFT'
+        ? 'This report was returned by State Reviewers. You can update fields, replace individual verification files, and save your corrections.'
+        : 'Authorized draft mode. Changes are saved directly to this existing activity record without duplicating the entry.',
+  };
+}
+
+/**
+ * Delete an evidence object from Supabase storage (for cleanup on failed database writes or superseded asset replacement).
+ * Never deletes objects in live storage when in Demo mode.
+ * Distinguishes storage RLS policy restrictions so callers can safely report administrative cleanup without failing.
  */
 export async function deleteEvidenceFromStorage(
-  storagePath: string
-): Promise<{ success: boolean; error?: string }> {
+  storagePath: string,
+  userSession?: UserSession
+): Promise<{ success: boolean; policyRestricted?: boolean; demoBlocked?: boolean; error?: string }> {
+  if (userSession?.isDemo) {
+    return {
+      success: false,
+      demoBlocked: true,
+      error: 'Demo Mode: Live Supabase storage deletion is disabled in sandbox demo mode.',
+    };
+  }
   const client = getSupabaseClient();
-  if (!client) return { success: false, error: 'Supabase client unavailable' };
+  if (!client || isSupabaseUnreachable()) {
+    return { success: false, error: 'Supabase storage unavailable' };
+  }
   try {
     const clean = cleanStoragePath(storagePath);
+    if (!clean) {
+      return { success: false, error: 'Empty storage path' };
+    }
     const { error } = await client.storage.from('hcd-evidence-vault').remove([clean]);
     if (error) {
-      return { success: false, error: error.message };
+      const lower = (error.message || '').toLowerCase();
+      const status = String((error as any).statusCode || (error as any).status || '');
+      const isPolicy =
+        status === '401' ||
+        status === '403' ||
+        status === '42501' ||
+        lower.includes('permission') ||
+        lower.includes('policy') ||
+        lower.includes('row-level security') ||
+        lower.includes('unauthorized') ||
+        lower.includes('not allowed');
+
+      return {
+        success: false,
+        policyRestricted: isPolicy,
+        error: isPolicy
+          ? `Storage policy retains superseded object (${clean}) for administrative cleanup.`
+          : error.message,
+      };
     }
     invalidateMediaCache(clean);
     return { success: true };
@@ -890,3 +1152,4 @@ export async function deleteEvidenceFromStorage(
     return { success: false, error: err.message || 'Failed to delete storage file' };
   }
 }
+

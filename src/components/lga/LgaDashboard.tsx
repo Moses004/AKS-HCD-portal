@@ -6,6 +6,8 @@ import { HCDActivity, ActivityStatus } from '../../types';
 import { LgaReportExportCentre } from '../reports/LgaReportExportCentre';
 import { HcdSettingsDashboard } from '../dashboard/HcdSettingsDashboard';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
+import { ActivityDraftEditorModal } from './ActivityDraftEditorModal';
+import { evaluateActivityEditPermission } from '../../services/mediaService';
 import {
   Building2,
   PlusCircle,
@@ -39,6 +41,14 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
   const { currentUser } = useAuth();
   const { activities, submitActivityForReview, deleteActivity, getPillarDisplayName } = useData();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [editorInitialSection, setEditorInitialSection] = useState<
+    'identification' | 'resources' | 'milestones' | 'measurements' | 'evidence' | undefined
+  >(undefined);
+
+  const editingActivity = editingActivityId
+    ? activities.find((a) => a.id === editingActivityId) || null
+    : null;
 
   // Selected LGA to view in workspace
   // An approved LGA Desk Worker is strictly locked to their approved assignedLgaId
@@ -374,6 +384,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
             const isPending = activity.status === 'PENDING_APPROVAL';
             const isPublished = activity.status === 'PUBLISHED';
             const isRejected = activity.status === 'REJECTED_DRAFT';
+            const editPerm = evaluateActivityEditPermission(activity, currentUser);
 
             return (
               <div
@@ -389,8 +400,11 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                     lgaName={activity.lgaName}
                     community={activity.community}
                     aspectRatioClass="h-44 w-full"
-                    canReupload={true}
-                    onReuploadRequested={() => onViewActivity(activity)}
+                    canReupload={editPerm.canEdit}
+                    onReuploadRequested={() => {
+                      setEditorInitialSection('evidence');
+                      setEditingActivityId(activity.id);
+                    }}
                   />
 
                   {/* Card Details */}
@@ -491,24 +505,55 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div className="p-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <button
                     onClick={() => onViewActivity(activity)}
-                    className="flex items-center gap-1 font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+                    className="flex items-center gap-1 font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     Inspect Proof
                   </button>
 
                   <div className="flex items-center gap-1.5">
+                    {/* Prominent Edit draft button on every eligible activity card */}
+                    {editPerm.canEdit && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditorInitialSection(undefined);
+                          setEditingActivityId(activity.id);
+                        }}
+                        className="flex items-center gap-1 px-2.5 py-1 bg-white border border-emerald-700/40 hover:bg-emerald-50 text-emerald-900 rounded-md font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                        title="Edit activity draft, indicator outcomes, and verification evidence"
+                      >
+                        <FileEdit className="w-3 h-3 text-emerald-800" />
+                        Edit draft
+                      </button>
+                    )}
+
                     {/* If Draft or Rejected, can submit to state queue */}
                     {(isDraft || isRejected) && isAssignedTenant && (
                       <button
                         onClick={() => handleSubmitDraft(activity.id)}
-                        className="flex items-center gap-1 px-2.5 py-1 bg-emerald-800 hover:bg-emerald-900 text-white rounded-md font-semibold text-[11px] transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 bg-emerald-800 hover:bg-emerald-900 text-white rounded-md font-semibold text-[11px] transition-colors cursor-pointer"
                       >
                         <Send className="w-3 h-3" />
                         Submit
+                      </button>
+                    )}
+
+                    {isPending && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditorInitialSection(undefined);
+                          setEditingActivityId(activity.id);
+                        }}
+                        className="flex items-center gap-1 text-[11px] font-semibold text-blue-800 hover:underline cursor-pointer"
+                        title="Pending State Executive review — click to view read-only status details"
+                      >
+                        <Lock className="w-3 h-3" />
+                        Pending Lock
                       </button>
                     )}
 
@@ -522,7 +567,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                     {(isDraft || isRejected) && isAssignedTenant && (
                       <button
                         onClick={() => handleDelete(activity.id)}
-                        className="p-1 text-slate-400 hover:text-red-600 rounded transition-colors"
+                        className="p-1 text-slate-400 hover:text-red-600 rounded transition-colors cursor-pointer"
                         title="Delete Record"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -537,6 +582,17 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
       )}
         </>
       )}
+
+      {/* Activity Draft & Evidence Editor Modal */}
+      <ActivityDraftEditorModal
+        activity={editingActivity}
+        isOpen={Boolean(editingActivity)}
+        initialSection={editorInitialSection}
+        onClose={() => {
+          setEditingActivityId(null);
+          setEditorInitialSection(undefined);
+        }}
+      />
 
       {/* Comprehensive LGA Report Export Centre Modal */}
       <LgaReportExportCentre

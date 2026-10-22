@@ -90,6 +90,21 @@ export interface ProjectMilestone {
   keyDeliverable?: string;
 }
 
+export type CoordinateProvenance =
+  | 'exif_gps'
+  | 'manual_entry'
+  | 'activity_location'
+  | 'none';
+
+export type ExifVerificationStatus =
+  | 'verified_exif'
+  | 'exif_warning'
+  | 'exif_out_of_bounds'
+  | 'no_exif_gps'
+  | 'manual_coordinates'
+  | 'activity_coordinates'
+  | 'not_applicable';
+
 export interface VerificationMedia {
   id: string;
   type: 'photo' | 'document' | 'video';
@@ -98,7 +113,14 @@ export interface VerificationMedia {
   caption: string;
   fileName: string;
   fileSize: string;
+  mimeType?: string;
   exifVerified?: boolean;
+  coordinateSource?: CoordinateProvenance;
+  exifStatus?: ExifVerificationStatus;
+  exifMessage?: string;
+  exifDeviceMake?: string;
+  exifDeviceModel?: string;
+  exifCapturedAt?: string;
   coordinates?: {
     lat: number;
     lng: number;

@@ -19,6 +19,7 @@ import {
   repairActivityMediaMetadata,
   deleteEvidenceFromStorage,
   resolveActivityMedia,
+  extractCanonicalAttendanceStoragePath,
   EVIDENCE_BUCKET,
 } from './mediaService';
 
@@ -146,7 +147,11 @@ export const activityToRow = (
     reviewed_at: a.reviewedAt || null,
     created_by: createdByUserId || a.createdBy || null,
     updated_by: updatedByUserId || a.updatedBy || null,
-    attendance_registry_url: a.attendanceRegistryUrl || null,
+    attendance_registry_url:
+      extractCanonicalAttendanceStoragePath(a.attendanceRegistryUrl) ||
+      (a.attendanceRegistryUrl && !a.attendanceRegistryUrl.startsWith('blob:') && !a.attendanceRegistryUrl.includes('token=')
+        ? a.attendanceRegistryUrl
+        : null),
     attendance_sheet_file_name: a.attendanceSheetFileName || null,
     created_at: a.createdAt || new Date().toISOString(),
     updated_at: a.updatedAt || new Date().toISOString(),
@@ -446,7 +451,15 @@ export const supabaseService = {
       if (updates.rejectionReason !== undefined) updateRow.rejection_reason = updates.rejectionReason;
       if (updates.reviewedBy !== undefined) updateRow.reviewed_by = updates.reviewedBy;
       if (updates.reviewedAt !== undefined) updateRow.reviewed_at = updates.reviewedAt;
-      if (updates.attendanceRegistryUrl !== undefined) updateRow.attendance_registry_url = updates.attendanceRegistryUrl;
+      if (updates.attendanceRegistryUrl !== undefined) {
+        updateRow.attendance_registry_url =
+          extractCanonicalAttendanceStoragePath(updates.attendanceRegistryUrl) ||
+          (updates.attendanceRegistryUrl &&
+          !updates.attendanceRegistryUrl.startsWith('blob:') &&
+          !updates.attendanceRegistryUrl.includes('token=')
+            ? updates.attendanceRegistryUrl
+            : null);
+      }
       if (updates.attendanceSheetFileName !== undefined) updateRow.attendance_sheet_file_name = updates.attendanceSheetFileName;
 
       const { data, error } = await client
@@ -735,7 +748,15 @@ export const supabaseService = {
       return { success: false, error: 'Supabase client not available' };
     }
 
-    // 0. Authorization guard:
+    // 0. Authorization & Demo Mode guard:
+    // Demo mode must never upload or delete evidence in the live Supabase storage bucket
+    if (userSession?.isDemo) {
+      return {
+        success: false,
+        error: 'Demo Mode: Live Supabase storage uploads are disabled in sandbox demo mode.',
+      };
+    }
+
     // Anonymous users cannot upload official evidence
     if (userSession) {
       if (!userSession.isAuthenticated || !userSession.isPrivileged) {
@@ -801,10 +822,13 @@ export const supabaseService = {
   },
 
   /**
-   * Delete an uploaded evidence file from storage (used for cleanup when database write fails)
+   * Delete an uploaded evidence file from storage (used for cleanup when database write fails or superseded asset is replaced)
    */
-  async deleteEvidenceFile(storagePath: string): Promise<{ success: boolean; error?: string }> {
-    return deleteEvidenceFromStorage(storagePath);
+  async deleteEvidenceFile(
+    storagePath: string,
+    userSession?: UserSession
+  ): Promise<{ success: boolean; policyRestricted?: boolean; demoBlocked?: boolean; error?: string }> {
+    return deleteEvidenceFromStorage(storagePath, userSession);
   },
 
   /**
@@ -1375,6 +1399,95 @@ export const supabaseService = {
       return {
         success: false,
         error: err.message || 'Failed to insert measurement',
+      };
+    }
+  },
+
+  /**
+   * Update existing activity measurement in public.activity_measurements
+   * Supports updating stored fields: indicator_code, reporting_period_start, reporting_period_end,
+   * value_numeric, value_text, numerator, denominator, disaggregation, data_source, evidence_reference, notes
+   */
+  async updateMeasurement(
+    id: string,
+    updates: Partial<ActivityMeasurement>,
+    userSession?: UserSession
+  ): Promise<DatabaseOperationResult<ActivityMeasurement>> {
+    if (!id) {
+      return { success: false, error: 'Measurement ID is required for update.' };
+    }
+    if (userSession?.isDemo) {
+      return {
+        success: false,
+        error: 'Demo Mode: Live Supabase measurement updates are disabled in sandbox mode.',
+      };
+    }
+    const client = getSupabaseClient();
+    if (!client) {
+      return { success: false, error: 'Supabase client not initialized' };
+    }
+
+    try {
+      const updateRow: Record<string, any> = {
+        updated_at: new Date().toISOString(),
+      };
+
+      if (updates.indicator_code !== undefined) updateRow.indicator_code = updates.indicator_code;
+      if (updates.reporting_period_start !== undefined) {
+        updateRow.reporting_period_start = updates.reporting_period_start;
+      }
+      if (updates.reporting_period_end !== undefined) {
+        updateRow.reporting_period_end = updates.reporting_period_end;
+      }
+      if (updates.value_numeric !== undefined) {
+        updateRow.value_numeric = updates.value_numeric;
+      }
+      if (updates.value_text !== undefined) {
+        updateRow.value_text = updates.value_text || null;
+      }
+      if (updates.numerator !== undefined) {
+        updateRow.numerator = updates.numerator;
+      }
+      if (updates.denominator !== undefined) {
+        updateRow.denominator = updates.denominator;
+      }
+      if (updates.disaggregation !== undefined) {
+        updateRow.disaggregation = updates.disaggregation;
+      }
+      if (updates.data_source !== undefined) {
+        updateRow.data_source = updates.data_source || null;
+      }
+      if (updates.evidence_reference !== undefined) {
+        updateRow.evidence_reference = updates.evidence_reference || null;
+      }
+      if (updates.notes !== undefined) {
+        updateRow.notes = updates.notes || null;
+      }
+
+      const { data, error } = await client
+        .from('activity_measurements')
+        .update(updateRow)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        if (!isNetworkFetchError(error)) {
+          console.debug('Supabase updateMeasurement notice:', error.message);
+        }
+        return {
+          success: false,
+          error: isNetworkFetchError(error) ? 'Network unreachable: Failed to fetch' : error.message,
+          code: error.code,
+          details: error.details,
+        };
+      }
+
+      return { success: true, data: data as ActivityMeasurement };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.message || 'Failed to update measurement in Supabase',
       };
     }
   },

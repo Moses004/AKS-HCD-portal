@@ -12,7 +12,15 @@ import {
   ActivityMeasurement,
 } from '../../types';
 import { validateCoordinates } from '../../lib/geoFence';
-import { validateMediaFile, isDocumentMedia } from '../../services/mediaService';
+import {
+  validateMediaFile,
+  validateAttendanceRegistryPdf,
+  isDocumentMedia,
+} from '../../services/mediaService';
+import {
+  extractExifGpsFromFile,
+  describeMediaGeotagProvenance,
+} from '../../lib/exifParser';
 import confetti from 'canvas-confetti';
 import {
   X,
@@ -225,6 +233,8 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
   // Media & Proofs: New activities must start with no uploaded evidence unless the user actually selects a file
   const [uploadedPhotos, setUploadedPhotos] = useState<VerificationMedia[]>([]);
   const [attendanceFileName, setAttendanceFileName] = useState('');
+  const [attendanceStoragePath, setAttendanceStoragePath] = useState('');
+  const [isUploadingAttendance, setIsUploadingAttendance] = useState(false);
   const [submissionNotes, setSubmissionNotes] = useState('');
 
   // Track created local object URLs to prevent memory leaks and revoke on unmount
@@ -436,7 +446,9 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
             ...p,
             url: '', // Do NOT persist temporary signed URL or local blob URL; storagePath is canonical!
           })),
-          attendanceRegistryUrl: attendanceFileName.trim() ? '#attendance-registry-file' : undefined,
+          attendanceRegistryUrl:
+            attendanceStoragePath.trim() ||
+            (attendanceFileName.trim() ? '#attendance-registry-file' : undefined),
           attendanceSheetFileName: attendanceFileName.trim() || undefined,
           submissionNotes,
         },
@@ -1435,7 +1447,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
                       <span>{isUploadingMedia ? 'Uploading to Supabase...' : 'Upload Real Evidence File'}</span>
                       <input
                         type="file"
-                        accept="image/*,video/*"
+                        accept=".jpg,.jpeg,.png,.webp,.pdf,.mp4,image/jpeg,image/png,image/webp,application/pdf,video/mp4"
                         className="hidden"
                         disabled={isUploadingMedia}
                         onChange={async (e) => {
@@ -1452,6 +1464,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
 
                           setIsUploadingMedia(true);
                           try {
+                            const exifResult = await extractExifGpsFromFile(file);
                             const mediaUrl = URL.createObjectURL(file);
                             blobUrlsRef.current.push(mediaUrl);
                             let storagePath: string | undefined;
@@ -1475,14 +1488,25 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
                             const fileSizeMb = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
                             const newPhoto: VerificationMedia = {
                               id: `proof-${Date.now()}`,
-                              type: file.type.startsWith('video') ? 'video' : file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf') ? 'document' : 'photo',
+                              type: file.type.startsWith('video')
+                                ? 'video'
+                                : file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf')
+                                ? 'document'
+                                : 'photo',
                               url: mediaUrl,
                               storagePath,
                               caption: `Field evidence: ${file.name}`,
                               fileName: file.name,
                               fileSize: fileSizeMb,
-                              exifVerified: true,
-                              coordinates: { lat: latitude, lng: longitude },
+                              mimeType: file.type,
+                              exifVerified: exifResult.exifVerified,
+                              coordinateSource: exifResult.coordinateSource,
+                              exifStatus: exifResult.exifStatus,
+                              exifMessage: exifResult.message,
+                              exifDeviceMake: exifResult.deviceMake,
+                              exifDeviceModel: exifResult.deviceModel,
+                              exifCapturedAt: exifResult.capturedAt,
+                              coordinates: exifResult.coordinates,
                               uploadTimestamp: new Date().toISOString(),
                             };
                             setUploadedPhotos((prev) => [...prev, newPhoto]);
@@ -1515,73 +1539,130 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
                     No evidence files attached yet. Select an authentic photo or document above.
                   </p>
                 ) : (
-                  uploadedPhotos.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-xs"
-                    >
-                      <div className="flex items-center gap-3">
-                        {item.type === 'document' || isDocumentMedia(item) ? (
-                          <div className="w-10 h-10 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200">
-                            <FileText className="w-5 h-5" />
-                          </div>
-                        ) : (
-                          <img
-                            src={item.url}
-                            alt="Proof preview"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                            className="w-10 h-10 object-cover rounded-md border border-slate-200"
-                          />
-                        )}
-                        <div>
-                          <div className="font-semibold text-slate-900 truncate max-w-[220px]" title={item.fileName}>
-                            {item.fileName}
-                          </div>
-                          <div className="text-[10px] text-slate-500 flex items-center gap-2">
-                            <span>{item.fileSize}</span>
-                            <span>·</span>
-                            <span className="text-emerald-700 font-bold">
-                              ✓ EXIF Coordinates Validated
-                            </span>
+                  uploadedPhotos.map((item) => {
+                    const prov = describeMediaGeotagProvenance(item, { lat: latitude, lng: longitude }, lgaObj.id);
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-xs"
+                      >
+                        <div className="flex items-center gap-3">
+                          {item.type === 'document' || isDocumentMedia(item) ? (
+                            <div className="w-10 h-10 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200">
+                              <FileText className="w-5 h-5" />
+                            </div>
+                          ) : (
+                            <img
+                              src={item.url}
+                              alt="Proof preview"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = 'none';
+                              }}
+                              className="w-10 h-10 object-cover rounded-md border border-slate-200"
+                            />
+                          )}
+                          <div>
+                            <div className="font-semibold text-slate-900 truncate max-w-[220px]" title={item.fileName}>
+                              {item.fileName}
+                            </div>
+                            <div className="text-[10px] text-slate-500 flex items-center gap-2">
+                              <span>{item.fileSize}</span>
+                              <span>·</span>
+                              <span
+                                className={
+                                  prov.badgeTone === 'emerald'
+                                    ? 'text-emerald-700 font-bold'
+                                    : 'text-slate-600 font-medium'
+                                }
+                              >
+                                {prov.badgeLabel}
+                              </span>
+                            </div>
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (item.url && item.url.startsWith('blob:')) {
+                              try {
+                                URL.revokeObjectURL(item.url);
+                              } catch {}
+                            }
+                            setUploadedPhotos((prev) => prev.filter((p) => p.id !== item.id));
+                          }}
+                          className="text-red-500 hover:text-red-700 text-xs p-1 cursor-pointer"
+                        >
+                          Remove
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (item.url && item.url.startsWith('blob:')) {
-                            try {
-                              URL.revokeObjectURL(item.url);
-                            } catch {}
-                          }
-                          setUploadedPhotos((prev) => prev.filter((p) => p.id !== item.id));
-                        }}
-                        className="text-red-500 hover:text-red-700 text-xs p-1 cursor-pointer"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
 
               {/* Attendance Registry PDF requirement */}
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                <label className="text-xs font-bold text-slate-800 block mb-1">
-                  Beneficiary Attendance Registry / Biometric Roll (.pdf) <span className="text-red-500">*</span>
-                </label>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Beneficiary Attendance Registry / Biometric Roll (.pdf) <span className="text-red-500">*</span>
+                  </label>
+                  <label className="cursor-pointer px-3 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg text-[11px] font-bold inline-flex items-center gap-1.5">
+                    <Upload className={`w-3.5 h-3.5 ${isUploadingAttendance ? 'animate-bounce' : ''}`} />
+                    <span>{isUploadingAttendance ? 'Uploading PDF...' : 'Upload Registry PDF'}</span>
+                    <input
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      className="hidden"
+                      disabled={isUploadingAttendance}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = '';
+                        if (!file) return;
+                        setUploadError(null);
+                        const val = validateAttendanceRegistryPdf(file, file.name);
+                        if (!val.valid) {
+                          setUploadError(val.error || 'Attendance registry must be a PDF file.');
+                          return;
+                        }
+                        setIsUploadingAttendance(true);
+                        try {
+                          if (isOnline && isSupabaseActive) {
+                            const up = await uploadEvidenceToSupabase(
+                              file,
+                              file.name,
+                              lgaObj.id,
+                              `attendance-${Date.now()}`
+                            );
+                            if (!up.success) {
+                              setUploadError(up.error || 'Failed to upload attendance PDF');
+                              return;
+                            }
+                            setAttendanceStoragePath(up.storagePath || '');
+                          }
+                          setAttendanceFileName(file.name);
+                        } finally {
+                          setIsUploadingAttendance(false);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 <div className="flex items-center gap-2">
                   <FileText className="w-5 h-5 text-emerald-800 shrink-0" />
                   <input
                     type="text"
                     value={attendanceFileName}
                     onChange={(e) => setAttendanceFileName(e.target.value)}
+                    placeholder="Upload a .pdf file above or enter registry reference..."
                     className="flex-1 text-xs p-2 rounded border border-slate-300 bg-white font-mono"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">
+                {attendanceStoragePath && (
+                  <p className="text-[10px] font-mono text-emerald-800">
+                    ✓ Stored in private vault: {attendanceStoragePath}
+                  </p>
+                )}
+                <p className="text-[10px] text-slate-500">
                   Required by State Super-Admin to approve publication to the open citizen portal.
                 </p>
               </div>
