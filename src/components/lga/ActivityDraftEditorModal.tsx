@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { X, Save, Upload, Trash2, FileText, Image as ImageIcon, Video, AlertTriangle, Plus } from 'lucide-react';
 import { HCDActivity, VerificationMedia, ProjectMilestone, PillarId, ReportingCategory, PillarSegment } from '../../types';
 import { PILLARS, ALL_31_LGAS } from '../../data/lgas';
@@ -52,13 +52,10 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
   const [saving, setSaving] = useState(false);
   const [pendingOldPaths, setPendingOldPaths] = useState<string[]>([]);
   const [pendingNewPaths, setPendingNewPaths] = useState<string[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const assignedLga = ALL_31_LGAS.find((l) => l.id === activity.lgaId);
   const balanced = Number(beneficiariesMale) + Number(beneficiariesFemale) === Number(beneficiariesTotal);
   const progress = useMemo(() => milestones.length ? Math.round(milestones.reduce((n, m) => n + (Number(m.completionPercentage) || 0), 0) / milestones.length) : 0, [milestones]);
-
-  useEffect(() => () => previewUrls.forEach((url) => { try { URL.revokeObjectURL(url); } catch {} }), [previewUrls]);
 
   const canEdit = (currentUser.role === 'state_admin' || (currentUser.role === 'lga_admin' && currentUser.assignedLgaId === activity.lgaId))
     && (activity.status === 'DRAFT' || activity.status === 'REJECTED_DRAFT');
@@ -81,8 +78,6 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
       const upload = await uploadEvidenceToSupabase(file, file.name, activity.lgaId, activity.id);
       if (!upload.success || !upload.storagePath) throw new Error(upload.error || 'Upload did not return a canonical storage path.');
       setPendingNewPaths((prev) => [...prev, upload.storagePath!]);
-      const preview = URL.createObjectURL(file);
-      setPreviewUrls((prev) => [...prev, preview]);
       const asset: VerificationMedia = {
         id: 'proof-' + (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : Date.now().toString()),
         type: mediaType(file),
