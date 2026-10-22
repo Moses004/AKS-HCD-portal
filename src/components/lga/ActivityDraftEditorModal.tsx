@@ -68,6 +68,10 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
     setNotice('');
     const validation = validateMediaFile(file);
     if (!validation.valid) { setError(validation.error || 'This file is not supported.'); return; }
+    if (currentUser.isDemo) {
+      setError('Evidence upload and replacement are disabled in demo mode to prevent writes to the live evidence vault. You can still edit report fields in the isolated demo.');
+      return;
+    }
     if (!isOnline || !isSupabaseActive) {
       setError('Media replacement requires an active online Supabase connection. Your existing evidence has been preserved; reconnect and try again.');
       return;
