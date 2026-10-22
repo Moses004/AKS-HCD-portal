@@ -5,6 +5,7 @@ import { ALL_31_LGAS, PILLARS, getLgaById } from '../../data/lgas';
 import { HCDActivity, ActivityStatus } from '../../types';
 import { LgaReportExportCentre } from '../reports/LgaReportExportCentre';
 import { HcdSettingsDashboard } from '../dashboard/HcdSettingsDashboard';
+import { ActivityDraftEditorModal } from './ActivityDraftEditorModal';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
 import {
   Building2,
@@ -39,6 +40,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
   const { currentUser } = useAuth();
   const { activities, submitActivityForReview, deleteActivity, getPillarDisplayName } = useData();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<HCDActivity | null>(null);
 
   // Selected LGA to view in workspace
   // An approved LGA Desk Worker is strictly locked to their approved assignedLgaId
@@ -494,13 +496,25 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
 
                 {/* Card Actions Footer */}
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <button
-                    onClick={() => onViewActivity(activity)}
-                    className="flex items-center gap-1 font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    Inspect Proof
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => onViewActivity(activity)}
+                      className="flex items-center gap-1 font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Inspect Proof
+                    </button>
+                    {(isDraft || isRejected) && isAssignedTenant && (
+                      <button
+                        onClick={() => setEditingActivity(activity)}
+                        className="flex items-center gap-1 font-semibold text-emerald-800 hover:text-emerald-950 transition-colors"
+                        aria-label={`Edit draft ${activity.title}`}
+                      >
+                        <FileEdit className="w-3.5 h-3.5" />
+                        Edit draft
+                      </button>
+                    )}
+                  </div>
 
                   <div className="flex items-center gap-1.5">
                     {/* If Draft or Rejected, can submit to state queue */}
@@ -538,6 +552,14 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
         </div>
       )}
         </>
+      )}
+
+      {editingActivity && (
+        <ActivityDraftEditorModal
+          activity={editingActivity}
+          onClose={() => setEditingActivity(null)}
+          onSaved={() => setEditingActivity(null)}
+        />
       )}
 
       {/* Comprehensive LGA Report Export Centre Modal */}
