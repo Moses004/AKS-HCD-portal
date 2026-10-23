@@ -343,13 +343,14 @@ async function runImageReliabilityTestSuite() {
     'uyo/test/cross-lga.pdf',
     ikotEkpeneUser
   );
-  const deletionGuardPassed =
+  const deletionGuardPassed = Boolean(
     !noSessionDelete.success &&
-    Boolean(noSessionDelete.policyRestricted) &&
-    noSessionDelete.error?.includes('Unauthorized') &&
-    !crossLgaDelete.success &&
-    Boolean(crossLgaDelete.policyRestricted) &&
-    crossLgaDelete.error?.includes('Cross-LGA deletion violation');
+      noSessionDelete.policyRestricted &&
+      noSessionDelete.error?.includes('Unauthorized') &&
+      !crossLgaDelete.success &&
+      crossLgaDelete.policyRestricted &&
+      crossLgaDelete.error?.includes('Cross-LGA deletion violation')
+  );
   recordTest(
     'IR-11B',
     'Evidence Deletion Session & Tenant Boundary Guard',
