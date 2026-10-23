@@ -214,10 +214,19 @@ async function runImageReliabilityTestSuite() {
 
   // TEST 7: Retry Circuit Breaker (No infinite loops)
   const circuitBreakerKey = 'uyo/circuit-breaker/test.jpg';
+  // Force refresh so the negative-result cache cannot short-circuit the
+  // retry tracker. This deliberately exercises repeated storage resolution
+  // attempts rather than merely proving the missing-file cache works.
   for (let i = 0; i < 4; i++) {
-    await resolveActivityMedia({ storagePath: circuitBreakerKey, fileName: 'test.jpg' });
+    await resolveActivityMedia(
+      { storagePath: circuitBreakerKey, fileName: 'test.jpg' },
+      { forceRefresh: true }
+    );
   }
-  const throttledResult = await resolveActivityMedia({ storagePath: circuitBreakerKey, fileName: 'test.jpg' });
+  const throttledResult = await resolveActivityMedia(
+    { storagePath: circuitBreakerKey, fileName: 'test.jpg' },
+    { forceRefresh: true }
+  );
   const circuitBreakerPassed =
     throttledResult.status === 'error' &&
     throttledResult.error?.includes('Too many retry attempts');
