@@ -10,6 +10,14 @@ import {
 } from '../src/types';
 import { stateActivitiesService } from '../src/services/stateActivitiesService';
 
+const integrationUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+if (!integrationUrl) {
+  throw new Error('Integration tests require VITE_SUPABASE_URL to point at an isolated Supabase instance.');
+}
+if (/refjawgovrmsyigtcfdl\.supabase\.co/i.test(integrationUrl)) {
+  throw new Error('Refusing to run state-activity integration tests against the AKS-HCD production Supabase project.');
+}
+
 async function runStateActivitiesSuite() {
   console.log('======================================================================');
   console.log('STATE-LEVEL ACTIVITIES REPORTING MODULE AUDIT & TEST SUITE');
