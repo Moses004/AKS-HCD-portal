@@ -25,9 +25,18 @@ import {
   evaluateDataCompleteness,
 } from '../src/services/lgaReportExportService';
 
-const SUPABASE_URL = 'https://refjawgovrmsyigtcfdl.supabase.co';
-const ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+const ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+
+if (!SUPABASE_URL || !ANON_KEY) {
+  throw new Error('Integration tests require an explicitly configured isolated Supabase target via VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+}
+if (/refjawgovrmsyigtcfdl\.supabase\.co/i.test(SUPABASE_URL)) {
+  throw new Error('Refusing to run integration tests against the AKS-HCD production Supabase project.');
+}
+if (!/^https?:\/\//i.test(SUPABASE_URL)) {
+  throw new Error('Invalid Supabase URL for integration tests.');
+}
 
 const client = createClient(SUPABASE_URL, ANON_KEY);
 
