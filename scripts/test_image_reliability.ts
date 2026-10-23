@@ -58,6 +58,13 @@ if (!/^https?:\/\//i.test(SUPABASE_URL)) {
 }
 
 const client = createClient(SUPABASE_URL, ANON_KEY);
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '';
+if (!SERVICE_ROLE_KEY) {
+  throw new Error('Storage integration tests require the local-only SUPABASE_SERVICE_ROLE_KEY provided by the isolated Supabase CLI.');
+}
+const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
 interface TestResult {
   id: string;
@@ -78,6 +85,47 @@ async function runImageReliabilityTestSuite() {
   console.log('======================================================================');
   console.log('AKS-HCD IMAGE RELIABILITY, EVIDENCE STORAGE & WORKFLOW AUDIT');
   console.log('======================================================================\n');
+
+  // TEST 0: Real isolated Storage upload -> signed URL -> download -> cleanup.
+  // The service-role key is supplied only by the ephemeral local Supabase stack.
+  const smokeActivityId = `integration-smoke-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const smokePath = generateSafeStoragePath('state-level', smokeActivityId, 'storage-smoke.pdf');
+  let smokeUploadSucceeded = false;
+  let smokeSignedUrlSucceeded = false;
+  let smokeDownloadSucceeded = false;
+  let smokeCleanupSucceeded = false;
+  try {
+    const { data: uploadData, error: uploadError } = await adminClient.storage
+      .from(EVIDENCE_BUCKET)
+      .upload(smokePath, new Blob(['AKS-HCD isolated storage integration smoke test'], { type: 'application/pdf' }), {
+        contentType: 'application/pdf',
+        cacheControl: '60',
+        upsert: false,
+      });
+    smokeUploadSucceeded = !uploadError && Boolean(uploadData?.path);
+    if (smokeUploadSucceeded && uploadData?.path) {
+      const { data: signedData, error: signedError } = await adminClient.storage
+        .from(EVIDENCE_BUCKET)
+        .createSignedUrl(uploadData.path, 60);
+      smokeSignedUrlSucceeded = !signedError && Boolean(signedData?.signedUrl);
+      if (smokeSignedUrlSucceeded && signedData?.signedUrl) {
+        const downloadResponse = await fetch(signedData.signedUrl);
+        smokeDownloadSucceeded = downloadResponse.ok;
+        await downloadResponse.body?.cancel().catch(() => undefined);
+      }
+    }
+  } catch (error) {
+    console.error('Isolated storage smoke test failed:', error instanceof Error ? error.message : 'Unknown error');
+  } finally {
+    const { error: cleanupError } = await adminClient.storage.from(EVIDENCE_BUCKET).remove([smokePath]);
+    smokeCleanupSucceeded = !cleanupError;
+  }
+  recordTest(
+    'IR-00',
+    'Real Storage Upload, Signed URL Download & Cleanup',
+    smokeUploadSucceeded && smokeSignedUrlSucceeded && smokeDownloadSucceeded && smokeCleanupSucceeded,
+    `upload=${smokeUploadSucceeded}, signedUrl=${smokeSignedUrlSucceeded}, download=${smokeDownloadSucceeded}, cleanup=${smokeCleanupSucceeded}`
+  );
 
   // TEST 1: Path sanitization & collision-resistant generation
   const safeLgaPath = generateSafeStoragePath('uyo', 'act-101', 'report document.pdf');
@@ -305,6 +353,24 @@ async function runImageReliabilityTestSuite() {
     'Anonymous User Evidence Upload RBAC Guard',
     Boolean(anonBlocked),
     'Anonymous users and requests without caller context are denied before any storage write'
+  );
+
+  // TEST 10b: The actual anonymous Storage API request must be denied by RLS.
+  const anonStoragePath = `state-level/anonymous-smoke-${Date.now()}/unauthorized.pdf`;
+  const { data: anonStorageData, error: anonStorageError } = await client.storage
+    .from(EVIDENCE_BUCKET)
+    .upload(anonStoragePath, new Blob(['must not persist'], { type: 'application/pdf' }), {
+      contentType: 'application/pdf',
+      upsert: false,
+    });
+  if (!anonStorageError && anonStorageData?.path) {
+    await adminClient.storage.from(EVIDENCE_BUCKET).remove([anonStorageData.path]);
+  }
+  recordTest(
+    'IR-10B',
+    'Anonymous Storage API Upload Denied by RLS',
+    Boolean(anonStorageError),
+    anonStorageError ? 'Storage RLS rejected the unauthenticated upload request' : 'SECURITY FAILURE: anonymous upload was accepted'
   );
 
   // TEST 11: Cross-LGA Evidence Upload Protection
