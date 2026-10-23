@@ -71,6 +71,7 @@ jobs:
           export SUPABASE_URL="$VITE_SUPABASE_URL"
           export VITE_SUPABASE_ANON_KEY="${ANON_KEY:?Supabase CLI did not provide ANON_KEY}"
           export SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY"
+          export SUPABASE_SERVICE_ROLE_KEY="${SERVICE_ROLE_KEY:?Supabase CLI did not provide SERVICE_ROLE_KEY}"
           if [[ "$VITE_SUPABASE_URL" == *"refjawgovrmsyigtcfdl.supabase.co"* ]]; then
             echo "::error::Refusing to run integration tests against production."
             exit 1
