@@ -33,6 +33,7 @@ import {
   isDocumentMedia,
   isAkwaIbomCoordinates,
   EVIDENCE_BUCKET,
+  deleteEvidenceFromStorage,
 } from '../src/lib/mediaResolver';
 import { supabaseService } from '../src/services/supabaseService';
 import {
@@ -43,11 +44,27 @@ import {
 } from '../src/lib/offlineQueue';
 import { UserSession, HCDActivity, VerificationMedia } from '../src/types';
 
-const SUPABASE_URL = 'https://refjawgovrmsyigtcfdl.supabase.co';
-const ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZmphd2dvdnJtc3lpZ3RjZmRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzODk4ODMsImV4cCI6MjEwNjk2NTg4M30.NJvqlQZVvfn8xfW_FimNWoKy-51Weu-35YqwB6EVBNs';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+const ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+
+if (!SUPABASE_URL || !ANON_KEY) {
+  throw new Error('Integration tests require an explicitly configured isolated Supabase target via VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+}
+if (/refjawgovrmsyigtcfdl\.supabase\.co/i.test(SUPABASE_URL)) {
+  throw new Error('Refusing to run integration tests against the AKS-HCD production Supabase project.');
+}
+if (!/^https?:\/\//i.test(SUPABASE_URL)) {
+  throw new Error('Invalid Supabase URL for integration tests.');
+}
 
 const client = createClient(SUPABASE_URL, ANON_KEY);
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '';
+if (!SERVICE_ROLE_KEY) {
+  throw new Error('Storage integration tests require the local-only SUPABASE_SERVICE_ROLE_KEY provided by the isolated Supabase CLI.');
+}
+const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
 interface TestResult {
   id: string;
@@ -68,6 +85,47 @@ async function runImageReliabilityTestSuite() {
   console.log('======================================================================');
   console.log('AKS-HCD IMAGE RELIABILITY, EVIDENCE STORAGE & WORKFLOW AUDIT');
   console.log('======================================================================\n');
+
+  // TEST 0: Real isolated Storage upload -> signed URL -> download -> cleanup.
+  // The service-role key is supplied only by the ephemeral local Supabase stack.
+  const smokeActivityId = `integration-smoke-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const smokePath = generateSafeStoragePath('state-level', smokeActivityId, 'storage-smoke.pdf');
+  let smokeUploadSucceeded = false;
+  let smokeSignedUrlSucceeded = false;
+  let smokeDownloadSucceeded = false;
+  let smokeCleanupSucceeded = false;
+  try {
+    const { data: uploadData, error: uploadError } = await adminClient.storage
+      .from(EVIDENCE_BUCKET)
+      .upload(smokePath, new Blob(['AKS-HCD isolated storage integration smoke test'], { type: 'application/pdf' }), {
+        contentType: 'application/pdf',
+        cacheControl: '60',
+        upsert: false,
+      });
+    smokeUploadSucceeded = !uploadError && Boolean(uploadData?.path);
+    if (smokeUploadSucceeded && uploadData?.path) {
+      const { data: signedData, error: signedError } = await adminClient.storage
+        .from(EVIDENCE_BUCKET)
+        .createSignedUrl(uploadData.path, 60);
+      smokeSignedUrlSucceeded = !signedError && Boolean(signedData?.signedUrl);
+      if (smokeSignedUrlSucceeded && signedData?.signedUrl) {
+        const downloadResponse = await fetch(signedData.signedUrl);
+        smokeDownloadSucceeded = downloadResponse.ok;
+        await downloadResponse.body?.cancel().catch(() => undefined);
+      }
+    }
+  } catch (error) {
+    console.error('Isolated storage smoke test failed:', error instanceof Error ? error.message : 'Unknown error');
+  } finally {
+    const { error: cleanupError } = await adminClient.storage.from(EVIDENCE_BUCKET).remove([smokePath]);
+    smokeCleanupSucceeded = !cleanupError;
+  }
+  recordTest(
+    'IR-00',
+    'Real Storage Upload, Signed URL Download & Cleanup',
+    smokeUploadSucceeded && smokeSignedUrlSucceeded && smokeDownloadSucceeded && smokeCleanupSucceeded,
+    `upload=${smokeUploadSucceeded}, signedUrl=${smokeSignedUrlSucceeded}, download=${smokeDownloadSucceeded}, cleanup=${smokeCleanupSucceeded}`
+  );
 
   // TEST 1: Path sanitization & collision-resistant generation
   const safeLgaPath = generateSafeStoragePath('uyo', 'act-101', 'report document.pdf');
@@ -205,10 +263,19 @@ async function runImageReliabilityTestSuite() {
 
   // TEST 7: Retry Circuit Breaker (No infinite loops)
   const circuitBreakerKey = 'uyo/circuit-breaker/test.jpg';
+  // Force refresh so the negative-result cache cannot short-circuit the
+  // retry tracker. This deliberately exercises repeated storage resolution
+  // attempts rather than merely proving the missing-file cache works.
   for (let i = 0; i < 4; i++) {
-    await resolveActivityMedia({ storagePath: circuitBreakerKey, fileName: 'test.jpg' });
+    await resolveActivityMedia(
+      { storagePath: circuitBreakerKey, fileName: 'test.jpg' },
+      { forceRefresh: true }
+    );
   }
-  const throttledResult = await resolveActivityMedia({ storagePath: circuitBreakerKey, fileName: 'test.jpg' });
+  const throttledResult = await resolveActivityMedia(
+    { storagePath: circuitBreakerKey, fileName: 'test.jpg' },
+    { forceRefresh: true }
+  );
   const circuitBreakerPassed =
     throttledResult.status === 'error' &&
     throttledResult.error?.includes('Too many retry attempts');
@@ -267,16 +334,43 @@ async function runImageReliabilityTestSuite() {
     'act-anon-01',
     publicUser
   );
+  const missingSessionUploadRes = await supabaseService.uploadEvidenceFile(
+    fakeBlob,
+    'missing_session_proof.pdf',
+    'uyo',
+    'act-missing-session',
+    undefined
+  );
 
   const anonBlocked =
     !anonUploadRes.success &&
-    anonUploadRes.error?.includes('Unauthorized');
+    anonUploadRes.error?.includes('Unauthorized') &&
+    !missingSessionUploadRes.success &&
+    missingSessionUploadRes.error?.includes('Unauthorized');
 
   recordTest(
     'IR-10',
     'Anonymous User Evidence Upload RBAC Guard',
     Boolean(anonBlocked),
-    'Anonymous / unauthenticated users strictly forbidden from uploading official evidence files'
+    'Anonymous users and requests without caller context are denied before any storage write'
+  );
+
+  // TEST 10b: The actual anonymous Storage API request must be denied by RLS.
+  const anonStoragePath = `state-level/anonymous-smoke-${Date.now()}/unauthorized.pdf`;
+  const { data: anonStorageData, error: anonStorageError } = await client.storage
+    .from(EVIDENCE_BUCKET)
+    .upload(anonStoragePath, new Blob(['must not persist'], { type: 'application/pdf' }), {
+      contentType: 'application/pdf',
+      upsert: false,
+    });
+  if (!anonStorageError && anonStorageData?.path) {
+    await adminClient.storage.from(EVIDENCE_BUCKET).remove([anonStorageData.path]);
+  }
+  recordTest(
+    'IR-10B',
+    'Anonymous Storage API Upload Denied by RLS',
+    Boolean(anonStorageError),
+    anonStorageError ? 'Storage RLS rejected the unauthenticated upload request' : 'SECURITY FAILURE: anonymous upload was accepted'
   );
 
   // TEST 11: Cross-LGA Evidence Upload Protection
@@ -307,6 +401,27 @@ async function runImageReliabilityTestSuite() {
     'Cross-LGA Evidence Folder Boundary Guard',
     Boolean(crossLgaBlocked),
     'LGA Desk Workers strictly prohibited from uploading into other LGAs folders'
+  );
+
+  // TEST 11b: Deletion requires an authorized session and respects LGA boundaries.
+  const noSessionDelete = await deleteEvidenceFromStorage('uyo/test/no-session.pdf');
+  const crossLgaDelete = await deleteEvidenceFromStorage(
+    'uyo/test/cross-lga.pdf',
+    ikotEkpeneUser
+  );
+  const deletionGuardPassed = Boolean(
+    !noSessionDelete.success &&
+      noSessionDelete.policyRestricted &&
+      noSessionDelete.error?.includes('Unauthorized') &&
+      !crossLgaDelete.success &&
+      crossLgaDelete.policyRestricted &&
+      crossLgaDelete.error?.includes('Cross-LGA deletion violation')
+  );
+  recordTest(
+    'IR-11B',
+    'Evidence Deletion Session & Tenant Boundary Guard',
+    deletionGuardPassed,
+    'Deletion fails closed without a privileged session and blocks cross-LGA paths before storage access'
   );
 
   // TEST 12: Offline Queue & Local Storage Multi-Tenant Isolation

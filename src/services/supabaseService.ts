@@ -757,22 +757,21 @@ export const supabaseService = {
       };
     }
 
-    // Anonymous users cannot upload official evidence
-    if (userSession) {
-      if (!userSession.isAuthenticated || !userSession.isPrivileged) {
+    // Fail closed: no caller context must never be treated as authorization.
+    if (!userSession || !userSession.isAuthenticated || !userSession.isPrivileged) {
+      return {
+        success: false,
+        error: 'Unauthorized: caller must have active government clearance to upload evidence.',
+      };
+    }
+
+    // LGA desk workers may only upload into their own LGA or the approved state-level folder.
+    if (userSession.role === 'lga_admin' && userSession.assignedLgaId) {
+      if (lgaId !== userSession.assignedLgaId && lgaId !== 'state-level') {
         return {
           success: false,
-          error: 'Unauthorized: caller must have active government clearance to upload evidence.',
+          error: `Cross-LGA upload violation: Desk worker for ${userSession.assignedLgaId} cannot upload into ${lgaId} folder.`,
         };
-      }
-      // LGA desk worker: cannot upload into another LGA's folder
-      if (userSession.role === 'lga_admin' && userSession.assignedLgaId) {
-        if (lgaId !== userSession.assignedLgaId && lgaId !== 'state-level') {
-          return {
-            success: false,
-            error: `Cross-LGA upload violation: Desk worker for ${userSession.assignedLgaId} cannot upload into ${lgaId} folder.`,
-          };
-        }
       }
     }
 
