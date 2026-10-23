@@ -33,6 +33,7 @@ import {
   isDocumentMedia,
   isAkwaIbomCoordinates,
   EVIDENCE_BUCKET,
+  deleteEvidenceFromStorage,
 } from '../src/lib/mediaResolver';
 import { supabaseService } from '../src/services/supabaseService';
 import {
@@ -285,16 +286,25 @@ async function runImageReliabilityTestSuite() {
     'act-anon-01',
     publicUser
   );
+  const missingSessionUploadRes = await supabaseService.uploadEvidenceFile(
+    fakeBlob,
+    'missing_session_proof.pdf',
+    'uyo',
+    'act-missing-session',
+    undefined
+  );
 
   const anonBlocked =
     !anonUploadRes.success &&
-    anonUploadRes.error?.includes('Unauthorized');
+    anonUploadRes.error?.includes('Unauthorized') &&
+    !missingSessionUploadRes.success &&
+    missingSessionUploadRes.error?.includes('Unauthorized');
 
   recordTest(
     'IR-10',
     'Anonymous User Evidence Upload RBAC Guard',
     Boolean(anonBlocked),
-    'Anonymous / unauthenticated users strictly forbidden from uploading official evidence files'
+    'Anonymous users and requests without caller context are denied before any storage write'
   );
 
   // TEST 11: Cross-LGA Evidence Upload Protection
@@ -325,6 +335,26 @@ async function runImageReliabilityTestSuite() {
     'Cross-LGA Evidence Folder Boundary Guard',
     Boolean(crossLgaBlocked),
     'LGA Desk Workers strictly prohibited from uploading into other LGAs folders'
+  );
+
+  // TEST 11b: Deletion requires an authorized session and respects LGA boundaries.
+  const noSessionDelete = await deleteEvidenceFromStorage('uyo/test/no-session.pdf');
+  const crossLgaDelete = await deleteEvidenceFromStorage(
+    'uyo/test/cross-lga.pdf',
+    ikotEkpeneUser
+  );
+  const deletionGuardPassed =
+    !noSessionDelete.success &&
+    Boolean(noSessionDelete.policyRestricted) &&
+    noSessionDelete.error?.includes('Unauthorized') &&
+    !crossLgaDelete.success &&
+    Boolean(crossLgaDelete.policyRestricted) &&
+    crossLgaDelete.error?.includes('Cross-LGA deletion violation');
+  recordTest(
+    'IR-11B',
+    'Evidence Deletion Session & Tenant Boundary Guard',
+    deletionGuardPassed,
+    'Deletion fails closed without a privileged session and blocks cross-LGA paths before storage access'
   );
 
   // TEST 12: Offline Queue & Local Storage Multi-Tenant Isolation
