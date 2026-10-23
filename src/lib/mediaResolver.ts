@@ -1115,6 +1115,14 @@ export async function deleteEvidenceFromStorage(
       error: 'Demo Mode: Live Supabase storage deletion is disabled in sandbox demo mode.',
     };
   }
+  // Storage mutation helpers must fail closed when caller identity/privilege is absent.
+  if (!userSession || !userSession.isAuthenticated || !userSession.isPrivileged) {
+    return {
+      success: false,
+      policyRestricted: true,
+      error: 'Unauthorized: active government clearance is required to delete evidence.',
+    };
+  }
   const client = getSupabaseClient();
   if (!client || isSupabaseUnreachable()) {
     return { success: false, error: 'Supabase storage unavailable' };
@@ -1123,6 +1131,16 @@ export async function deleteEvidenceFromStorage(
     const clean = cleanStoragePath(storagePath);
     if (!clean) {
       return { success: false, error: 'Empty storage path' };
+    }
+    if (userSession.role === 'lga_admin' && userSession.assignedLgaId) {
+      const pathLga = clean.split('/')[0];
+      if (pathLga !== userSession.assignedLgaId && pathLga !== 'state-level') {
+        return {
+          success: false,
+          policyRestricted: true,
+          error: `Cross-LGA deletion violation: Desk worker for ${userSession.assignedLgaId} cannot delete evidence from ${pathLga}.`,
+        };
+      }
     }
     const { error } = await client.storage.from('hcd-evidence-vault').remove([clean]);
     if (error) {
