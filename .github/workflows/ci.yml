@@ -26,19 +26,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      # Transitional only: generates a lockfile artifact until the reviewed
-      # package-lock.json is committed. Do not bypass npm peer dependency checks.
-      - name: Generate lockfile when repository lock is absent
-        if: hashFiles('package-lock.json') == ''
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-      - name: Upload generated lockfile for review
-        if: always() && hashFiles('package-lock.json') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: aks-hcd-generated-package-lock
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 3
+      - name: Require committed lockfile
+        run: test -s package-lock.json
       - name: Install from lockfile
         run: npm ci --no-audit --no-fund
       - name: TypeScript check
