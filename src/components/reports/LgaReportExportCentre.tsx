@@ -59,7 +59,10 @@ import {
   Eye,
   Plus,
   ShieldAlert,
+  Printer,
 } from 'lucide-react';
+import { HcdLogo, AriseAgendaLogo } from '../common/Logos';
+import { exportTargetPerformancePdfReport } from '../../utils/reportLogoHelper';
 
 interface LgaReportExportCentreProps {
   isOpen?: boolean;
@@ -365,6 +368,13 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
     setTimeout(() => setSuccessNotice(null), 4000);
   };
 
+  const handleExportTargetPerformancePdf = async () => {
+    const lgaTag = selectedLgaInfo ? selectedLgaInfo.name.replace(/\s+/g, '_') : 'Statewide';
+    await exportTargetPerformancePdfReport(filteredTargetPerformance, pillars, lgaTag);
+    setSuccessNotice(`Exported ${filteredTargetPerformance.length} target performance records to official logo-embedded PDF.`);
+    setTimeout(() => setSuccessNotice(null), 4000);
+  };
+
   // Target Performance Formatters (Section F & G)
   const renderAchievementRate = (row: HCDLgaTargetPerformance) => {
     if (row.actual_value === null || row.actual_value === undefined) {
@@ -614,8 +624,8 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
     setErrorNotice(null);
     try {
       const payload = buildPayload();
-      exportLgaPdfReport(payload);
-      setSuccessNotice('Official print-ready PDF report with indicator performance generated successfully.');
+      await exportLgaPdfReport(payload);
+      setSuccessNotice('Official print-ready PDF report with embedded site logo and indicator performance generated successfully.');
     } catch (err: any) {
       setErrorNotice(err.message || 'Failed to generate PDF report');
     } finally {
@@ -683,14 +693,14 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
 
   const containerContent = (
     <div className={`bg-white ${isPageMode ? 'rounded-2xl border border-slate-200 shadow-sm' : 'rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[94vh] flex flex-col'} w-full animate-in fade-in duration-200`}>
-      {/* Top Official Banner */}
-      <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40 shadow-sm shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-900/60 rounded-xl border border-[#D4AF37]/30 text-[#D4AF37]">
-            <FileSpreadsheet className="w-6 h-6" />
+      {/* Top Official Banner with Embedded Site Logos */}
+      <div className="print-letterhead bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40 shadow-sm shrink-0">
+        <div className="flex items-center gap-3.5">
+          <div className="p-1 bg-white rounded-xl border-2 border-[#D4AF37] shadow-sm shrink-0">
+            <HcdLogo className="w-10 h-10 sm:w-11 sm:h-11" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-[11px] uppercase tracking-wider font-bold text-[#D4AF37]">
                 Akwa Ibom State Government • ARISE Agenda
               </span>
@@ -703,15 +713,28 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
             </h2>
           </div>
         </div>
-        {!isPageMode && onClose && (
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="hidden sm:flex p-1 bg-white rounded-lg border border-[#D4AF37]/50 shadow-2xs">
+            <AriseAgendaLogo className="w-9 h-9" />
+          </div>
           <button
-            onClick={onClose}
-            className="p-2 text-emerald-200 hover:text-white hover:bg-emerald-800/60 rounded-lg transition-colors cursor-pointer"
-            aria-label="Close export modal"
+            onClick={() => window.print()}
+            className="no-print px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1.5 border border-white/20 transition-colors cursor-pointer"
+            title="Print Official Branded Dossier"
           >
-            <X className="w-5 h-5" />
+            <Printer className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span className="hidden md:inline">Print Dossier</span>
           </button>
-        )}
+          {!isPageMode && onClose && (
+            <button
+              onClick={onClose}
+              className="no-print p-2 text-emerald-200 hover:text-white hover:bg-emerald-800/60 rounded-lg transition-colors cursor-pointer"
+              aria-label="Close export modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Notices & Alerts */}
@@ -1539,6 +1562,43 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
                 Quantitative measurement dataset with indicator codes, values and reporting periods.
               </span>
             </button>
+          </div>
+
+          {/* Target Performance & Print Quick Export Strip */}
+          <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 text-slate-600">
+              <HcdLogo className="w-5 h-5 rounded" />
+              <span>All exported PDFs and printed dossiers automatically embed the official AKS-HCD Portal emblem.</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {currentUser.isAuthenticated && currentUser.isPrivileged && (
+                <>
+                  <button
+                    onClick={handleExportTargetPerformancePdf}
+                    disabled={isLoading || isExporting}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Target Performance PDF</span>
+                  </button>
+                  <button
+                    onClick={handleExportTargetPerformanceCsv}
+                    disabled={isLoading || isExporting}
+                    className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Target Performance CSV</span>
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => window.print()}
+                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-900 hover:bg-slate-800 text-white font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Print Current Dossier</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

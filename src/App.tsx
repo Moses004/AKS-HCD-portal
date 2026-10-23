@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider, useData } from './context/DataContext';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
+import { OfficialPrintLetterhead } from './components/common/Logos';
 import { OfflineSyncBanner } from './components/common/OfflineSyncBanner';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner';
 import { RoleSwitcher } from './components/common/RoleSwitcher';
@@ -306,6 +307,9 @@ function AppContent() {
         onOpenCreateWizard={() => setIsWizardOpen(true)}
         onOpenReportExport={() => setIsReportExportOpen(true)}
       />
+
+      {/* Global Official Print Letterhead (visible when printing main pages) */}
+      {!inspectedActivity && !isReportExportOpen && <OfficialPrintLetterhead />}
 
       {/* Main Content Body */}
       <main className="flex-1">{renderMainContent()}</main>

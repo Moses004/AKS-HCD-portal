@@ -22,7 +22,7 @@ export const HcdLogo: React.FC<{
     <img
       src="/assets/aistudio/IMG-20261013-WA0049_58348b43.jpg"
       alt="Official ARISE Human Capital Development Emblem"
-      className={`object-contain shrink-0 ${className}`}
+      className={`report-logo object-contain shrink-0 ${className}`}
       style={size ? { width: size, height: size } : undefined}
       referrerPolicy="no-referrer"
       loading="eager"
@@ -48,7 +48,7 @@ export const AkwaIbomStateLogo: React.FC<{
     <img
       src={akwaIbomCrestImg}
       alt={alt}
-      className={`rounded-full object-contain shrink-0 ${className}`}
+      className={`report-logo rounded-full object-contain shrink-0 ${className}`}
       style={size ? { width: size, height: size } : undefined}
       referrerPolicy="no-referrer"
       loading="eager"
@@ -73,7 +73,7 @@ export const AriseAgendaLogo: React.FC<{
     <img
       src="/assets/aistudio/images__2__a39b6d2f.jpeg"
       alt={alt}
-      className={`object-contain shrink-0 ${className}`}
+      className={`report-logo object-contain shrink-0 ${className}`}
       style={size ? { width: size, height: size } : undefined}
       referrerPolicy="no-referrer"
       loading="eager"
@@ -141,3 +141,55 @@ export const AksHcdDualLogo: React.FC<{
     </div>
   );
 };
+
+/**
+ * Official Print & Report Letterhead Banner
+ * Automatically appears on printed reports/dossiers (or on-screen when alwaysVisible=true)
+ * so every printed or exported page carries the official AKS-HCD site logo.
+ */
+export const OfficialPrintLetterhead: React.FC<{
+  title?: string;
+  subtitle?: string;
+  alwaysVisible?: boolean;
+}> = ({
+  title = 'AKWA IBOM STATE HUMAN CAPITAL DEVELOPMENT PORTAL',
+  subtitle = 'Directorate of Human Capital Development • Official ARISE Agenda Monitoring & Evaluation Record',
+  alwaysVisible = false,
+}) => {
+  return (
+    <div
+      className={`print-letterhead ${
+        alwaysVisible ? 'flex' : 'hidden print:flex'
+      } items-center justify-between gap-4 border-b-2 border-[#0B4619] bg-white px-4 py-3 mb-4`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="p-1 rounded-xl border border-[#D4AF37] bg-white shadow-2xs shrink-0">
+          <HcdLogo className="w-12 h-12" />
+        </div>
+        <div>
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#0B4619]">
+            Government of Akwa Ibom State • ARISE Agenda
+          </p>
+          <h1 className="text-sm sm:text-base font-black text-slate-900 leading-tight">
+            {title}
+          </h1>
+          <p className="text-[11px] text-slate-600 font-medium">{subtitle}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2.5 shrink-0">
+        <div className="text-right hidden sm:block print:block">
+          <span className="block text-[9px] font-bold uppercase tracking-wider text-emerald-800">
+            Official Verified Record
+          </span>
+          <span className="block text-[9px] text-slate-500 font-mono">
+            Printed: {new Date().toLocaleDateString('en-NG')}
+          </span>
+        </div>
+        <div className="p-1 rounded-lg border border-slate-200 bg-white shrink-0">
+          <AriseAgendaLogo className="w-10 h-10" />
+        </div>
+      </div>
+    </div>
+  );
+};
+

@@ -11,6 +11,12 @@ import {
 } from '../types';
 import { getPillarDisplayName } from '../utils/pillarUtils';
 import { supabaseService } from './supabaseService';
+import {
+  drawPdfOfficialHeader,
+  stampPdfOfficialFooters,
+  OFFICIAL_HCD_LOGO_PATH,
+  OFFICIAL_ARISE_LOGO_PATH,
+} from '../utils/reportLogoHelper';
 
 export interface ExportFilterOptions {
   lgaId?: string;
@@ -182,6 +188,8 @@ export const exportLgaExcelWorkbook = (payload: ExportDataPayload): void => {
   const summaryRows: any[][] = [
     ['AKWA IBOM STATE GOVERNMENT — HUMAN CAPITAL DEVELOPMENT (ARISE AGENDA)'],
     ['OFFICIAL LOCAL GOVERNMENT AREA COMPREHENSIVE DOSSIER & METRICS REPORT'],
+    ['OFFICIAL PORTAL EMBLEM:', typeof window !== 'undefined' ? `${window.location.origin}${OFFICIAL_HCD_LOGO_PATH}` : OFFICIAL_HCD_LOGO_PATH],
+    ['ARISE AGENDA EMBLEM:', typeof window !== 'undefined' ? `${window.location.origin}${OFFICIAL_ARISE_LOGO_PATH}` : OFFICIAL_ARISE_LOGO_PATH],
     [''],
     ['REPORT METADATA & PARAMETERS', ''],
     ['Local Government Area (LGA):', filters.lgaName || filters.lgaId || 'All Akwa Ibom State LGAs'],
@@ -665,9 +673,9 @@ export const exportLgaExcelWorkbook = (payload: ExportDataPayload): void => {
 };
 
 /**
- * Builds a professional, print-ready PDF document and initiates download
+ * Builds a professional, print-ready PDF document with embedded official site logos and initiates download
  */
-export const exportLgaPdfReport = (payload: ExportDataPayload): void => {
+export const exportLgaPdfReport = async (payload: ExportDataPayload): Promise<void> => {
   const {
     activities,
     measurements,
@@ -696,26 +704,13 @@ export const exportLgaPdfReport = (payload: ExportDataPayload): void => {
         )
       : 0;
 
-  // Header Banner
-  doc.setFillColor(11, 70, 25); // Emerald Green #0B4619
-  doc.rect(0, 0, 210, 32, 'F');
-
-  // Gold Accent line
-  doc.setFillColor(212, 175, 55); // Gold #D4AF37
-  doc.rect(0, 32, 210, 2, 'F');
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.text('AKWA IBOM STATE GOVERNMENT', 14, 12);
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.text('DIRECTORATE OF HUMAN CAPITAL DEVELOPMENT (ARISE AGENDA)', 14, 18);
-  doc.setFontSize(8);
-  doc.text('Comprehensive Local Government Area Report & Strategic Indicator Dossier', 14, 25);
-
-  let currentY = 40;
+  let currentY = await drawPdfOfficialHeader(doc, {
+    documentType: 'AKWA IBOM STATE GOVERNMENT • DIRECTORATE OF HUMAN CAPITAL DEVELOPMENT',
+    title: 'LGA Report & Strategic Indicator Dossier',
+    subtitle: `Jurisdiction: ${filters.lgaName || filters.lgaId || 'All 31 Local Government Areas'}  |  ${activities.length} Activities`,
+    rightMetaTop: filters.lgaId && filters.lgaId !== 'all' ? filters.lgaId.toUpperCase() : 'STATEWIDE',
+    rightMetaBottom: `Generated: ${generatedAt.split('T')[0]}`,
+  });
 
   // Report Context Box
   doc.setFillColor(248, 250, 252); // Slate-50
@@ -920,18 +915,13 @@ export const exportLgaPdfReport = (payload: ExportDataPayload): void => {
     });
   }
 
-  // Add Page Numbers to all pages
-  const pageCount = (doc as any).internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(7);
-    doc.setTextColor(148, 163, 184); // Slate-400
-    doc.text(
-      `Akwa Ibom State Human Capital Development Portal • Page ${i} of ${pageCount} • Official Government Dossier`,
-      14,
-      290
-    );
-  }
+  // Stamp official footers with embedded site logo on all pages
+  await stampPdfOfficialFooters(
+    doc,
+    `Akwa Ibom State Human Capital Development Portal • ${
+      filters.lgaName || 'Statewide'
+    } Official Dossier`
+  );
 
   // Download PDF
   const dateStr = generatedAt.split('T')[0];

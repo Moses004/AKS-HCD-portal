@@ -20,7 +20,10 @@ import {
   Search,
   ExternalLink,
   ShieldCheck,
+  FileText,
 } from 'lucide-react';
+import { HcdLogo } from '../../common/Logos';
+import { exportStateActivitiesExecutiveBriefingPdf } from '../../../utils/reportLogoHelper';
 
 interface ReportsExportsTabProps {
   activities: StateHCDActivity[];
@@ -96,6 +99,10 @@ export const ReportsExportsTab: React.FC<ReportsExportsTabProps> = ({
 
   const handlePrintBriefing = () => {
     window.print();
+  };
+
+  const handleExportBriefingPdf = async () => {
+    await exportStateActivitiesExecutiveBriefingPdf(activities, actionItems);
   };
 
   // Filtered overview rows
@@ -179,28 +186,39 @@ export const ReportsExportsTab: React.FC<ReportsExportsTabProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="p-2 rounded-xl bg-slate-100 text-slate-700">
-                <Printer className="w-5 h-5" />
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
-                Print & PDF
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded-xl border border-[#D4AF37] bg-white shadow-2xs">
+                  <HcdLogo className="w-7 h-7" />
+                </span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                Logo Embedded • Print & PDF
               </span>
             </div>
-            <h4 className="text-sm font-bold text-slate-900">Executive Print Briefing</h4>
+            <h4 className="text-sm font-bold text-slate-900">Executive Print & PDF Briefing</h4>
             <p className="text-xs text-slate-500 mt-1">
-              Formatted state summary report with official Akwa Ibom State letterhead for Executive Cabinet briefings.
+              Formatted state summary report with embedded official Akwa Ibom State HCD logo & letterhead for Executive Cabinet briefings.
             </p>
             <div className="mt-3 text-xs text-slate-600 font-semibold">
-              Ready for immediate printing or PDF export
+              Ready for immediate logo-embedded PDF download or printing
             </div>
           </div>
-          <button
-            onClick={handlePrintBriefing}
-            className="mt-4 w-full inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition-colors cursor-pointer"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Executive Briefing</span>
-          </button>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button
+              onClick={handleExportBriefingPdf}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition-colors cursor-pointer"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Download PDF</span>
+            </button>
+            <button
+              onClick={handlePrintBriefing}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition-colors cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print Briefing</span>
+            </button>
+          </div>
         </div>
       </div>
 

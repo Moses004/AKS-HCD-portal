@@ -4,6 +4,8 @@ import { PILLARS } from '../../data/lgas';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
+import { HcdLogo } from '../common/Logos';
+import { exportSingleActivityPdfDossier } from '../../utils/reportLogoHelper';
 import {
   evaluateActivityEditPermission,
   resolveActivityMedia,
@@ -209,32 +211,45 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
         {/* Header */}
-        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2 py-0.5 rounded">
-                {activity.lgaName} LGA Workspace
-              </span>
-              <span className="text-xs font-semibold text-emerald-200">
-                {getPillarDisplayName(activity.pillar)}
-              </span>
+        <div className="print-letterhead p-5 bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-1 bg-white rounded-xl border border-[#D4AF37] shadow-xs shrink-0">
+              <HcdLogo className="w-10 h-10" />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white mt-1 leading-snug">
-              {activity.title}
-            </h3>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2 py-0.5 rounded">
+                  {activity.lgaName} LGA Workspace
+                </span>
+                <span className="text-xs font-semibold text-emerald-200">
+                  {getPillarDisplayName(activity.pillar)}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-white mt-1 leading-snug">
+                {activity.title}
+              </h3>
+            </div>
           </div>
-          <div className="flex items-center gap-2 no-print">
+          <div className="flex items-center gap-2 no-print shrink-0">
+            <button
+              onClick={() => void exportSingleActivityPdfDossier(activity)}
+              title="Download Official Branded PDF Dossier with Site Logo"
+              className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Download PDF</span>
+            </button>
             <button
               onClick={() => window.print()}
-              title="Print / Save Project Dossier as PDF"
-              className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5 text-xs font-semibold"
+              title="Print Project Dossier"
+              className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
             >
               <Printer className="w-4 h-4 text-[#D4AF37]" />
-              <span className="hidden sm:inline">Print / PDF</span>
+              <span className="hidden sm:inline">Print</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>

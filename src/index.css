@@ -97,7 +97,7 @@
   }
 
   /* 2. Hide Non-Printable Web Chrome & Interactive Controls */
-  header,
+  header:not(.print-letterhead),
   footer,
   nav,
   aside,
@@ -110,9 +110,27 @@
   [role="dialog"] button,
   [data-testid="banner"],
   .fixed.bottom-4,
-  .sticky,
+  .sticky:not(.print-keep-header),
   .overflow-hidden:has(header) {
     display: none !important;
+  }
+
+  .print-letterhead {
+    display: flex !important;
+    visibility: visible !important;
+  }
+
+  .print-keep-header {
+    position: static !important;
+    display: flex !important;
+    visibility: visible !important;
+  }
+
+  img.report-logo {
+    display: inline-block !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* 3. Modal Dialog Print Normalization */

@@ -23,7 +23,11 @@ import {
   Send,
   Plus,
   Loader2,
+  Download,
+  Printer,
 } from 'lucide-react';
+import { HcdLogo } from '../../common/Logos';
+import { exportStateActivitySinglePdfDossier } from '../../../utils/reportLogoHelper';
 
 interface StateActivityDetailModalProps {
   activity: StateHCDActivity;
@@ -103,25 +107,30 @@ export const StateActivityDetailModal: React.FC<StateActivityDetailModalProps> =
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 my-8">
         {/* Modal Header */}
-        <div className="sticky top-0 z-10 bg-white border-b border-slate-200 p-5 flex items-start justify-between gap-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="font-mono text-xs font-bold text-emerald-950 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                {activity.activity_code}
-              </span>
-              <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusBadge}`}>
-                {STATE_STATUS_LABELS[activity.status] || activity.status}
-              </span>
-              <span className="text-xs text-slate-500 font-semibold">
-                {STATE_CATEGORY_LABELS[activity.category]}
-              </span>
+        <div className="sticky top-0 z-10 print-keep-header bg-white border-b border-slate-200 p-5 flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-1 rounded-xl border border-[#D4AF37] bg-white shadow-2xs shrink-0">
+              <HcdLogo className="w-10 h-10" />
             </div>
-            <h2 className="text-lg font-black text-slate-900">{activity.title}</h2>
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold text-emerald-950 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                  {activity.activity_code}
+                </span>
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusBadge}`}>
+                  {STATE_STATUS_LABELS[activity.status] || activity.status}
+                </span>
+                <span className="text-xs text-slate-500 font-semibold">
+                  {STATE_CATEGORY_LABELS[activity.category]}
+                </span>
+              </div>
+              <h2 className="text-lg font-black text-slate-900">{activity.title}</h2>
+            </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+            className="no-print p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -358,13 +367,29 @@ export const StateActivityDetailModal: React.FC<StateActivityDetailModalProps> =
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="sticky bottom-0 bg-white border-t border-slate-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <button
-            onClick={onClose}
-            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold cursor-pointer"
-          >
-            Close
-          </button>
+        <div className="sticky bottom-0 no-print bg-white border-t border-slate-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold cursor-pointer"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => void exportStateActivitySinglePdfDossier(activity, associatedActions)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold cursor-pointer shadow-xs"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF Dossier</span>
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-bold cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </button>
+          </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             {(activity.status === 'draft' || activity.status === 'rejected_draft') && (

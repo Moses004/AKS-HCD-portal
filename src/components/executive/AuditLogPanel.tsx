@@ -33,6 +33,8 @@ import {
   ExternalLink,
   SlidersHorizontal,
 } from 'lucide-react';
+import { HcdLogo } from '../common/Logos';
+import { exportAuditTrailPdfReport } from '../../utils/reportLogoHelper';
 
 interface AuditLogPanelProps {
   onViewActivity?: (activity: HCDActivity) => void;
@@ -539,6 +541,24 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
     document.body.removeChild(link);
   };
 
+  const handleExportAuditPdf = async () => {
+    const rows = filteredLogs.map((log) => ({
+      id: log.id,
+      timestamp: log.timestamp,
+      actionLabel: getActionMeta(log.action).label,
+      severityLevel: log.severityLevel,
+      performedBy: log.performedBy,
+      role: log.role,
+      lgaDisplayName: log.lgaDisplayName,
+      activityTitle: log.activityTitle,
+      notes: log.notes,
+    }));
+    await exportAuditTrailPdfReport(
+      rows,
+      `${lgaFilter === 'ALL' ? 'All 31 LGAs' : lgaFilter} • ${actionFilter === 'ALL' ? 'All Actions' : actionFilter}`
+    );
+  };
+
   const formatTimestamp = (iso: string) => {
     try {
       const d = new Date(iso);
@@ -587,22 +607,27 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
       {/* Top Executive Accountability Header */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-card-pad sm:p-card-pad-lg">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-900 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                Immutable Accountability & Governance Ledger
-              </span>
-              <span className="text-xs text-slate-500 font-medium">
-                Akwa Ibom State Administration · Department of Human Capital Development
-              </span>
+          <div className="flex items-start gap-3.5">
+            <div className="p-1.5 rounded-xl border border-[#D4AF37] bg-white shadow-2xs shrink-0 mt-0.5">
+              <HcdLogo className="w-11 h-11" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Sensitive Data Change & Executive Audit Trail
-            </h3>
-            <p className="text-xs text-slate-600 max-w-3xl leading-relaxed">
-              Tracks every sensitive data mutation across all 31 Local Government Areas and the State Secretariat — including project approvals, budget & beneficiary modifications, immutability unlocks, annual target changes, and officer RBAC credentials.
-            </p>
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-900 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                  Immutable Accountability & Governance Ledger
+                </span>
+                <span className="text-xs text-slate-500 font-medium">
+                  Akwa Ibom State Administration · Department of Human Capital Development
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Sensitive Data Change & Executive Audit Trail
+              </h3>
+              <p className="text-xs text-slate-600 max-w-3xl leading-relaxed">
+                Tracks every sensitive data mutation across all 31 Local Government Areas and the State Secretariat — including project approvals, budget & beneficiary modifications, immutability unlocks, annual target changes, and officer RBAC credentials.
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
@@ -623,6 +648,15 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-emerald-700' : ''}`} />
               <span>{isRefreshing ? 'Syncing Ledger...' : 'Sync Cloud Ledger'}</span>
+            </button>
+
+            <button
+              onClick={handleExportAuditPdf}
+              className="px-3.5 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              title="Download Official Logo-Embedded PDF Audit Ledger"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Export Audit PDF ({filteredLogs.length})</span>
             </button>
 
             <button
