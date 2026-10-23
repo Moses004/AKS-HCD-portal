@@ -35,6 +35,51 @@ jobs:
       - name: Production build
         run: npm run build
 
+  isolated-supabase-integration:
+    name: Isolated local Supabase integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Initialize local Supabase configuration when absent
+        run: |
+          if [ ! -f supabase/config.toml ]; then
+            supabase init
+          fi
+      - name: Start isolated local Supabase services
+        run: supabase start -x studio,edge-runtime,logflare,vector,analytics,imgproxy
+      - name: Apply migrations to the local database
+        run: supabase db reset
+      - name: Run integration verification suite against local Supabase only
+        shell: bash
+        run: |
+          set -euo pipefail
+          eval "$(supabase status -o env)"
+          export VITE_SUPABASE_URL="${API_URL:-http://127.0.0.1:54321}"
+          export SUPABASE_URL="$VITE_SUPABASE_URL"
+          export VITE_SUPABASE_ANON_KEY="${ANON_KEY:?Supabase CLI did not provide ANON_KEY}"
+          export SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY"
+          if [[ "$VITE_SUPABASE_URL" == *"refjawgovrmsyigtcfdl.supabase.co"* ]]; then
+            echo "::error::Refusing to run integration tests against production."
+            exit 1
+          fi
+          npm test
+      - name: Stop local Supabase services
+        if: always()
+        run: supabase stop --no-backup
+
   backend-migration-safety:
     name: Backend migration and secret-safety checks
     runs-on: ubuntu-latest
