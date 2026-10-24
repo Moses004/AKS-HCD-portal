@@ -40,11 +40,26 @@ import {
   Target,
   Layers,
   History,
+  MapPin,
+  Trash2,
+  CheckSquare,
+  Square,
+  FileText,
 } from 'lucide-react';
 import { StateActivitiesWorkspace } from './stateActivities/StateActivitiesWorkspace';
 import { AuditLogPanel } from './AuditLogPanel';
 import { HcdLogo } from '../common/Logos';
-import { exportExecutiveMatrixPdfReport } from '../../utils/reportLogoHelper';
+import {
+  exportExecutiveMatrixPdfReport,
+  exportBatchActivitiesDossierPdf,
+  exportQuarterlyAriseCouncilBriefPdf,
+} from '../../utils/reportLogoHelper';
+import { detectProximityDuplicates } from '../../lib/geoFence';
+import {
+  fetchStorageCleanupQueue,
+  resolveStorageCleanupItem,
+  StorageCleanupQueueItem,
+} from '../../services/mediaService';
 
 interface ExecutivePanelProps {
   onOpenReportExport: () => void;
@@ -97,7 +112,22 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
   const [localSyncing, setLocalSyncing] = useState<boolean>(false);
   const [comparativeFilter, setComparativeFilter] = useState<'all' | 'reporting' | 'pending'>('all');
   const [comparativeSearch, setComparativeSearch] = useState<string>('');
+  const [selectedPendingIds, setSelectedPendingIds] = useState<string[]>([]);
+  const [isBatchProcessing, setIsBatchProcessing] = useState<boolean>(false);
+  const [cleanupQueue, setCleanupQueue] = useState<StorageCleanupQueueItem[]>([]);
+  const [showCleanupPanel, setShowCleanupPanel] = useState<boolean>(false);
   const [, setTick] = useState<number>(0);
+
+  // Load superseded storage cleanup queue for State Super-Admins
+  useEffect(() => {
+    let mounted = true;
+    fetchStorageCleanupQueue().then((items) => {
+      if (mounted) setCleanupQueue(items);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [activeTab]);
 
   // Periodically refresh relative time string
   useEffect(() => {
@@ -256,12 +286,78 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
   const handleApprove = async (id: string, title: string) => {
     const res = await approveActivity(id);
     if (res.success) {
+      setSelectedPendingIds((prev) => prev.filter((item) => item !== id));
       setActionFeedback(`Approved and published "${title}" to the state public portal.`);
       setTimeout(() => setActionFeedback(null), 4000);
     } else {
       setActionFeedback(res.error || 'Failed to approve activity.');
       setTimeout(() => setActionFeedback(null), 5000);
     }
+  };
+
+  const toggleSelectPending = (id: string) => {
+    setSelectedPendingIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAllFilteredPending = () => {
+    const filteredIds = filteredPending.map((a) => a.id);
+    const allSelected =
+      filteredIds.length > 0 && filteredIds.every((id) => selectedPendingIds.includes(id));
+    if (allSelected) {
+      setSelectedPendingIds((prev) => prev.filter((id) => !filteredIds.includes(id)));
+    } else {
+      setSelectedPendingIds(Array.from(new Set([...selectedPendingIds, ...filteredIds])));
+    }
+  };
+
+  const handleBatchApproveSelected = async () => {
+    if (!isSuperAdmin || selectedPendingIds.length === 0 || isBatchProcessing) return;
+    setIsBatchProcessing(true);
+    let approvedCount = 0;
+    try {
+      for (const id of selectedPendingIds) {
+        const res = await approveActivity(id);
+        if (res.success) approvedCount++;
+      }
+      setSelectedPendingIds([]);
+      setActionFeedback(
+        `Batch validation complete: ${approvedCount} submission(s) approved and published to the State Portal.`
+      );
+      setTimeout(() => setActionFeedback(null), 4500);
+    } finally {
+      setIsBatchProcessing(false);
+    }
+  };
+
+  const handleBatchExportSelectedPdf = async () => {
+    const selectedActs = pendingQueue.filter((a) => selectedPendingIds.includes(a.id));
+    const targetList = selectedActs.length > 0 ? selectedActs : filteredPending;
+    if (targetList.length === 0) return;
+    await exportBatchActivitiesDossierPdf(
+      targetList,
+      selectedActs.length > 0
+        ? `${selectedActs.length} Selected Pending Submissions`
+        : `All ${filteredPending.length} Filtered Pending Submissions`
+    );
+  };
+
+  const handleExportQuarterlyCouncilBrief = async () => {
+    await exportQuarterlyAriseCouncilBriefPdf(activities, pillars);
+    setActionFeedback('Quarterly ARISE Agenda Executive Council Brief PDF generated with official logos.');
+    setTimeout(() => setActionFeedback(null), 4000);
+  };
+
+  const handleResolveCleanupItem = async (
+    item: StorageCleanupQueueItem,
+    action: 'purge' | 'retain'
+  ) => {
+    const res = await resolveStorageCleanupItem(item, action, currentUser);
+    const refreshed = await fetchStorageCleanupQueue();
+    setCleanupQueue(refreshed);
+    setActionFeedback(res.message);
+    setTimeout(() => setActionFeedback(null), 4000);
   };
 
   const handleConfirmReject = async () => {
@@ -381,10 +477,19 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={onOpenReportExport}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer"
           >
             <Download className="w-4 h-4" />
             Generate Executive Briefing
+          </button>
+
+          <button
+            onClick={handleExportQuarterlyCouncilBrief}
+            className="flex items-center gap-2 px-3.5 py-2.5 bg-emerald-800/90 hover:bg-emerald-700 text-white border border-[#D4AF37]/50 rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 whitespace-nowrap cursor-pointer"
+            title="Download 1-Click Quarterly ARISE Council Cabinet Brief PDF with Statewide KPIs, Pillar Breakdown, and Top LGAs"
+          >
+            <FileText className="w-4 h-4 text-[#D4AF37]" />
+            <span>Quarterly Council Brief PDF</span>
           </button>
 
           <button
@@ -401,7 +506,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
           <button
             onClick={handleExportCsv}
-            className="flex items-center gap-2 px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-300" />
             Export State CSV
@@ -837,7 +942,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <select
                 value={selectedPillarFilter}
                 onChange={(e) => setSelectedPillarFilter(e.target.value)}
@@ -850,8 +955,151 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                   </option>
                 ))}
               </select>
+
+              <button
+                onClick={() => setShowCleanupPanel((s) => !s)}
+                className="px-3 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                title="Inspect superseded evidence files queued for storage cleanup"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-slate-500" />
+                <span>Vault Cleanup Queue</span>
+                <span className="font-mono text-[11px] tabular-nums text-emerald-800">
+                  ({cleanupQueue.filter((c) => c.status === 'pending').length})
+                </span>
+              </button>
             </div>
           </div>
+
+          {/* Batch Verification & Dossier Export Toolbar */}
+          {filteredPending.length > 0 && (
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleSelectAllFilteredPending}
+                  className="flex items-center gap-2 font-bold text-slate-800 hover:text-emerald-900 cursor-pointer"
+                >
+                  {filteredPending.length > 0 &&
+                  filteredPending.every((a) => selectedPendingIds.includes(a.id)) ? (
+                    <CheckSquare className="w-4 h-4 text-emerald-700" />
+                  ) : (
+                    <Square className="w-4 h-4 text-slate-400" />
+                  )}
+                  <span>
+                    Select All Filtered ({selectedPendingIds.length} of {filteredPending.length} selected)
+                  </span>
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleBatchExportSelectedPdf}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>
+                    {selectedPendingIds.length > 0
+                      ? `Export Selected Dossiers PDF (${selectedPendingIds.length})`
+                      : `Export All Queue Dossiers PDF (${filteredPending.length})`}
+                  </span>
+                </button>
+
+                {isSuperAdmin && selectedPendingIds.length > 0 && (
+                  <button
+                    onClick={handleBatchApproveSelected}
+                    disabled={isBatchProcessing}
+                    className="px-4 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-bold shadow-xs flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>
+                      {isBatchProcessing
+                        ? 'Approving Batch...'
+                        : `Batch Approve & Publish (${selectedPendingIds.length})`}
+                    </span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Collapsible Superseded Evidence Storage Cleanup Queue */}
+          {showCleanupPanel && (
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Superseded Evidence Storage Cleanup Queue (hcd-evidence-vault)
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Tracks superseded storage paths when an LGA Desk Officer replaces an attachment or attendance sheet and bucket RLS retains the old object for administrative review.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCleanupPanel(false)}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
+                >
+                  Hide
+                </button>
+              </div>
+
+              {cleanupQueue.length === 0 ? (
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                  No superseded storage objects are currently queued for cleanup.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                      <tr>
+                        <th className="py-2 px-3">Storage Path</th>
+                        <th className="py-2 px-3">LGA / Activity</th>
+                        <th className="py-2 px-3">Queued By</th>
+                        <th className="py-2 px-3">Status</th>
+                        <th className="py-2 px-3 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {cleanupQueue.slice(0, 20).map((item) => (
+                        <tr key={item.id}>
+                          <td className="py-2 px-3 font-mono text-[11px] text-slate-800">
+                            {item.storage_path}
+                          </td>
+                          <td className="py-2 px-3 text-slate-600">
+                            {item.lga_id || '—'} · {item.activity_id || '—'}
+                          </td>
+                          <td className="py-2 px-3 text-slate-600">
+                            {item.queued_by_name || 'Officer'}
+                          </td>
+                          <td className="py-2 px-3 font-mono text-[11px] uppercase">
+                            {item.status}
+                          </td>
+                          <td className="py-2 px-3 text-right">
+                            {item.status === 'pending' && isSuperAdmin ? (
+                              <div className="inline-flex items-center gap-1.5">
+                                <button
+                                  onClick={() => handleResolveCleanupItem(item, 'purge')}
+                                  className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] cursor-pointer"
+                                >
+                                  Purge Object
+                                </button>
+                                <button
+                                  onClick={() => handleResolveCleanupItem(item, 'retain')}
+                                  className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[11px] cursor-pointer"
+                                >
+                                  Retain
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-slate-400">Resolved</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
 
           {filteredPending.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
@@ -866,34 +1114,52 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
           ) : (
             <div className="space-y-4">
               {filteredPending.map((activity) => {
-                const pillar = PILLARS[activity.pillar];
+                const isSelected = selectedPendingIds.includes(activity.id);
+                const proximityAlerts = detectProximityDuplicates(activity, activities, 150);
                 return (
                   <div
                     key={activity.id}
-                    className="activity-card bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/10 hover:border-emerald-700/30 space-y-4"
+                    className={`activity-card bg-white rounded-2xl border shadow-sm p-5 sm:p-6 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/10 space-y-4 ${
+                      isSelected
+                        ? 'border-emerald-700 ring-1 ring-emerald-700/30'
+                        : 'border-slate-200/90 hover:border-emerald-700/30'
+                    }`}
                   >
                     {/* Top Row */}
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2 text-xs">
-                          <span className="font-bold text-emerald-950 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                            {activity.lgaName} LGA
-                          </span>
-                          <span className="text-slate-400">·</span>
-                          <span className="text-slate-600 font-medium">
-                            {getPillarDisplayName(activity.pillar)}
-                          </span>
-                          <span className="text-slate-400">·</span>
-                          <span className="text-slate-500 font-mono text-[11px] tabular-nums">
-                            Submitted {new Date(activity.createdAt).toLocaleDateString()}
-                          </span>
+                      <div className="flex items-start gap-3">
+                        <button
+                          onClick={() => toggleSelectPending(activity.id)}
+                          className="mt-1 text-slate-400 hover:text-emerald-800 cursor-pointer"
+                          aria-label={`Select ${activity.title} for batch action`}
+                        >
+                          {isSelected ? (
+                            <CheckSquare className="w-4 h-4 text-emerald-700" />
+                          ) : (
+                            <Square className="w-4 h-4" />
+                          )}
+                        </button>
+                        <div>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="font-bold text-emerald-950">
+                              {activity.lgaName} LGA
+                            </span>
+                            <span className="text-slate-400">·</span>
+                            <span className="text-slate-600 font-medium">
+                              {getPillarDisplayName(activity.pillar)}
+                            </span>
+                            <span className="text-slate-400">·</span>
+                            <span className="text-slate-500 font-mono text-[11px] tabular-nums">
+                              Submitted {new Date(activity.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <h3 className="text-base font-bold text-slate-900 mt-1.5 leading-snug">
+                            {activity.title}
+                          </h3>
+                          <p className="text-xs text-slate-600 mt-0.5">
+                            Location: <strong>{activity.community}</strong> · Desk Officer: <strong>{activity.leadOfficer}</strong> ({activity.officerContact})
+                          </p>
                         </div>
-                        <h3 className="text-base font-bold text-slate-900 mt-1.5 leading-snug">
-                          {activity.title}
-                        </h3>
-                        <p className="text-xs text-slate-600 mt-0.5">
-                          Location: <strong>{activity.community}</strong> · Desk Officer: <strong>{activity.leadOfficer}</strong> ({activity.officerContact})
-                        </p>
                       </div>
 
                       <div className="text-right sm:shrink-0 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
@@ -903,11 +1169,37 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                         <div className="text-sm font-black text-slate-900 font-mono tabular-nums">
                           {activity.beneficiariesTotal.toLocaleString()} Beneficiaries
                         </div>
-                        <div className="text-xs text-emerald-800 font-bold font-mono">
+                        <div className="text-xs text-emerald-800 font-bold font-mono tabular-nums">
                           ₦ {(activity.budgetNgn / 1000000).toFixed(1)}M NGN
                         </div>
                       </div>
                     </div>
+
+                    {/* GIS Proximity & Duplicate Submission Alert */}
+                    {proximityAlerts.length > 0 && (
+                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="font-bold">
+                              GIS Proximity Alert ({proximityAlerts.length} nearby record{proximityAlerts.length > 1 ? 's' : ''} in same pillar):
+                            </strong>{' '}
+                            <span>{proximityAlerts[0].summary}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const matched = activities.find(
+                              (a) => a.id === proximityAlerts[0].matchedActivityId
+                            );
+                            if (matched) onViewActivity(matched);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 font-bold text-[11px] shrink-0 cursor-pointer"
+                        >
+                          Compare Nearby Record
+                        </button>
+                      </div>
+                    )}
 
                     {/* Verification Assets Inspection Strip */}
                     <div className="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 flex flex-wrap items-center justify-between gap-3 text-xs">

@@ -882,3 +882,243 @@ export async function exportTargetPerformancePdfReport(
   const dateStr = new Date().toISOString().split('T')[0];
   doc.save(`AKS_HCD_Target_Performance_${lgaTag}_${dateStr}.pdf`);
 }
+
+/**
+ * Generates an official, logo-embedded Batch Verification Dossier PDF for selected LGA activities.
+ */
+export async function exportBatchActivitiesDossierPdf(
+  selectedActivities: HCDActivity[],
+  scopeLabel = 'Selected Executive Review Queue Submissions'
+): Promise<void> {
+  if (!selectedActivities.length) return;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  let yPos = await drawPdfOfficialHeader(doc, {
+    documentType: 'AKWA IBOM STATE HCD COUNCIL • BATCH VERIFICATION DOSSIER',
+    title: `Executive Batch Inspection Dossier (${selectedActivities.length} Interventions)`,
+    subtitle: `Scope: ${scopeLabel}`,
+    rightMetaTop: 'BATCH DOSSIER',
+    rightMetaBottom: `Exported: ${new Date().toLocaleDateString('en-NG')}`,
+    orientation: 'portrait',
+  });
+
+  const totalBen = selectedActivities.reduce((sum, a) => sum + (a.beneficiariesTotal || 0), 0);
+  const totalBudget = selectedActivities.reduce((sum, a) => sum + (a.budgetNgn || 0), 0);
+
+  autoTable(doc, {
+    startY: yPos,
+    head: [['Batch Metric', 'Aggregated Value']],
+    body: [
+      ['Total Selected Interventions', `${selectedActivities.length} Records`],
+      ['Combined Beneficiaries Reached', `${totalBen.toLocaleString()} Citizens`],
+      ['Combined Capital Allocation', `NGN ${totalBudget.toLocaleString()}`],
+      [
+        'Distinct LGAs Represented',
+        `${new Set(selectedActivities.map((a) => a.lgaName)).size} Local Government Areas`,
+      ],
+    ],
+    theme: 'grid',
+    headStyles: { fillColor: [11, 70, 25], textColor: 255, fontSize: 8.5 },
+    bodyStyles: { fontSize: 8, cellPadding: 2.5 },
+    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 65 } },
+    margin: { left: 14, right: 14 },
+  });
+
+  yPos = (doc as any).lastAutoTable.finalY + 7;
+
+  autoTable(doc, {
+    startY: yPos,
+    head: [
+      [
+        '#',
+        'LGA & Community',
+        'Intervention Title & Pillar',
+        'Beneficiaries (M / F)',
+        'Budget (NGN)',
+        'Proofs & Status',
+      ],
+    ],
+    body: selectedActivities.map((act, idx) => [
+      String(idx + 1),
+      `${act.lgaName}\n(${act.community || '—'})`,
+      `${act.title}\n[${getPillarDisplayName(act.pillar)}]`,
+      `${act.beneficiariesTotal.toLocaleString()}\n(M:${act.beneficiariesMale} / F:${act.beneficiariesFemale})`,
+      (act.budgetNgn || 0).toLocaleString(),
+      `${(act.mediaAssets || []).length} asset(s)\n${act.status}`,
+    ]),
+    theme: 'grid',
+    headStyles: { fillColor: [15, 23, 42], textColor: 255, fontSize: 7.5 },
+    bodyStyles: { fontSize: 7, cellPadding: 2.2 },
+    margin: { left: 14, right: 14 },
+  });
+
+  await stampPdfOfficialFooters(
+    doc,
+    'AKS-HCD Batch Verification Dossier • Official Executive Review Record'
+  );
+
+  const dateStr = new Date().toISOString().split('T')[0];
+  doc.save(`AKS_HCD_Batch_Dossier_${selectedActivities.length}_Records_${dateStr}.pdf`);
+}
+
+/**
+ * Generates an official, logo-embedded 1-Click Quarterly ARISE Council Cabinet Brief PDF
+ * summarizing statewide KPIs, Pillar Capital & Beneficiary distribution, Top LGAs, and Field Highlights.
+ */
+export async function exportQuarterlyAriseCouncilBriefPdf(
+  activities: HCDActivity[],
+  pillars?: HCDPillar[]
+): Promise<void> {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const now = new Date();
+  const quarter = Math.floor(now.getMonth() / 3) + 1;
+  const quarterLabel = `Q${quarter} ${now.getFullYear()}`;
+
+  let yPos = await drawPdfOfficialHeader(doc, {
+    documentType: 'GOVERNOR’S COUNCIL ON HUMAN CAPITAL DEVELOPMENT • CABINET BRIEF',
+    title: `Quarterly ARISE Agenda Executive Council Brief (${quarterLabel})`,
+    subtitle: 'Statewide Grassroots Impact, Capital Utilization & 31-LGA Compliance Summary',
+    rightMetaTop: `CABINET DECK • ${quarterLabel}`,
+    rightMetaBottom: `Issued: ${now.toLocaleDateString('en-NG')}`,
+    orientation: 'portrait',
+  });
+
+  const published = activities.filter((a) => a.status === 'PUBLISHED');
+  const pending = activities.filter((a) => a.status === 'PENDING_APPROVAL');
+  const totalBen = published.reduce((sum, a) => sum + (a.beneficiariesTotal || 0), 0);
+  const totalMale = published.reduce((sum, a) => sum + (a.beneficiariesMale || 0), 0);
+  const totalFemale = published.reduce((sum, a) => sum + (a.beneficiariesFemale || 0), 0);
+  const totalYouth = published.reduce((sum, a) => sum + (a.youthBeneficiaries || 0), 0);
+  const totalBudget = published.reduce((sum, a) => sum + (a.budgetNgn || 0), 0);
+  const reportingLgas = new Set(published.map((a) => a.lgaId)).size;
+
+  // Section 1: Executive Statewide KPIs
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(11, 70, 25);
+  doc.text('1. STATEWIDE EXECUTIVE SCORECARD (VERIFIED & PUBLISHED)', 14, yPos);
+  yPos += 3;
+
+  autoTable(doc, {
+    startY: yPos,
+    head: [['Strategic Cabinet Indicator', 'Verified Statewide Figure']],
+    body: [
+      ['Reporting Period', `${quarterLabel} (As of ${now.toLocaleDateString('en-NG')})`],
+      ['Published Field Interventions', `${published.length} Verified Projects (${pending.length} Pending Review)`],
+      ['Active Reporting Local Government Areas', `${reportingLgas} of 31 LGAs (${Math.round((reportingLgas / 31) * 100)}% Coverage)`],
+      [
+        'Total Verified Beneficiaries',
+        `${totalBen.toLocaleString()} Citizens (Male: ${totalMale.toLocaleString()} | Female: ${totalFemale.toLocaleString()})`,
+      ],
+      ['Youth Beneficiaries (15–35 yrs)', `${totalYouth.toLocaleString()} Youth Empowered`],
+      ['Total Verified Capital Deployed', `NGN ${totalBudget.toLocaleString()}`],
+    ],
+    theme: 'grid',
+    headStyles: { fillColor: [11, 70, 25], textColor: 255, fontSize: 8.5 },
+    bodyStyles: { fontSize: 8, cellPadding: 2.2 },
+    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 72 } },
+    margin: { left: 14, right: 14 },
+  });
+
+  yPos = (doc as any).lastAutoTable.finalY + 7;
+
+  // Section 2: Strategic Pillar Performance Breakdown
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(11, 70, 25);
+  doc.text('2. PERFORMANCE BY STRATEGIC HCD PILLAR', 14, yPos);
+  yPos += 3;
+
+  const pillarMap = new Map<
+    string,
+    { count: number; beneficiaries: number; budget: number; avgProgress: number }
+  >();
+  for (const act of published) {
+    const label = getPillarDisplayName(act.pillar, pillars);
+    const curr = pillarMap.get(label) || { count: 0, beneficiaries: 0, budget: 0, avgProgress: 0 };
+    curr.count += 1;
+    curr.beneficiaries += act.beneficiariesTotal || 0;
+    curr.budget += act.budgetNgn || 0;
+    curr.avgProgress += act.overallProgress || 0;
+    pillarMap.set(label, curr);
+  }
+
+  const pillarRows = Array.from(pillarMap.entries()).map(([label, stats]) => [
+    label,
+    String(stats.count),
+    stats.beneficiaries.toLocaleString(),
+    `NGN ${stats.budget.toLocaleString()}`,
+    `${stats.count > 0 ? Math.round(stats.avgProgress / stats.count) : 0}%`,
+  ]);
+
+  autoTable(doc, {
+    startY: yPos,
+    head: [['Strategic HCD Pillar', 'Projects', 'Beneficiaries', 'Capital Deployed', 'Avg. Progress']],
+    body:
+      pillarRows.length > 0
+        ? pillarRows
+        : [['No published pillar interventions recorded yet', '0', '0', 'NGN 0', '0%']],
+    theme: 'grid',
+    headStyles: { fillColor: [15, 23, 42], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7.5, cellPadding: 2 },
+    margin: { left: 14, right: 14 },
+  });
+
+  yPos = (doc as any).lastAutoTable.finalY + 7;
+
+  // Section 3: Top Performing LGAs by Verified Beneficiaries
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(11, 70, 25);
+  doc.text('3. TOP PERFORMING LOCAL GOVERNMENT COUNCILS', 14, yPos);
+  yPos += 3;
+
+  const lgaStatsMap = new Map<
+    string,
+    { lgaName: string; count: number; beneficiaries: number; budget: number }
+  >();
+  for (const act of published) {
+    const curr = lgaStatsMap.get(act.lgaId) || {
+      lgaName: act.lgaName,
+      count: 0,
+      beneficiaries: 0,
+      budget: 0,
+    };
+    curr.count += 1;
+    curr.beneficiaries += act.beneficiariesTotal || 0;
+    curr.budget += act.budgetNgn || 0;
+    lgaStatsMap.set(act.lgaId, curr);
+  }
+
+  const topLgas = Array.from(lgaStatsMap.values())
+    .sort((a, b) => b.beneficiaries - a.beneficiaries)
+    .slice(0, 10);
+
+  autoTable(doc, {
+    startY: yPos,
+    head: [['Rank', 'Local Government Area', 'Verified Projects', 'Total Beneficiaries', 'Capital Utilized (NGN)']],
+    body:
+      topLgas.length > 0
+        ? topLgas.map((item, idx) => [
+            `#${idx + 1}`,
+            item.lgaName,
+            String(item.count),
+            item.beneficiaries.toLocaleString(),
+            item.budget.toLocaleString(),
+          ])
+        : [['—', 'No published LGA data available', '0', '0', '0']],
+    theme: 'grid',
+    headStyles: { fillColor: [11, 70, 25], textColor: 255, fontSize: 8 },
+    bodyStyles: { fontSize: 7.5, cellPadding: 2 },
+    margin: { left: 14, right: 14 },
+  });
+
+  await stampPdfOfficialFooters(
+    doc,
+    `AKS-HCD Quarterly ARISE Council Brief (${quarterLabel}) • Official Cabinet Document`
+  );
+
+  const dateStr = now.toISOString().split('T')[0];
+  doc.save(`AKS_HCD_Quarterly_ARISE_Council_Brief_${quarterLabel.replace(/\s+/g, '_')}_${dateStr}.pdf`);
+}
+

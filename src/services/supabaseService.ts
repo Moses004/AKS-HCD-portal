@@ -22,6 +22,7 @@ import {
   extractCanonicalAttendanceStoragePath,
   EVIDENCE_BUCKET,
 } from './mediaService';
+import { compressEvidenceImageBeforeUpload } from '../lib/imageCompressor';
 
 export interface SupabaseConnectionStatus {
   connected: boolean;
@@ -690,6 +691,108 @@ export const supabaseService = {
   },
 
   /**
+   * Server-side range-paginated audit log retrieval with optional LGA, action, date range, and text filters.
+   */
+  async fetchAuditLogsPaginated(options: {
+    offset?: number;
+    limit?: number;
+    lgaId?: string;
+    action?: string;
+    searchQuery?: string;
+    startDate?: string;
+    endDate?: string;
+    userSession?: UserSession;
+  }): Promise<{
+    success: boolean;
+    data: AuditLog[];
+    totalCount: number;
+    hasMore: boolean;
+    permissionRestricted?: boolean;
+    error?: string;
+  }> {
+    const client = getSupabaseClient();
+    const limit = Math.max(1, Math.min(options.limit || 100, 500));
+    const offset = Math.max(0, options.offset || 0);
+
+    if (!client || isSupabaseUnreachable()) {
+      return { success: false, data: [], totalCount: 0, hasMore: false, error: 'Supabase client unavailable' };
+    }
+
+    if (
+      options.userSession &&
+      (!options.userSession.isAuthenticated ||
+        !options.userSession.isPrivileged ||
+        options.userSession.role === 'public')
+    ) {
+      return { success: true, data: [], totalCount: 0, hasMore: false, permissionRestricted: true };
+    }
+
+    try {
+      let query = client.from('audit_logs').select('*', { count: 'exact' });
+
+      if (options.lgaId && options.lgaId !== 'ALL') {
+        query = query.eq('lga_id', options.lgaId);
+      }
+      if (options.action && options.action !== 'ALL') {
+        query = query.eq('action', options.action);
+      }
+      if (options.startDate) {
+        query = query.gte('timestamp', `${options.startDate}T00:00:00.000Z`);
+      }
+      if (options.endDate) {
+        query = query.lte('timestamp', `${options.endDate}T23:59:59.999Z`);
+      }
+      if (options.searchQuery && options.searchQuery.trim()) {
+        const q = options.searchQuery.trim().replace(/[%_]/g, '');
+        query = query.or(
+          `activity_title.ilike.%${q}%,performed_by.ilike.%${q}%,notes.ilike.%${q}%,action.ilike.%${q}%`
+        );
+      }
+
+      const { data, error, count } = await query
+        .order('timestamp', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (error) {
+        if (isPermissionDeniedError(error)) {
+          return { success: true, data: [], totalCount: 0, hasMore: false, permissionRestricted: true };
+        }
+        return { success: false, data: [], totalCount: 0, hasMore: false, error: error.message };
+      }
+
+      const mapped: AuditLog[] = (data || []).map((r: any) => ({
+        id: r.id,
+        timestamp: r.timestamp,
+        activityId: r.activity_id || undefined,
+        activityTitle: r.activity_title || undefined,
+        lgaId: r.lga_id || undefined,
+        performedBy: r.performed_by,
+        actorUserId: r.actor_user_id || undefined,
+        role: r.role,
+        action: r.action,
+        notes: r.notes || undefined,
+        persistedToCloud: true,
+      }));
+
+      const total = typeof count === 'number' ? count : mapped.length;
+      return {
+        success: true,
+        data: mapped,
+        totalCount: total,
+        hasMore: offset + mapped.length < total,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        data: [],
+        totalCount: 0,
+        hasMore: false,
+        error: err?.message || 'Failed to paginate audit logs',
+      };
+    }
+  },
+
+  /**
    * Record PTR verification ledger log with authenticated actor identity
    */
   async recordPtrTestLog(
@@ -783,12 +886,16 @@ export const supabaseService = {
     }
 
     try {
-      // 2. Collision-resistant folder and object path
+      // 2. EXIF-preserving client-side compression for large field photographs (> 1.2 MB)
+      const compression = await compressEvidenceImageBeforeUpload(file, fileName);
+      const payloadToUpload = compression.file;
+
+      // 3. Collision-resistant folder and object path
       const storagePath = generateSafeStoragePath(lgaId, activityId, fileName);
 
       const { data, error } = await client.storage
         .from(EVIDENCE_BUCKET)
-        .upload(storagePath, file, {
+        .upload(storagePath, payloadToUpload, {
           cacheControl: '3600',
           upsert: false,
         });

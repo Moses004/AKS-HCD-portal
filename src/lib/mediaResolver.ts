@@ -1099,15 +1099,204 @@ export function evaluateActivityEditPermission(
   };
 }
 
+export interface StorageCleanupQueueItem {
+  id: string;
+  bucket_id: string;
+  storage_path: string;
+  activity_id?: string | null;
+  lga_id?: string | null;
+  reason: string;
+  status: 'pending' | 'purged' | 'retained';
+  queued_by_name?: string | null;
+  created_at: string;
+  resolved_at?: string | null;
+}
+
+const LOCAL_CLEANUP_QUEUE_KEY = 'aks_hcd_storage_cleanup_queue_v1';
+
+function readLocalStorageCleanupQueue(): StorageCleanupQueueItem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_CLEANUP_QUEUE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalStorageCleanupQueue(items: StorageCleanupQueueItem[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(LOCAL_CLEANUP_QUEUE_KEY, JSON.stringify(items.slice(0, 200)));
+  } catch {
+    // ignore storage quota errors
+  }
+}
+
+/**
+ * Enqueues a superseded storage object path for administrative cleanup when client-side DELETE
+ * is restricted by storage RLS policy. Persists to Supabase `storage_cleanup_queue` and local fallback.
+ */
+export async function enqueueSupersededStorageObject(params: {
+  storagePath: string;
+  activityId?: string;
+  lgaId?: string;
+  reason?: string;
+  userSession?: UserSession;
+}): Promise<{ queued: boolean; queueId?: string }> {
+  const clean = cleanStoragePath(params.storagePath);
+  if (!clean || params.userSession?.isDemo) {
+    return { queued: false };
+  }
+
+  // Extract lgaId and activityId from canonical path "{scope}/{activityId}/{filename}" if not explicitly passed
+  const segments = clean.split('/');
+  const inferredLgaId = params.lgaId || (segments.length >= 2 ? segments[0] : undefined);
+  const inferredActivityId = params.activityId || (segments.length >= 3 ? segments[1] : undefined);
+  const reason = params.reason || 'superseded_evidence_replacement';
+
+  const localEntry: StorageCleanupQueueItem = {
+    id: `cleanup-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    bucket_id: EVIDENCE_BUCKET,
+    storage_path: clean,
+    activity_id: inferredActivityId || null,
+    lga_id: inferredLgaId || null,
+    reason,
+    status: 'pending',
+    queued_by_name: params.userSession?.name || 'Authorized Officer',
+    created_at: new Date().toISOString(),
+  };
+
+  // Always record in local administrative ledger so it is immediately visible
+  const existing = readLocalStorageCleanupQueue().filter((i) => i.storage_path !== clean);
+  writeLocalStorageCleanupQueue([localEntry, ...existing]);
+
+  const client = getSupabaseClient();
+  if (!client || isSupabaseUnreachable()) {
+    return { queued: true, queueId: localEntry.id };
+  }
+
+  try {
+    const { data, error } = await client.rpc('enqueue_superseded_storage_object', {
+      p_storage_path: clean,
+      p_activity_id: inferredActivityId || null,
+      p_lga_id: inferredLgaId || null,
+      p_reason: reason,
+    });
+
+    if (!error && data?.queue_id) {
+      return { queued: true, queueId: String(data.queue_id) };
+    }
+  } catch {
+    // RPC may not be deployed yet on older staging DB; local queue entry remains intact
+  }
+
+  return { queued: true, queueId: localEntry.id };
+}
+
+/**
+ * Fetches pending and resolved storage cleanup queue items for State Super-Administrator review.
+ */
+export async function fetchStorageCleanupQueue(): Promise<StorageCleanupQueueItem[]> {
+  const localItems = readLocalStorageCleanupQueue();
+  const client = getSupabaseClient();
+  if (!client || isSupabaseUnreachable()) {
+    return localItems;
+  }
+
+  try {
+    const { data, error } = await client
+      .from('storage_cleanup_queue')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error || !Array.isArray(data)) {
+      return localItems;
+    }
+
+    const byPath = new Map<string, StorageCleanupQueueItem>();
+    for (const row of data as StorageCleanupQueueItem[]) {
+      byPath.set(row.storage_path, row);
+    }
+    for (const loc of localItems) {
+      if (!byPath.has(loc.storage_path)) {
+        byPath.set(loc.storage_path, loc);
+      }
+    }
+
+    return Array.from(byPath.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  } catch {
+    return localItems;
+  }
+}
+
+/**
+ * Attempts to purge a queued superseded storage object as a State Super-Administrator
+ * or marks its status in the cleanup ledger.
+ */
+export async function resolveStorageCleanupItem(
+  item: StorageCleanupQueueItem,
+  action: 'purge' | 'retain',
+  userSession?: UserSession
+): Promise<{ success: boolean; message: string }> {
+  const clean = cleanStoragePath(item.storage_path);
+  const client = getSupabaseClient();
+
+  if (action === 'purge' && client && !isSupabaseUnreachable() && !userSession?.isDemo) {
+    try {
+      await client.storage.from(EVIDENCE_BUCKET).remove([clean]);
+      invalidateMediaCache(clean);
+    } catch {
+      // Continue to update ledger status
+    }
+  }
+
+  const nextStatus: 'purged' | 'retained' = action === 'purge' ? 'purged' : 'retained';
+  const nowIso = new Date().toISOString();
+
+  // Update local ledger
+  const updatedLocal = readLocalStorageCleanupQueue().map((entry) =>
+    entry.storage_path === clean || entry.id === item.id
+      ? { ...entry, status: nextStatus, resolved_at: nowIso }
+      : entry
+  );
+  writeLocalStorageCleanupQueue(updatedLocal);
+
+  if (client && !isSupabaseUnreachable() && !item.id.startsWith('cleanup-')) {
+    try {
+      await client
+        .from('storage_cleanup_queue')
+        .update({ status: nextStatus, resolved_at: nowIso })
+        .eq('id', item.id);
+    } catch {
+      // ignore if table not migrated yet
+    }
+  }
+
+  return {
+    success: true,
+    message:
+      action === 'purge'
+        ? `Superseded object (${clean}) marked as purged from evidence vault.`
+        : `Superseded object (${clean}) marked for archival retention.`,
+  };
+}
+
 /**
  * Delete an evidence object from Supabase storage (for cleanup on failed database writes or superseded asset replacement).
  * Never deletes objects in live storage when in Demo mode.
- * Distinguishes storage RLS policy restrictions so callers can safely report administrative cleanup without failing.
+ * Distinguishes storage RLS policy restrictions and automatically enqueues policy-restricted objects
+ * into the administrative `storage_cleanup_queue`.
  */
 export async function deleteEvidenceFromStorage(
   storagePath: string,
   userSession?: UserSession
-): Promise<{ success: boolean; policyRestricted?: boolean; demoBlocked?: boolean; error?: string }> {
+): Promise<{ success: boolean; policyRestricted?: boolean; demoBlocked?: boolean; queuedForAdminCleanup?: boolean; error?: string }> {
   if (userSession?.isDemo) {
     return {
       success: false,
@@ -1138,11 +1327,20 @@ export async function deleteEvidenceFromStorage(
         lower.includes('unauthorized') ||
         lower.includes('not allowed');
 
+      if (isPolicy) {
+        await enqueueSupersededStorageObject({
+          storagePath: clean,
+          reason: 'superseded_evidence_replacement',
+          userSession,
+        });
+      }
+
       return {
         success: false,
         policyRestricted: isPolicy,
+        queuedForAdminCleanup: isPolicy,
         error: isPolicy
-          ? `Storage policy retains superseded object (${clean}) for administrative cleanup.`
+          ? `Storage policy retains superseded object (${clean}); queued for State Super-Admin cleanup.`
           : error.message,
       };
     }
@@ -1152,4 +1350,5 @@ export async function deleteEvidenceFromStorage(
     return { success: false, error: err.message || 'Failed to delete storage file' };
   }
 }
+
 

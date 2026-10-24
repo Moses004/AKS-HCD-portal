@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { HcdLogo } from '../common/Logos';
 import { exportAuditTrailPdfReport } from '../../utils/reportLogoHelper';
+import { supabaseService } from '../../services/supabaseService';
 
 interface AuditLogPanelProps {
   onViewActivity?: (activity: HCDActivity) => void;
@@ -185,6 +186,12 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
   const [feedbackBanner, setFeedbackBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [selectedLog, setSelectedLog] = useState<EnrichedAuditLog | null>(null);
 
+  // Server-Side Range Pagination Archive States
+  const [archivedCloudLogs, setArchivedCloudLogs] = useState<AuditLog[]>([]);
+  const [cloudTotalCount, setCloudTotalCount] = useState<number | null>(null);
+  const [hasMoreCloudLogs, setHasMoreCloudLogs] = useState<boolean>(true);
+  const [isLoadingMoreCloud, setIsLoadingMoreCloud] = useState<boolean>(false);
+
   // Manual Compliance Attestation Modal State
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [noteTitle, setNoteTitle] = useState('');
@@ -199,25 +206,29 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
     return found ? `${found.name} LGA` : lgaId.toUpperCase();
   };
 
-  // Combine direct audit logs with verified activity lifecycle provenance so historical & seeded state records are also accountable
+  // Combine direct audit logs + server-paginated archive logs with verified activity lifecycle provenance
   const unifiedLogs = useMemo<EnrichedAuditLog[]>(() => {
     const directIds = new Set<string>();
     const directActivityActions = new Set<string>();
 
-    const mappedDirect: EnrichedAuditLog[] = auditLogs.map((log) => {
+    const combinedDirectSource = [...auditLogs, ...archivedCloudLogs];
+    const mappedDirect: EnrichedAuditLog[] = [];
+
+    for (const log of combinedDirectSource) {
+      if (directIds.has(log.id)) continue;
       directIds.add(log.id);
       if (log.activityId) {
         directActivityActions.add(`${log.activityId}:${log.action}`);
       }
       const meta = getActionMeta(log.action);
-      return {
+      mappedDirect.push({
         ...log,
         sourceType: 'direct_ledger',
         lgaDisplayName: resolveLgaLabel(log.lgaId),
         severityLevel: meta.severity,
         categoryLabel: meta.categoryLabel,
-      };
-    });
+      });
+    }
 
     if (!includeDerivedHistory) {
       return mappedDirect.sort(
@@ -300,7 +311,51 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
     return [...mappedDirect, ...derivedLogs].sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
-  }, [auditLogs, activities, includeDerivedHistory]);
+  }, [auditLogs, archivedCloudLogs, activities, includeDerivedHistory]);
+
+  const handleLoadOlderCloudArchive = async () => {
+    if (!isOnline || isLoadingMoreCloud) return;
+    setIsLoadingMoreCloud(true);
+    setFeedbackBanner(null);
+    try {
+      const currentDirectCount = new Set([...auditLogs, ...archivedCloudLogs].map((l) => l.id)).size;
+      const res = await supabaseService.fetchAuditLogsPaginated({
+        offset: currentDirectCount,
+        limit: 100,
+        lgaId: lgaFilter !== 'ALL' && lgaFilter !== 'state-level' ? lgaFilter : undefined,
+        action: actionFilter !== 'ALL' && actionFilter !== 'TARGET_ALL' ? actionFilter : undefined,
+        searchQuery: searchQuery.trim() || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        userSession: currentUser,
+      });
+
+      if (res.success) {
+        setArchivedCloudLogs((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const additions = res.data.filter((r) => !existingIds.has(r.id));
+          return [...prev, ...additions];
+        });
+        setCloudTotalCount(res.totalCount);
+        setHasMoreCloudLogs(res.hasMore);
+        setFeedbackBanner({
+          type: 'success',
+          message:
+            res.data.length > 0
+              ? `Loaded ${res.data.length} additional cloud audit log record(s) (Total Cloud Ledger: ${res.totalCount}).`
+              : `All ${res.totalCount} cloud audit ledger records are already loaded.`,
+        });
+      } else {
+        setFeedbackBanner({
+          type: 'error',
+          message: res.error || 'Unable to query older cloud archive pages.',
+        });
+      }
+      setTimeout(() => setFeedbackBanner(null), 4000);
+    } finally {
+      setIsLoadingMoreCloud(false);
+    }
+  };
 
   // Apply multi-dimensional filters
   const filteredLogs = useMemo(() => {
@@ -1129,33 +1184,50 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
         </div>
 
         {/* Pagination Footer */}
-        {filteredLogs.length > pageSize && (
-          <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-slate-600 font-medium font-mono tabular-nums">
-              Page {safePage} of {totalPages} · Showing {(safePage - 1) * pageSize + 1}–
+              Page {safePage} of {totalPages} · Showing{' '}
+              {filteredLogs.length === 0 ? 0 : (safePage - 1) * pageSize + 1}–
               {Math.min(safePage * pageSize, filteredLogs.length)} of {filteredLogs.length} events
             </span>
-
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={safePage <= 1}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Previous</span>
-              </button>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={safePage >= totalPages}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
-              >
-                <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            {cloudTotalCount !== null && (
+              <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 tabular-nums">
+                Cloud Total: {cloudTotalCount}
+              </span>
+            )}
           </div>
-        )}
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {isSupabaseActive && isOnline && hasMoreCloudLogs && (
+              <button
+                onClick={handleLoadOlderCloudArchive}
+                disabled={isLoadingMoreCloud}
+                className="px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 font-bold disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                title="Fetch older historical pages from Supabase audit_logs using server-side range pagination"
+              >
+                <Database className={`w-3.5 h-3.5 text-emerald-700 ${isLoadingMoreCloud ? 'animate-spin' : ''}`} />
+                <span>{isLoadingMoreCloud ? 'Fetching Archive...' : 'Load Cloud Archive (+100)'}</span>
+              </button>
+            )}
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={safePage <= 1}
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Previous</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage >= totalPages}
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+            >
+              <span>Next</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Modal 1: Audit Event Inspection Dossier */}

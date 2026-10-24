@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider, useData } from './context/DataContext';
 import { Header } from './components/common/Header';
@@ -8,12 +8,6 @@ import { OfflineSyncBanner } from './components/common/OfflineSyncBanner';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner';
 import { RoleSwitcher } from './components/common/RoleSwitcher';
 import { PublicPortal } from './components/public/PublicPortal';
-import { LgaDashboard } from './components/lga/LgaDashboard';
-import { ExecutivePanel } from './components/executive/ExecutivePanel';
-import { AccessRequestsPanel } from './components/executive/AccessRequestsPanel';
-import { ReportingWizardModal } from './components/lga/ReportingWizardModal';
-import { ActivityDraftEditorModal } from './components/lga/ActivityDraftEditorModal';
-import { ReportExportModal } from './components/executive/ReportExportModal';
 import { ProjectDetailModal } from './components/public/ProjectDetailModal';
 import { SignUpPage } from './components/auth/SignUpPage';
 import { SignInPage } from './components/auth/SignInPage';
@@ -21,6 +15,33 @@ import { ForgotPasswordPage } from './components/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './components/auth/ResetPasswordPage';
 import { AccessPendingPage } from './components/auth/AccessPendingPage';
 import { HCDActivity } from './types';
+
+const LgaDashboard = lazy(() =>
+  import('./components/lga/LgaDashboard').then((m) => ({ default: m.LgaDashboard }))
+);
+const ExecutivePanel = lazy(() =>
+  import('./components/executive/ExecutivePanel').then((m) => ({ default: m.ExecutivePanel }))
+);
+const AccessRequestsPanel = lazy(() =>
+  import('./components/executive/AccessRequestsPanel').then((m) => ({
+    default: m.AccessRequestsPanel,
+  }))
+);
+const ReportingWizardModal = lazy(() =>
+  import('./components/lga/ReportingWizardModal').then((m) => ({
+    default: m.ReportingWizardModal,
+  }))
+);
+const ActivityDraftEditorModal = lazy(() =>
+  import('./components/lga/ActivityDraftEditorModal').then((m) => ({
+    default: m.ActivityDraftEditorModal,
+  }))
+);
+const ReportExportModal = lazy(() =>
+  import('./components/executive/ReportExportModal').then((m) => ({
+    default: m.ReportExportModal,
+  }))
+);
 
 type TabType = 'public' | 'lga' | 'executive' | 'ptr' | 'requests' | 'targets' | 'state-activities';
 
@@ -312,7 +333,19 @@ function AppContent() {
       {!inspectedActivity && !isReportExportOpen && <OfficialPrintLetterhead />}
 
       {/* Main Content Body */}
-      <main className="flex-1">{renderMainContent()}</main>
+      <main className="flex-1">
+        <Suspense
+          fallback={
+            <div className="max-w-7xl mx-auto px-4 py-12">
+              <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-xs text-slate-600 font-semibold">
+                Loading AKS-HCD Workspace...
+              </div>
+            </div>
+          }
+        >
+          {renderMainContent()}
+        </Suspense>
+      </main>
 
       {/* Official Government Footer */}
       <Footer onSelectLga={handleNavigateToLga} />
@@ -324,18 +357,36 @@ function AppContent() {
         onNavigate={handleNavigate}
       />
 
-      <ReportingWizardModal
-        isOpen={isWizardOpen}
-        onClose={() => setIsWizardOpen(false)}
-        onSuccess={() => {
-          if (currentTab !== 'lga') handleTabChange('lga');
-        }}
-      />
+      <Suspense fallback={null}>
+        {isWizardOpen && (
+          <ReportingWizardModal
+            isOpen={isWizardOpen}
+            onClose={() => setIsWizardOpen(false)}
+            onSuccess={() => {
+              if (currentTab !== 'lga') handleTabChange('lga');
+            }}
+          />
+        )}
 
-      <ReportExportModal
-        isOpen={isReportExportOpen}
-        onClose={() => setIsReportExportOpen(false)}
-      />
+        {isReportExportOpen && (
+          <ReportExportModal
+            isOpen={isReportExportOpen}
+            onClose={() => setIsReportExportOpen(false)}
+          />
+        )}
+
+        {Boolean(editingDraftActivity) && (
+          <ActivityDraftEditorModal
+            activity={editingDraftActivity}
+            isOpen={Boolean(editingDraftActivity)}
+            initialSection={editingDraftSection}
+            onClose={() => {
+              setEditingDraftActivityId(null);
+              setEditingDraftSection(undefined);
+            }}
+          />
+        )}
+      </Suspense>
 
       <ProjectDetailModal
         activity={
@@ -348,16 +399,6 @@ function AppContent() {
           setInspectedActivity(null);
           setEditingDraftSection(section);
           setEditingDraftActivityId(act.id);
-        }}
-      />
-
-      <ActivityDraftEditorModal
-        activity={editingDraftActivity}
-        isOpen={Boolean(editingDraftActivity)}
-        initialSection={editingDraftSection}
-        onClose={() => {
-          setEditingDraftActivityId(null);
-          setEditingDraftSection(undefined);
         }}
       />
     </div>
