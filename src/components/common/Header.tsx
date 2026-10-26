@@ -104,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
-            <div className="flex items-center justify-center p-1 rounded-xl bg-white border border-[#D4AF37]/60 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+            <div className="flex items-center justify-center p-1 pl-[4px] h-[44px] w-[44.3906px] -ml-[18px] mr-0 mt-0 mb-0 rounded-xl bg-white border border-[#D4AF37]/60 shadow-xs group-hover:scale-105 transition-transform shrink-0">
               <HcdLogo className="h-10 w-auto object-contain" />
             </div>
           </button>
