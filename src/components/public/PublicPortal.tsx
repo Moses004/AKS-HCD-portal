@@ -38,6 +38,11 @@ import { useData } from '../../context/DataContext';
 import { AkwaIbomStateMap } from '../map/AkwaIbomStateMap';
 import { AriseLogo } from '../common/Logos';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
+import { ImpactPulse } from '../common/ImpactPulse';
+import {
+  HistoricalImpactTrendOverlay,
+  TrendFocusMetric,
+} from '../common/HistoricalImpactTrendOverlay';
 import {
   AnimatedCounter,
   ScrollReveal,
@@ -76,6 +81,7 @@ import {
   X,
   ArrowUpRight,
   BarChart3,
+  TrendingUp,
 } from 'lucide-react';
 
 import heroImpactImg from '../../assets/images/hero_akwa_ibom_impact_1795446602763.jpg';
@@ -213,6 +219,8 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
   const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
+  const [isTrendOverlayOpen, setIsTrendOverlayOpen] = useState<boolean>(false);
+  const [trendOverlayMetric, setTrendOverlayMetric] = useState<TrendFocusMetric>('activities');
   const [spotlightPillarCode, setSpotlightPillarCode] = useState<string>('education');
   const [internalSearchQuery, setInternalSearchQuery] = useState<string>('');
   const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
@@ -586,7 +594,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 className="font-display font-bold text-white tracking-tight leading-[1.08] text-balance drop-shadow-[0_2px_16px_rgba(0,0,0,0.68)]"
                 style={{ fontSize: 'clamp(2.25rem, 4.2vw, 3.75rem)' }}
               >
-                Verified Human Capital Impact Across Every Council in Akwa Ibom.
+                ARISE Human Capital Development Implementation Dashboard
               </h1>
 
               <p className="text-sm sm:text-base text-white/95 leading-relaxed max-w-2xl drop-shadow-[0_1px_10px_rgba(0,0,0,0.7)]">
@@ -750,56 +758,89 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       </section>
 
       {/* =====================================================================
-          2. ROLLING SPRING KPI STRIP + INTERACTIVE GRASSROOTS PULSE MARQUEE
+          2. ROLLING SPRING KPI STRIP + IMPACT PULSE + GRASSROOTS MARQUEE
           ===================================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 space-y-4">
-        <div className="bg-white rounded-2xl shadow-lg shadow-emerald-950/8 border border-[#E5E2D9] p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:divide-x lg:divide-[#ECE8DD]">
-          <div className="space-y-1">
-            <span className="text-xs font-semibold text-slate-500 block">
-              Verified Beneficiaries
-            </span>
-            <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
-              <AnimatedCounter value={totalBeneficiaries} />
+        <div className="relative bg-white rounded-2xl shadow-lg shadow-emerald-950/8 border border-[#E5E2D9] overflow-hidden">
+          {/* Grassroots HCD Heartbeat Bar */}
+          <ImpactPulse
+            variant="bar"
+            projectCount={publishedActivities.length}
+            activeLgasCount={activeLgasCount}
+            beneficiariesTotal={totalBeneficiaries}
+          />
+
+          <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:divide-x lg:divide-[#ECE8DD]">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold text-slate-500 block">
+                Verified Beneficiaries
+              </span>
+              <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
+                <AnimatedCounter value={totalBeneficiaries} />
+              </div>
+              <p className="text-xs text-emerald-800 font-medium">
+                Biometrically documented citizens
+              </p>
             </div>
-            <p className="text-xs text-emerald-800 font-medium">
-              Biometrically documented citizens
-            </p>
+
+            <div className="space-y-1 lg:pl-6">
+              <span className="text-xs font-semibold text-slate-500 block">
+                Published Grassroots Projects
+              </span>
+              <div className="text-2xl sm:text-3xl font-bold text-slate-950 font-mono tabular-nums">
+                <AnimatedCounter value={publishedActivities.length} />
+              </div>
+              <p className="text-xs text-slate-500">
+                Cabinet approved & EXIF verified
+              </p>
+            </div>
+
+            <div className="space-y-1 lg:pl-6">
+              <span className="text-xs font-semibold text-slate-500 block">
+                Active Local Governments
+              </span>
+              <div className="text-2xl sm:text-3xl font-bold text-slate-950 font-mono tabular-nums">
+                <AnimatedCounter value={activeLgasCount} suffix=" / 31" />
+              </div>
+              <p className="text-xs text-emerald-800 font-medium">
+                Across 3 Senatorial Districts
+              </p>
+            </div>
+
+            <div className="space-y-1 lg:pl-6">
+              <span className="text-xs font-semibold text-slate-500 block">
+                Capacity Capital Deployed
+              </span>
+              <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
+                <AnimatedCounter value={totalBudget / 1_000_000} prefix="₦" suffix="M" decimals={1} />
+              </div>
+              <p className="text-xs text-slate-500">
+                Direct grassroots investments
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-1 lg:pl-6">
-            <span className="text-xs font-semibold text-slate-500 block">
-              Published Grassroots Projects
-            </span>
-            <div className="text-2xl sm:text-3xl font-bold text-slate-950 font-mono tabular-nums">
-              <AnimatedCounter value={publishedActivities.length} />
+          {/* Historical Impact Trend Overlay Trigger Bar */}
+          <div className="no-print px-6 py-3 bg-[#FAF8F2]/80 border-t border-[#ECE8DD] flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+              <TrendingUp className="w-3.5 h-3.5 text-[#0B4619] shrink-0" />
+              <span className="font-semibold text-slate-800">Historical Impact Trend</span>
+              <span aria-hidden="true" className="text-slate-300">·</span>
+              <span>Month-over-month capacity building growth &amp; cumulative citizen trajectory</span>
             </div>
-            <p className="text-xs text-slate-500">
-              Cabinet approved & EXIF verified
-            </p>
-          </div>
 
-          <div className="space-y-1 lg:pl-6">
-            <span className="text-xs font-semibold text-slate-500 block">
-              Active Local Governments
-            </span>
-            <div className="text-2xl sm:text-3xl font-bold text-slate-950 font-mono tabular-nums">
-              <AnimatedCounter value={activeLgasCount} suffix=" / 31" />
-            </div>
-            <p className="text-xs text-emerald-800 font-medium">
-              Across 3 Senatorial Districts
-            </p>
-          </div>
-
-          <div className="space-y-1 lg:pl-6">
-            <span className="text-xs font-semibold text-slate-500 block">
-              Capacity Capital Deployed
-            </span>
-            <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
-              <AnimatedCounter value={totalBudget / 1_000_000} prefix="₦" suffix="M" decimals={1} />
-            </div>
-            <p className="text-xs text-slate-500">
-              Direct grassroots investments
-            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setTrendOverlayMetric('activities');
+                setIsTrendOverlayOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0B4619] hover:bg-emerald-900 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            >
+              <TrendingUp className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>View MoM Trend Overlay</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+            </button>
           </div>
         </div>
 
@@ -1919,6 +1960,16 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         activity={inspectedStateActivity}
         actionItems={publicActionItems}
         onClose={() => setInspectedStateActivity(null)}
+      />
+
+      {/* Recharts Month-over-Month Historical Impact Trend Overlay */}
+      <HistoricalImpactTrendOverlay
+        isOpen={isTrendOverlayOpen}
+        onClose={() => setIsTrendOverlayOpen(false)}
+        activities={publishedActivities}
+        initialMetric={trendOverlayMetric}
+        allowAllStatuses={false}
+        scopeTitle="Akwa Ibom Public Transparency Portal · 31 LGAs"
       />
     </div>
   );

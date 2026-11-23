@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { ALL_31_LGAS, PILLARS } from '../../data/lgas';
@@ -46,10 +46,12 @@ import {
   CheckSquare,
   Square,
   FileText,
+  Printer,
 } from 'lucide-react';
 import { StateActivitiesWorkspace } from './stateActivities/StateActivitiesWorkspace';
 import { AuditLogPanel } from './AuditLogPanel';
-import { HcdLogo } from '../common/Logos';
+import { HcdLogo, AriseLogo } from '../common/Logos';
+import { prepareDashboardChartsForPrint } from '../../utils/printChartSnapshot';
 import {
   exportExecutiveMatrixPdfReport,
   exportBatchActivitiesDossierPdf,
@@ -117,7 +119,19 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
   const [isBatchProcessing, setIsBatchProcessing] = useState<boolean>(false);
   const [cleanupQueue, setCleanupQueue] = useState<StorageCleanupQueueItem[]>([]);
   const [showCleanupPanel, setShowCleanupPanel] = useState<boolean>(false);
+  const [isPreparingPrint, setIsPreparingPrint] = useState<boolean>(false);
+  const [printTimestamp, setPrintTimestamp] = useState<string>('');
+  const executivePrintRootRef = useRef<HTMLDivElement | null>(null);
+  const printCleanupRef = useRef<(() => void) | null>(null);
   const [, setTick] = useState<number>(0);
+
+  // Clean up any temporary static chart snapshots on unmount
+  useEffect(() => {
+    return () => {
+      printCleanupRef.current?.();
+      printCleanupRef.current = null;
+    };
+  }, []);
 
   // Load superseded storage cleanup queue for State Super-Admins
   useEffect(() => {
@@ -445,10 +459,123 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
     await exportExecutiveMatrixPdfReport(activities, 'State-Wide 31 Local Government Areas');
   };
 
+  const activeTabDisplayLabel: Record<typeof activeTab, string> = {
+    trends: 'Trend Analysis & Year-over-Year Progress',
+    barchart: '31-LGA Bar Chart Comparison',
+    queue: 'Pending Executive Approval Queue',
+    published: 'Published & Verified Grassroots Records',
+    comparative: '31-LGA Comparative Performance Matrix',
+    ptr: 'PTR Security & Mathematical Audits',
+    targets: 'Strategic HCD Target Management',
+    'hcd-settings': 'HCD Settings Initiative Dashboard',
+    'state-activities': 'State-Level Executive Activities & Outcomes',
+    audit: 'Executive Audit Trail & Change Log',
+  };
+
+  const printBriefMetrics = useMemo(() => {
+    const published = activities.filter((a) => a.status === 'PUBLISHED');
+    const totalBen = published.reduce((sum, a) => sum + (a.beneficiariesTotal || 0), 0);
+    const totalBudgetM = (
+      published.reduce((sum, a) => sum + (a.budgetNgn || 0), 0) / 1_000_000
+    ).toFixed(1);
+    const reportingLgas = new Set(published.map((a) => a.lgaId)).size;
+    return {
+      publishedCount: published.length,
+      totalBeneficiaries: totalBen,
+      totalBudgetM,
+      reportingLgas,
+    };
+  }, [activities]);
+
+  const handlePrintDashboard = useCallback(async () => {
+    if (isPreparingPrint) return;
+    setIsPreparingPrint(true);
+    setPrintTimestamp(
+      new Date().toLocaleString('en-NG', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })
+    );
+
+    try {
+      // Clear any previous temporary chart snapshots first
+      printCleanupRef.current?.();
+      printCleanupRef.current = null;
+
+      // Wait one paint frame so the print timestamp commits cleanly
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+
+      const prepared = await prepareDashboardChartsForPrint(executivePrintRootRef.current);
+      printCleanupRef.current = prepared.cleanup;
+
+      const handleAfterPrint = () => {
+        window.removeEventListener('afterprint', handleAfterPrint);
+        printCleanupRef.current?.();
+        printCleanupRef.current = null;
+        setIsPreparingPrint(false);
+      };
+
+      window.addEventListener('afterprint', handleAfterPrint);
+
+      if (prepared.capturedCount > 0) {
+        setActionFeedback(
+          `Prepared print-optimized Executive Briefing with ${prepared.capturedCount} static chart image${
+            prepared.capturedCount === 1 ? '' : 's'
+          }.`
+        );
+        window.setTimeout(() => setActionFeedback(null), 4500);
+      }
+
+      // Trigger native print dialog after static PNG snapshots are decoded
+      window.requestAnimationFrame(() => {
+        window.print();
+        // Fallback reset in case browser suppresses afterprint event
+        window.setTimeout(() => {
+          setIsPreparingPrint(false);
+        }, 1200);
+      });
+    } catch (err) {
+      console.warn('Print preparation error:', err);
+      printCleanupRef.current?.();
+      printCleanupRef.current = null;
+      setIsPreparingPrint(false);
+      window.print();
+    }
+  }, [isPreparingPrint]);
+
   return (
-    <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg py-dashboard-y space-y-section">
-      {/* Executive Command Header */}
-      <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white rounded-2xl p-card-pad sm:p-card-pad-lg shadow-md border border-[#D4AF37]/40 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div
+      ref={executivePrintRootRef}
+      className="executive-print-briefing-root max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg py-dashboard-y space-y-section"
+    >
+      {/* Print-Only Official Akwa Ibom Executive Briefing Letterhead */}
+      <header className="executive-print-only print-letterhead items-center justify-between gap-4 border-b-2 border-[#0B4619] pb-4 mb-5">
+        <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-2 shrink-0">
+            <HcdLogo className="report-logo w-12 h-12 object-contain" />
+            <AriseLogo className="report-logo w-12 h-12 object-contain" />
+          </div>
+          <div>
+            <div className="text-[9pt] font-bold tracking-wide text-[#0B4619]">
+              Akwa Ibom State Government · Governor&apos;s Council on Human Capital Development
+            </div>
+            <h1 className="text-[15pt] font-black text-slate-950 leading-tight mt-0.5">
+              Executive Briefing — {activeTabDisplayLabel[activeTab]}
+            </h1>
+            <div className="text-[8.5pt] text-slate-600 mt-1 font-mono tabular-nums">
+              Verified Beneficiaries: {printBriefMetrics.totalBeneficiaries.toLocaleString()} · Published Projects: {printBriefMetrics.publishedCount} · Active Councils: {printBriefMetrics.reportingLgas}/31 LGAs · Capital: ₦{printBriefMetrics.totalBudgetM}M
+            </div>
+          </div>
+        </div>
+        <div className="text-right text-[8.5pt] text-slate-600 shrink-0 font-mono tabular-nums">
+          <div className="font-bold text-[#0B4619]">OFFICIAL CABINET BRIEF</div>
+          <div>Prepared by: {currentUser.name}</div>
+          <div>Generated: {printTimestamp || new Date().toLocaleDateString('en-NG')}</div>
+        </div>
+      </header>
+
+      {/* Executive Command Header (Screen Chrome) */}
+      <div className="no-print bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white rounded-2xl p-card-pad sm:p-card-pad-lg shadow-md border border-[#D4AF37]/40 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
           <div className="p-1.5 bg-white rounded-2xl border-2 border-[#D4AF37] shadow-sm shrink-0 mt-0.5">
             <HcdLogo className="w-12 h-12 sm:w-14 sm:h-14" />
@@ -491,6 +618,17 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
           >
             <FileText className="w-4 h-4 text-[#D4AF37]" />
             <span>Quarterly Council Brief PDF</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePrintDashboard}
+            disabled={isPreparingPrint}
+            className="flex items-center gap-2 px-3.5 py-2.5 bg-white text-[#0B4619] hover:bg-[#FAF8F2] border border-[#D4AF37]/70 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 whitespace-nowrap cursor-pointer disabled:opacity-65"
+            title="Render all currently viewed charts as static high-DPI images and open print-optimized Executive Briefing layout"
+          >
+            <Printer className={`w-4 h-4 text-[#0B4619] ${isPreparingPrint ? 'animate-pulse' : ''}`} />
+            <span>{isPreparingPrint ? 'Preparing Charts…' : 'Print Dashboard'}</span>
           </button>
 
           <button
@@ -592,7 +730,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       )}
 
       {actionFeedback && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-medium flex items-center gap-2 animate-in fade-in">
+        <div className="no-print p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-medium flex items-center gap-2 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-700" />
           <span>{actionFeedback}</span>
         </div>
@@ -601,7 +739,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       {/* REAL-TIME CLOUD DATA SYNC GATEWAY (RENTORA-INSPIRED LIVE ARCHITECTURE) */}
       <section
         aria-label="Executive Real-Time Cloud Data Sync Gateway"
-        className={`rounded-2xl p-4 sm:p-5 border transition-all ${
+        className={`no-print rounded-2xl p-4 sm:p-5 border transition-all ${
           !isOnline
             ? 'bg-amber-500/10 border-amber-300/80 text-amber-950 shadow-xs'
             : isSyncing
@@ -775,7 +913,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       </section>
 
       {/* Primary Tab Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
         <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600 overflow-x-auto max-w-full">
           <button
             onClick={() => setActiveTab('trends')}
@@ -1620,6 +1758,26 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
           <PtrTestModal embedded={true} />
         </div>
       )}
+
+      {/* Print-Only Executive Briefing Verification Footer & Endorsement */}
+      <div className="executive-print-only mt-8 pt-4 border-t border-slate-300 break-inside-avoid">
+        <div className="flex items-end justify-between gap-6 text-[8.5pt] text-slate-600">
+          <div className="max-w-lg leading-relaxed">
+            <div className="font-bold text-[#0B4619]">
+              ARISE Agenda Human Capital Development Transparency Portal
+            </div>
+            <div>
+              This executive briefing reflects live Cabinet-verified metrics and static chart snapshots generated from the Akwa Ibom State 31-LGA HCD Repository.
+            </div>
+          </div>
+          <div className="text-right shrink-0 space-y-4">
+            <div className="border-b border-slate-400 w-52 ml-auto" />
+            <div className="font-semibold text-slate-800">
+              State HCD Coordinator / Executive Endorsement
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Supabase Cloud DB Connection & Schema Management Modal */}
       <SupabaseModal

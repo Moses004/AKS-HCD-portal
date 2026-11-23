@@ -1,6 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { HCDActivity } from '../../types';
 import { ALL_31_LGAS } from '../../data/lgas';
+import { ImpactPulse } from '../common/ImpactPulse';
+import {
+  HistoricalImpactTrendOverlay,
+  TrendFocusMetric,
+} from '../common/HistoricalImpactTrendOverlay';
 import {
   Users,
   Briefcase,
@@ -89,6 +94,7 @@ const Sparkline: React.FC<SparklineProps> = ({
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         className="overflow-visible"
+        data-print-chart="true"
         aria-hidden="true"
       >
         <defs>
@@ -119,6 +125,14 @@ const Sparkline: React.FC<SparklineProps> = ({
 };
 
 export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ activities }) => {
+  const [isTrendOverlayOpen, setIsTrendOverlayOpen] = useState(false);
+  const [trendFocusMetric, setTrendFocusMetric] = useState<TrendFocusMetric>('activities');
+
+  const openTrendOverlay = (focus: TrendFocusMetric = 'activities') => {
+    setTrendFocusMetric(focus);
+    setIsTrendOverlayOpen(true);
+  };
+
   // Aggregate Key State Metrics - STRICTLY DERIVED FROM DATABASE RECORDS
   const publishedActivities = useMemo(
     () => activities.filter((a) => a.status === 'PUBLISHED'),
@@ -199,6 +213,28 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
 
   return (
     <div className="space-y-subsection">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <ImpactPulse
+          variant="compact"
+          label="Statewide Impact Pulse"
+          projectCount={publishedActivities.length}
+          activeLgasCount={reportingLgaCount}
+          beneficiariesTotal={liveParticipants}
+          className="flex-1"
+        />
+
+        <button
+          type="button"
+          onClick={() => openTrendOverlay('activities')}
+          className="no-print inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B4619] hover:bg-emerald-900 text-white text-xs font-bold shadow-xs border border-[#D4AF37]/40 transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap shrink-0"
+          title="Open month-over-month Recharts growth overlay for capacity building activities"
+        >
+          <TrendingUp className="w-4 h-4 text-[#D4AF37]" />
+          <span>Historical Impact Trend</span>
+          <ArrowUpRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+        </button>
+      </div>
+
       {/* Executive KPI Summary Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-card-gap lg:gap-card-gap-lg">
         {/* CARD 1: YEAR-TO-DATE TOTAL PARTICIPANTS */}
@@ -225,13 +261,20 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
 
               {/* Sparkline & Live Indicator */}
               <div className="flex flex-col items-end">
-                <Sparkline
-                  data={participantsSparkline}
-                  color="#059669"
-                  gradientId="sparkline-participants"
-                  width={96}
-                  height={32}
-                />
+                <button
+                  type="button"
+                  onClick={() => openTrendOverlay('beneficiaries')}
+                  title="Inspect month-over-month beneficiary growth trend"
+                  className="rounded-lg p-0.5 hover:bg-emerald-50/80 transition-colors cursor-pointer"
+                >
+                  <Sparkline
+                    data={participantsSparkline}
+                    color="#059669"
+                    gradientId="sparkline-participants"
+                    width={96}
+                    height={32}
+                  />
+                </button>
                 <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                   Live Sync
@@ -286,13 +329,20 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
 
               {/* Sparkline */}
               <div className="flex flex-col items-end">
-                <Sparkline
-                  data={projectsSparkline}
-                  color="#2563eb"
-                  gradientId="sparkline-projects"
-                  width={96}
-                  height={32}
-                />
+                <button
+                  type="button"
+                  onClick={() => openTrendOverlay('activities')}
+                  title="Inspect month-over-month capacity building activities growth trend"
+                  className="rounded-lg p-0.5 hover:bg-blue-50/80 transition-colors cursor-pointer"
+                >
+                  <Sparkline
+                    data={projectsSparkline}
+                    color="#2563eb"
+                    gradientId="sparkline-projects"
+                    width={96}
+                    height={32}
+                  />
+                </button>
                 <span className="text-[10px] font-bold text-blue-800 bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
                   {activities.length} Total Rows
                 </span>
@@ -345,13 +395,20 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
 
               {/* Sparkline */}
               <div className="flex flex-col items-end">
-                <Sparkline
-                  data={complianceSparkline}
-                  color="#9333ea"
-                  gradientId="sparkline-compliance"
-                  width={96}
-                  height={32}
-                />
+                <button
+                  type="button"
+                  onClick={() => openTrendOverlay('lgaCoverage')}
+                  title="Inspect month-over-month LGA coverage growth trend"
+                  className="rounded-lg p-0.5 hover:bg-purple-50/80 transition-colors cursor-pointer"
+                >
+                  <Sparkline
+                    data={complianceSparkline}
+                    color="#9333ea"
+                    gradientId="sparkline-compliance"
+                    width={96}
+                    height={32}
+                  />
+                </button>
                 <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
                   {reportingLgaCount} of 31 LGAs
                 </span>
@@ -393,6 +450,16 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
           </div>
         </div>
       </div>
+
+      {/* Recharts Month-over-Month Historical Impact Trend Overlay */}
+      <HistoricalImpactTrendOverlay
+        isOpen={isTrendOverlayOpen}
+        onClose={() => setIsTrendOverlayOpen(false)}
+        activities={activities}
+        initialMetric={trendFocusMetric}
+        allowAllStatuses={true}
+        scopeTitle="State Executive Cabinet · 31 Local Government Areas"
+      />
     </div>
   );
 };

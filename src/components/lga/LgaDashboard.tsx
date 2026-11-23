@@ -7,6 +7,7 @@ import { LgaReportExportCentre } from '../reports/LgaReportExportCentre';
 import { HcdSettingsDashboard } from '../dashboard/HcdSettingsDashboard';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
 import { KineticActivityCard } from '../common/MotionPrimitives';
+import { ImpactPulse } from '../common/ImpactPulse';
 import { ActivityDraftEditorModal } from './ActivityDraftEditorModal';
 import { evaluateActivityEditPermission } from '../../services/mediaService';
 import {
@@ -256,6 +257,13 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
         />
       ) : (
         <>
+          <ImpactPulse
+            variant="compact"
+            label={`${currentLga.name} Impact Pulse`}
+            projectCount={publishedCount}
+            beneficiariesTotal={totalBeneficiaries}
+          />
+
           {/* Metric Cards Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-card-gap lg:gap-card-gap-lg">
         <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-slate-200/90 shadow-sm">

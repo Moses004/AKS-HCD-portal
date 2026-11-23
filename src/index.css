@@ -126,6 +126,13 @@
     scroll-snap-align: start;
     scroll-snap-stop: normal;
   }
+
+  /* Print-only Executive Briefing elements & static chart snapshots (hidden on screen) */
+  .executive-print-only,
+  .executive-static-chart-img,
+  .executive-static-sparkline-img {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -212,6 +219,42 @@
   .print-letterhead {
     display: flex !important;
     visibility: visible !important;
+  }
+
+  .executive-print-only {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .executive-print-only.print-letterhead {
+    display: flex !important;
+  }
+
+  /* Swap live interactive Recharts SVGs for crisp 2x-DPI static PNG snapshots in print */
+  .executive-chart-replaced-for-print {
+    display: none !important;
+  }
+
+  .executive-static-chart-img {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 6pt auto !important;
+    object-fit: contain !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    border-radius: 6pt;
+  }
+
+  .executive-static-sparkline-img {
+    display: inline-block !important;
+    visibility: visible !important;
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .print-keep-header {
@@ -353,6 +396,24 @@
   .grid-cols-4,
   .sm\:grid-cols-4 {
     grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  /* Keep 3-column Executive Briefing KPI grids cleanly 3-up in A4 print */
+  .executive-print-briefing-root .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10pt !important;
+  }
+
+  .executive-print-briefing-root .lg\:grid-cols-2,
+  .executive-print-briefing-root .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10pt !important;
+  }
+
+  .executive-print-briefing-root {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   /* Avoid slicing through summary cards & widgets */
