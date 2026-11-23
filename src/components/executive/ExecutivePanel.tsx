@@ -1123,10 +1123,10 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                     variant="compact"
                     animateEntrance
                     delayIndex={idx}
-                    className={`bg-white rounded-2xl border shadow-sm p-5 sm:p-6 space-y-4 ${
+                    className={`rounded-2xl border overflow-hidden p-5 sm:p-6 space-y-4 group ${
                       isSelected
                         ? 'border-emerald-700 ring-1 ring-emerald-700/30'
-                        : 'border-slate-200/90 hover:border-emerald-700/35'
+                        : 'border-emerald-900/15 hover:border-emerald-700/35'
                     }`}
                   >
                     {/* Top Row */}

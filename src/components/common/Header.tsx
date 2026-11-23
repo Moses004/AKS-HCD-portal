@@ -11,7 +11,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { HcdLogo } from './Logos';
 import { KINETIC_EASE } from './MotionPrimitives';
+import { HeaderPredictiveSearch } from './HeaderPredictiveSearch';
+import { HCDActivity } from '../../types';
 import {
+  Search,
   ShieldCheck,
   Building2,
   Users,
@@ -40,6 +43,11 @@ interface HeaderProps {
   onOpenRoleSwitcher: () => void;
   onOpenCreateWizard?: () => void;
   onOpenReportExport?: () => void;
+  publicSearchQuery?: string;
+  onPublicSearchChange?: (query: string) => void;
+  onSelectSearchActivity?: (activity: HCDActivity) => void;
+  onSelectSearchLga?: (lgaId: string) => void;
+  onJumpToPublicRegistry?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -50,11 +58,18 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenRoleSwitcher,
   onOpenCreateWizard,
   onOpenReportExport,
+  publicSearchQuery = '',
+  onPublicSearchChange,
+  onSelectSearchActivity,
+  onSelectSearchLga,
+  onJumpToPublicRegistry,
 }) => {
   const { currentUser, signOut } = useAuth();
   const { isOnline, pendingSyncCount } = useData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const isPublicPortalView = currentRoute === '/' && currentTab === 'public';
 
   const prefersReduced = useReducedMotion();
   const { scrollY, scrollYProgress } = useScroll();
@@ -308,6 +323,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Primary Actions & User State */}
         <div className="flex items-center gap-2.5">
+          {/* Predictive Real-Time LGA Activity Search (Desktop Slide-In on Public Portal) */}
+          {isPublicPortalView && onPublicSearchChange && (
+            <HeaderPredictiveSearch
+              variant="desktop"
+              query={publicSearchQuery}
+              onQueryChange={onPublicSearchChange}
+              onSelectActivity={(act) => onSelectSearchActivity?.(act)}
+              onSelectLga={(id) => onSelectSearchLga?.(id)}
+              onJumpToRegistry={() => onJumpToPublicRegistry?.()}
+            />
+          )}
+
           {/* LGA Reports & Export Centre */}
           {onOpenReportExport && (
             <button
@@ -408,15 +435,51 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
+          {/* Mobile Predictive Search Toggle (Public Portal) */}
+          {isPublicPortalView && onPublicSearchChange && (
+            <button
+              type="button"
+              onClick={() => {
+                setMobileSearchOpen((prev) => !prev);
+                setMobileMenuOpen(false);
+              }}
+              aria-label="Toggle predictive LGA activity search"
+              className={`md:hidden p-2 rounded-lg transition-colors cursor-pointer ${
+                mobileSearchOpen || publicSearchQuery.trim()
+                  ? 'text-[#0B4619] bg-emerald-50 border border-emerald-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Search className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Mobile hamburger menu button */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => {
+              setMobileMenuOpen(!mobileMenuOpen);
+              setMobileSearchOpen(false);
+            }}
             className="lg:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Slide-Down Predictive LGA Search Bar (Public Portal) */}
+      {isPublicPortalView && onPublicSearchChange && (
+        <HeaderPredictiveSearch
+          variant="mobile"
+          mobileOpen={mobileSearchOpen}
+          onMobileOpenChange={setMobileSearchOpen}
+          query={publicSearchQuery}
+          onQueryChange={onPublicSearchChange}
+          onSelectActivity={(act) => onSelectSearchActivity?.(act)}
+          onSelectLga={(id) => onSelectSearchLga?.(id)}
+          onJumpToRegistry={() => onJumpToPublicRegistry?.()}
+        />
+      )}
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (

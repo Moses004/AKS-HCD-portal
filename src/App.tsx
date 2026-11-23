@@ -105,6 +105,7 @@ function AppContent() {
   const [editingDraftActivityId, setEditingDraftActivityId] = useState<string | null>(null);
   const [editingDraftSection, setEditingDraftSection] = useState<'evidence' | undefined>(undefined);
   const [focusedPublicLgaId, setFocusedPublicLgaId] = useState<string | null>(null);
+  const [publicSearchQuery, setPublicSearchQuery] = useState<string>('');
 
   const editingDraftActivity = editingDraftActivityId
     ? activities.find((a) => a.id === editingDraftActivityId) || null
@@ -317,6 +318,8 @@ function AppContent() {
         onNavigateToLga={handleNavigateToLga}
         externalSelectedLgaId={focusedPublicLgaId}
         onClearExternalLga={() => setFocusedPublicLgaId(null)}
+        externalSearchQuery={publicSearchQuery}
+        onExternalSearchQueryChange={setPublicSearchQuery}
       />
     );
   };
@@ -341,6 +344,16 @@ function AppContent() {
         onOpenRoleSwitcher={() => setIsRoleSwitcherOpen(true)}
         onOpenCreateWizard={() => setIsWizardOpen(true)}
         onOpenReportExport={() => setIsReportExportOpen(true)}
+        publicSearchQuery={publicSearchQuery}
+        onPublicSearchChange={setPublicSearchQuery}
+        onSelectSearchActivity={(act) => setInspectedActivity(act)}
+        onSelectSearchLga={handleNavigateToLga}
+        onJumpToPublicRegistry={() => {
+          const el = document.getElementById('registry-section');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
       />
 
       {/* Global Official Print Letterhead (visible when printing main pages) */}

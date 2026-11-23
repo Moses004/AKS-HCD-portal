@@ -554,8 +554,9 @@ interface KineticActivityCardProps {
 }
 
 /**
- * Tactile Kinetic Civic Showcase card with Framer Motion spring `whileHover`
- * scale elevation and layered emerald-and-gold shadow intensity.
+ * Tactile Kinetic Civic Showcase card with glassmorphic 'Emerald Frost' backdrop,
+ * subtle inner specular border highlights, and Framer Motion spring `whileHover`
+ * scale elevation + layered emerald-and-gold shadow intensity.
  */
 export const KineticActivityCard: React.FC<KineticActivityCardProps> = ({
   children,
@@ -571,20 +572,20 @@ export const KineticActivityCard: React.FC<KineticActivityCardProps> = ({
   const hoverEffect = prefersReduced
     ? {
         boxShadow:
-          '0 12px 24px -8px rgba(6, 78, 59, 0.16), 0 0 0 1px rgba(11, 70, 25, 0.22)',
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.96), inset 0 0 0 1px rgba(212, 175, 55, 0.24), 0 12px 24px -8px rgba(6, 78, 59, 0.18), 0 0 0 1px rgba(11, 70, 25, 0.24)',
       }
     : variant === 'compact'
     ? {
         scale: 1.008,
         y: -2,
         boxShadow:
-          '0 16px 30px -12px rgba(6, 78, 59, 0.20), 0 6px 14px -6px rgba(212, 175, 55, 0.16), 0 0 0 1px rgba(11, 70, 25, 0.18)',
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.98), inset 0 0 0 1px rgba(212, 175, 55, 0.26), 0 18px 34px -12px rgba(6, 78, 59, 0.22), 0 6px 14px -6px rgba(212, 175, 55, 0.18), 0 0 0 1px rgba(11, 70, 25, 0.22)',
       }
     : {
         scale: 1.016,
         y: -4,
         boxShadow:
-          '0 24px 44px -14px rgba(6, 78, 59, 0.24), 0 10px 22px -8px rgba(212, 175, 55, 0.18), 0 0 0 1px rgba(11, 70, 25, 0.24)',
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.98), inset 0 0 0 1px rgba(212, 175, 55, 0.30), 0 26px 46px -14px rgba(6, 78, 59, 0.26), 0 10px 24px -8px rgba(212, 175, 55, 0.20), 0 0 0 1px rgba(11, 70, 25, 0.26)',
       };
 
   const tapEffect =
@@ -612,11 +613,25 @@ export const KineticActivityCard: React.FC<KineticActivityCardProps> = ({
         opacity: { duration: 0.35, delay: Math.min(delayIndex * 0.04, 0.24), ease: KINETIC_EASE },
         y: { type: 'spring', stiffness: 380, damping: 26, mass: 0.78 },
         scale: { type: 'spring', stiffness: 380, damping: 26, mass: 0.78 },
-        boxShadow: { duration: 0.22, ease: KINETIC_EASE },
+        boxShadow: { duration: 0.24, ease: KINETIC_EASE },
       }}
       style={{ willChange: 'transform, box-shadow' }}
       className={`activity-card relative hover:z-10 ${className}`}
     >
+      {/* Emerald Frost Inner Specular Border Rim & Top Edge Gleam */}
+      <span
+        aria-hidden="true"
+        className="no-print pointer-events-none absolute inset-[1px] rounded-[inherit] border border-white/65 z-20"
+      />
+      <span
+        aria-hidden="true"
+        className="no-print pointer-events-none absolute inset-x-6 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/95 to-transparent z-20"
+      />
+      <span
+        aria-hidden="true"
+        className="no-print pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full bg-radial from-[#D4AF37]/[0.11] via-emerald-400/[0.07] to-transparent blur-xl opacity-70 group-hover:opacity-100 transition-opacity duration-300 z-0"
+      />
+
       {children}
     </motion.article>
   );

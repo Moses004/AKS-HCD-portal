@@ -392,7 +392,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                 key={activity.id}
                 animateEntrance
                 delayIndex={idx}
-                className="bg-white rounded-2xl border border-slate-200/90 hover:border-emerald-700/35 shadow-sm overflow-hidden flex flex-col justify-between group"
+                className="rounded-2xl border border-emerald-900/15 hover:border-emerald-700/35 overflow-hidden flex flex-col justify-between group"
               >
                 <div>
                   {/* Card Media Preview with Secure Resolver & Neutral Fallback */}
@@ -508,7 +508,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="p-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="p-4 bg-emerald-950/[0.035] border-t border-emerald-900/10 flex flex-wrap items-center justify-between gap-2 text-xs relative z-10">
                   <button
                     onClick={() => onViewActivity(activity)}
                     className="flex items-center gap-1 font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"

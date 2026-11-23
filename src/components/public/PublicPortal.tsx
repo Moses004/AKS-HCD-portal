@@ -32,6 +32,7 @@ import {
   HeroDossierReelBar,
   CuratedFallbackVisual,
 } from './HeroDossierBackdropReel';
+import { LivelihoodImpactFlow } from './LivelihoodImpactFlow';
 import { PILLARS, getLgaById } from '../../data/lgas';
 import { useData } from '../../context/DataContext';
 import { AkwaIbomStateMap } from '../map/AkwaIbomStateMap';
@@ -89,6 +90,8 @@ interface PublicPortalProps {
   onNavigateToLga: (lgaId: string) => void;
   externalSelectedLgaId?: string | null;
   onClearExternalLga?: () => void;
+  externalSearchQuery?: string;
+  onExternalSearchQueryChange?: (query: string) => void;
 }
 
 type DistrictMetric = 'beneficiaries' | 'budget' | 'projects';
@@ -155,6 +158,7 @@ const PUBLIC_SNAP_SECTIONS: SnapSectionDefinition[] = [
   { id: 'hero-section', label: 'Civic Showcase' },
   { id: 'pillars-section', label: 'Six HCD Pillars' },
   { id: 'districts-section', label: 'Senatorial Districts' },
+  { id: 'livelihood-flow-section', label: 'Livelihood Flow' },
   { id: 'map-section', label: '31-LGA Impact Map' },
   { id: 'registry-section', label: 'Verified Dossiers' },
   { id: 'assurance-section', label: 'Verification Standard' },
@@ -167,6 +171,8 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
   onNavigateToLga,
   externalSelectedLgaId,
   onClearExternalLga,
+  externalSearchQuery,
+  onExternalSearchQueryChange,
 }) => {
   const { pillars, getPillarDisplayName } = useData();
   const prefersReduced = useReducedMotion();
@@ -208,7 +214,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
   const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
   const [spotlightPillarCode, setSpotlightPillarCode] = useState<string>('education');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [internalSearchQuery, setInternalSearchQuery] = useState<string>('');
+  const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
+  const setSearchQuery = (next: string) => {
+    setInternalSearchQuery(next);
+    onExternalSearchQueryChange?.(next);
+  };
   const [districtFilter, setDistrictFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [districtChartMetric, setDistrictChartMetric] = useState<DistrictMetric>('beneficiaries');
@@ -219,6 +230,13 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
   // State-Level Activities Transparency for Citizens
   const [portalScope, setPortalScope] = useState<'lga' | 'state'>('lga');
+
+  // Automatically bring LGA activities into view when typing in the header predictive search
+  useEffect(() => {
+    if (externalSearchQuery && externalSearchQuery.trim().length > 0 && portalScope !== 'lga') {
+      setPortalScope('lga');
+    }
+  }, [externalSearchQuery, portalScope]);
   const [publishedStateActivities, setPublishedStateActivities] = useState<StateHCDActivity[]>([]);
   const [publicActionItems, setPublicActionItems] = useState<StateHCDPublicActionItem[]>([]);
   const [selectedStateCategory, setSelectedStateCategory] = useState<StateActivityCategory | 'all'>('all');
@@ -1197,6 +1215,38 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             </div>
           </div>
         </ScrollReveal>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          4B. D3.JS LIVELIHOOD IMPACT FLOW (CAPACITY BUILDING -> EMPOWERMENT)
+          ===================================================================== */}
+      <section
+        id="livelihood-flow-section"
+        className="kinetic-snap-section relative overflow-x-clip scroll-mt-20"
+      >
+        <ParallaxDecorativeField variant="gold-contours" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
+          <KineticSectionHeader
+            kicker="Livelihood Transition · D3.js Impact Flow"
+            title="From Capacity Building to Economic Empowerment"
+            description="Trace how verified citizens across all 31 Local Government Areas transition from targeted HCD capacity building into productive livelihoods, skilled employment, and community enterprise."
+          />
+
+          <ScrollReveal delay={0.05}>
+            <LivelihoodImpactFlow
+              publishedActivities={publishedActivities}
+              onSelectPillarFilter={(pillarCode) => {
+                setSelectedPillar(pillarCode);
+                setPortalScope('lga');
+                scrollToSection('registry-section');
+              }}
+              onSelectLgaFocus={(lgaId) => {
+                setSelectedLgaId(lgaId);
+                scrollToSection('map-section');
+              }}
+            />
+          </ScrollReveal>
         </div>
       </section>
 

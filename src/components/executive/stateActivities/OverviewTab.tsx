@@ -482,7 +482,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
                     animateEntrance
                     delayIndex={idx}
                     onClick={() => onViewActivity(act)}
-                    className="p-3.5 rounded-xl border border-slate-200 shadow-2xs hover:border-emerald-400 hover:bg-emerald-50/30 cursor-pointer group"
+                    className="p-3.5 rounded-xl border border-emerald-900/15 hover:border-emerald-600/40 overflow-hidden cursor-pointer group"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
