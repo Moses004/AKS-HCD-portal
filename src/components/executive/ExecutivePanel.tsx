@@ -11,6 +11,7 @@ import { SupabaseModal } from '../common/SupabaseModal';
 import { TargetManagementPanel } from './TargetManagementPanel';
 import { HcdSettingsDashboard } from '../dashboard/HcdSettingsDashboard';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
+import { KineticActivityCard } from '../common/MotionPrimitives';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -1113,16 +1114,19 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredPending.map((activity) => {
+              {filteredPending.map((activity, idx) => {
                 const isSelected = selectedPendingIds.includes(activity.id);
                 const proximityAlerts = detectProximityDuplicates(activity, activities, 150);
                 return (
-                  <div
+                  <KineticActivityCard
                     key={activity.id}
-                    className={`activity-card bg-white rounded-2xl border shadow-sm p-5 sm:p-6 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/10 space-y-4 ${
+                    variant="compact"
+                    animateEntrance
+                    delayIndex={idx}
+                    className={`bg-white rounded-2xl border shadow-sm p-5 sm:p-6 space-y-4 ${
                       isSelected
                         ? 'border-emerald-700 ring-1 ring-emerald-700/30'
-                        : 'border-slate-200/90 hover:border-emerald-700/30'
+                        : 'border-slate-200/90 hover:border-emerald-700/35'
                     }`}
                   >
                     {/* Top Row */}
@@ -1308,7 +1312,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </KineticActivityCard>
                 );
               })}
             </div>

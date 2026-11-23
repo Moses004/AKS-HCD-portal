@@ -6,6 +6,7 @@ import { HCDActivity, ActivityStatus } from '../../types';
 import { LgaReportExportCentre } from '../reports/LgaReportExportCentre';
 import { HcdSettingsDashboard } from '../dashboard/HcdSettingsDashboard';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
+import { KineticActivityCard } from '../common/MotionPrimitives';
 import { ActivityDraftEditorModal } from './ActivityDraftEditorModal';
 import { evaluateActivityEditPermission } from '../../services/mediaService';
 import {
@@ -378,7 +379,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredActivities.map((activity) => {
+          {filteredActivities.map((activity, idx) => {
             const pillar = PILLARS[activity.pillar];
             const isDraft = activity.status === 'DRAFT';
             const isPending = activity.status === 'PENDING_APPROVAL';
@@ -387,9 +388,11 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
             const editPerm = evaluateActivityEditPermission(activity, currentUser);
 
             return (
-              <div
+              <KineticActivityCard
                 key={activity.id}
-                className="activity-card bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/10 hover:border-emerald-700/30 group"
+                animateEntrance
+                delayIndex={idx}
+                className="bg-white rounded-2xl border border-slate-200/90 hover:border-emerald-700/35 shadow-sm overflow-hidden flex flex-col justify-between group"
               >
                 <div>
                   {/* Card Media Preview with Secure Resolver & Neutral Fallback */}
@@ -575,7 +578,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                     )}
                   </div>
                 </div>
-              </div>
+              </KineticActivityCard>
             );
           })}
         </div>

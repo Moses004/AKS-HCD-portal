@@ -7,6 +7,7 @@ import { OfficialPrintLetterhead } from './components/common/Logos';
 import { OfflineSyncBanner } from './components/common/OfflineSyncBanner';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner';
 import { RoleSwitcher } from './components/common/RoleSwitcher';
+import { ScrollProgressBar, KineticGlowCursor } from './components/common/MotionPrimitives';
 import { PublicPortal } from './components/public/PublicPortal';
 import { ProjectDetailModal } from './components/public/ProjectDetailModal';
 import { SignUpPage } from './components/auth/SignUpPage';
@@ -103,6 +104,7 @@ function AppContent() {
   const [inspectedActivity, setInspectedActivity] = useState<HCDActivity | null>(null);
   const [editingDraftActivityId, setEditingDraftActivityId] = useState<string | null>(null);
   const [editingDraftSection, setEditingDraftSection] = useState<'evidence' | undefined>(undefined);
+  const [focusedPublicLgaId, setFocusedPublicLgaId] = useState<string | null>(null);
 
   const editingDraftActivity = editingDraftActivityId
     ? activities.find((a) => a.id === editingDraftActivityId) || null
@@ -164,11 +166,18 @@ function AppContent() {
     if (currentUser.isAuthenticated && currentUser.isPrivileged) {
       switchLga(lgaId);
       handleTabChange('lga');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // Logged-out visitor remains on public portal with LGA selection
-      handleTabChange('public');
+      // Logged-out visitor navigates to public portal and locks the Geospatial Impact Map onto this LGA
+      setFocusedPublicLgaId(lgaId);
+      if (currentRoute !== '/' || currentTab !== 'public') {
+        if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+          window.history.pushState({}, '', '/');
+        }
+        setCurrentRoute('/');
+        setCurrentTab('public');
+      }
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Determine which page content to render based on route and auth guards
@@ -306,12 +315,17 @@ function AppContent() {
         onViewActivity={(act) => setInspectedActivity(act)}
         onOpenReportExport={() => setIsReportExportOpen(true)}
         onNavigateToLga={handleNavigateToLga}
+        externalSelectedLgaId={focusedPublicLgaId}
+        onClearExternalLga={() => setFocusedPublicLgaId(null)}
       />
     );
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans text-slate-800">
+    <div className="min-h-screen bg-[#FAF8F2] flex flex-col font-sans text-slate-800">
+      {/* Kinetic viewport scroll-progress hairline */}
+      <ScrollProgressBar />
+
       {/* PWA Home screen installation prompt */}
       <PwaInstallBanner />
 
@@ -401,6 +415,9 @@ function AppContent() {
           setEditingDraftActivityId(act.id);
         }}
       />
+
+      {/* Subtle Kinetic Civic Showcase cursor-following glow */}
+      <KineticGlowCursor />
     </div>
   );
 }

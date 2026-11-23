@@ -13,7 +13,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
   const { pillars } = useData();
 
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-[#0B4619] to-emerald-900 text-slate-300 pt-12 pb-8 border-t-4 border-[#D4AF37]">
+    <footer className="snap-end relative overflow-hidden bg-gradient-to-br from-emerald-950 via-[#0B4619] to-emerald-900 text-slate-300 pt-12 pb-8 border-t-4 border-[#D4AF37]">
       {/* Subtle White & Emerald Government Identity Gradient Sheen */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-emerald-950/50" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,15 +102,20 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
 
         {/* 31 LGAs Quick Directory Bar */}
         <div className="py-6 border-b border-emerald-800/40">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-300 mb-2">
-            31 Local Government Area Workspaces
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-200">
+              31 Local Government Area Workspaces & Map Directory
+            </div>
+            <span className="text-[11px] text-emerald-300/75">
+              Select any council to inspect live impact on the Geospatial Map
+            </span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {ALL_31_LGAS.map((lga) => (
               <button
                 key={lga.id}
                 onClick={() => onSelectLga && onSelectLga(lga.id)}
-                className="text-[10px] px-2 py-0.5 rounded bg-emerald-900/60 hover:bg-emerald-800 text-emerald-100 transition-colors border border-emerald-700/40"
+                className="text-[11px] px-2.5 py-1 rounded-md bg-emerald-900/55 hover:bg-[#D4AF37] hover:text-[#051F0E] text-emerald-100 font-medium transition-all duration-150 border border-emerald-700/40 hover:border-[#D4AF37] cursor-pointer"
               >
                 {lga.name}
               </button>

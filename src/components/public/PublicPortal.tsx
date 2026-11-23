@@ -1,22 +1,57 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  useSpring,
+} from 'motion/react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 import {
   HCDActivity,
   StateHCDActivity,
   StateHCDPublicActionItem,
   StateActivityCategory,
   STATE_CATEGORY_LABELS,
-  STATE_ACTIVITY_CATEGORIES,
 } from '../../types';
 import { stateActivitiesService } from '../../services/stateActivitiesService';
 import { PublicStateActivityModal } from './PublicStateActivityModal';
-import { ALL_31_LGAS, PILLARS, getLgaById } from '../../data/lgas';
+import {
+  useHeroDossierReel,
+  HeroDossierBackdropCanvas,
+  HeroDossierReelBar,
+  CuratedFallbackVisual,
+} from './HeroDossierBackdropReel';
+import { PILLARS, getLgaById } from '../../data/lgas';
 import { useData } from '../../context/DataContext';
 import { AkwaIbomStateMap } from '../map/AkwaIbomStateMap';
 import { AriseLogo } from '../common/Logos';
 import { ActivityMediaImage } from '../common/ActivityMediaImage';
 import {
+  AnimatedCounter,
+  ScrollReveal,
+  ShowcaseImage,
+  ParallaxLayer,
+  ParallaxDecorativeField,
+  AmbientParallaxGeometry,
+  KineticSectionHeader,
+  KineticActivityCard,
+  SectionSnapRail,
+  SnapSectionDefinition,
+  KINETIC_EASE,
+} from '../common/MotionPrimitives';
+import {
   Search,
-  Filter,
   GraduationCap,
   HeartPulse,
   Wrench,
@@ -24,41 +59,163 @@ import {
   Users,
   MapPin,
   CheckCircle2,
-  FileCheck2,
   Download,
   Eye,
-  ExternalLink,
   Building2,
   ArrowRight,
-  TrendingUp,
-  Award,
-  Calendar,
-  Sparkles,
   Flag,
   Layers,
   ShieldCheck,
   Paperclip,
   Clock,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  List,
+  X,
+  ArrowUpRight,
+  BarChart3,
 } from 'lucide-react';
+
+import heroImpactImg from '../../assets/images/hero_akwa_ibom_impact_1795446602763.jpg';
+import educationImg from '../../assets/images/pillar_education_learning_1795446602071.jpg';
+import healthImg from '../../assets/images/pillar_health_wellness_1795446606506.jpg';
+import skillsAgriImg from '../../assets/images/pillar_skills_agriculture_1795446599881.jpg';
 
 interface PublicPortalProps {
   activities: HCDActivity[];
   onViewActivity: (activity: HCDActivity) => void;
   onOpenReportExport: () => void;
   onNavigateToLga: (lgaId: string) => void;
+  externalSelectedLgaId?: string | null;
+  onClearExternalLga?: () => void;
 }
+
+type DistrictMetric = 'beneficiaries' | 'budget' | 'projects';
+
+const PILLAR_VISUALS: Record<string, { src: string; alt: string }> = {
+  education: {
+    src: educationImg,
+    alt: 'Akwa Ibom students and educators engaging with digital learning resources in a sunlit classroom',
+  },
+  health: {
+    src: healthImg,
+    alt: 'Primary healthcare consultation supporting mothers and families in Akwa Ibom State',
+  },
+  vocational: {
+    src: skillsAgriImg,
+    alt: 'Young Akwa Ibom technicians building modern engineering and vocational competencies',
+  },
+  agriculture: {
+    src: skillsAgriImg,
+    alt: 'Agri-entrepreneurs cultivating high-yield seedlings in a solar-assisted training center',
+  },
+  cross_cutting_enablers: {
+    src: heroImpactImg,
+    alt: 'Modern civic innovation campus advancing cross-cutting digital and social infrastructure in Uyo',
+  },
+  values_ethics_social_behaviour: {
+    src: heroImpactImg,
+    alt: 'Community youth and civic leaders gathering across Akwa Ibom State public learning spaces',
+  },
+};
+
+const HERO_CURATED_FALLBACKS: CuratedFallbackVisual[] = [
+  {
+    src: heroImpactImg,
+    alt: 'Modern civic innovation campus advancing cross-cutting digital and social infrastructure in Uyo',
+    pillarKey: 'cross_cutting_enablers',
+    title: 'ARISE Agenda Civic & Digital Human Capital Hub',
+    locationLabel: 'Uyo Senatorial District',
+  },
+  {
+    src: educationImg,
+    alt: 'Akwa Ibom students and educators engaging with digital learning resources in a sunlit classroom',
+    pillarKey: 'education',
+    title: 'Smart Classroom & Digital Literacy Transformation',
+    locationLabel: 'Akwa Ibom Public Schools',
+  },
+  {
+    src: healthImg,
+    alt: 'Primary healthcare consultation supporting mothers and families in Akwa Ibom State',
+    pillarKey: 'health',
+    title: 'Maternal, Newborn & Primary Healthcare Outreach',
+    locationLabel: 'Community Health Centres',
+  },
+  {
+    src: skillsAgriImg,
+    alt: 'Young Akwa Ibom technicians and agri-entrepreneurs advancing vocational and agricultural productivity',
+    pillarKey: 'vocational',
+    title: 'Youth Technical Skills & Modern Agro-Enterprise Centres',
+    locationLabel: 'Across 31 LGAs',
+  },
+];
+
+const PUBLIC_SNAP_SECTIONS: SnapSectionDefinition[] = [
+  { id: 'hero-section', label: 'Civic Showcase' },
+  { id: 'pillars-section', label: 'Six HCD Pillars' },
+  { id: 'districts-section', label: 'Senatorial Districts' },
+  { id: 'map-section', label: '31-LGA Impact Map' },
+  { id: 'registry-section', label: 'Verified Dossiers' },
+  { id: 'assurance-section', label: 'Verification Standard' },
+];
 
 export const PublicPortal: React.FC<PublicPortalProps> = ({
   activities,
   onViewActivity,
   onOpenReportExport,
   onNavigateToLga,
+  externalSelectedLgaId,
+  onClearExternalLga,
 }) => {
   const { pillars, getPillarDisplayName } = useData();
+  const prefersReduced = useReducedMotion();
+
+  // Scroll-triggered Parallax Refs & Transforms
+  const heroRef = useRef<HTMLElement | null>(null);
+  const assuranceRef = useRef<HTMLElement | null>(null);
+
+  const { scrollYProgress: heroScrollProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+  const smoothHeroScroll = useSpring(heroScrollProgress, {
+    stiffness: 110,
+    damping: 26,
+    restDelta: 0.001,
+  });
+
+  const heroBgY = useTransform(smoothHeroScroll, [0, 1], ['0%', '22%']);
+  const heroBgScale = useTransform(smoothHeroScroll, [0, 1], [1.04, 1.13]);
+  const heroDecorY = useTransform(smoothHeroScroll, [0, 1], ['0%', '-18%']);
+  const heroDecorRotate = useTransform(smoothHeroScroll, [0, 1], [0, 9]);
+  const heroDecorOpacity = useTransform(smoothHeroScroll, [0, 1], [0.22, 0.04]);
+  const heroLeftY = useTransform(smoothHeroScroll, [0, 1], [0, 26]);
+  const heroRightY = useTransform(smoothHeroScroll, [0, 1], [0, -22]);
+
+  const { scrollYProgress: assuranceScrollProgress } = useScroll({
+    target: assuranceRef,
+    offset: ['start end', 'end start'],
+  });
+  const smoothAssuranceScroll = useSpring(assuranceScrollProgress, {
+    stiffness: 110,
+    damping: 26,
+    restDelta: 0.001,
+  });
+  const assuranceDecorY = useTransform(smoothAssuranceScroll, [0, 1], [-28, 28]);
+  const assuranceDecorRotate = useTransform(smoothAssuranceScroll, [0, 1], [-5, 5]);
+
   const [selectedLgaId, setSelectedLgaId] = useState<string | null>(null);
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
+  const [spotlightPillarCode, setSpotlightPillarCode] = useState<string>('education');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [districtFilter, setDistrictFilter] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [districtChartMetric, setDistrictChartMetric] = useState<DistrictMetric>('beneficiaries');
+
+  // Hero Spotlight Carousel State
+  const [heroSlideIdx, setHeroSlideIdx] = useState<number>(0);
+  const [heroPaused, setHeroPaused] = useState<boolean>(false);
 
   // State-Level Activities Transparency for Citizens
   const [portalScope, setPortalScope] = useState<'lga' | 'state'>('lga');
@@ -68,6 +225,25 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
   const [stateSearchQuery, setStateSearchQuery] = useState('');
   const [inspectedStateActivity, setInspectedStateActivity] = useState<StateHCDActivity | null>(null);
   const [isStateLoading, setIsStateLoading] = useState(false);
+
+  // Sync Footer / External LGA selection directly to the Geospatial Impact Map
+  useEffect(() => {
+    if (externalSelectedLgaId) {
+      setSelectedLgaId(externalSelectedLgaId);
+      const mapEl = document.getElementById('map-section');
+      if (mapEl) {
+        mapEl.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+      }
+      onClearExternalLga?.();
+    }
+  }, [externalSelectedLgaId, onClearExternalLga, prefersReduced]);
+
+  // Keep spotlightPillarCode aligned with available pillars
+  useEffect(() => {
+    if (pillars.length > 0 && !pillars.some((p) => p.pillar_code === spotlightPillarCode)) {
+      setSpotlightPillarCode(pillars[0].pillar_code);
+    }
+  }, [pillars, spotlightPillarCode]);
 
   useEffect(() => {
     const loadPublishedStateActivities = async () => {
@@ -81,7 +257,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           setPublishedStateActivities(actRes.data);
         }
         if (actionRes.success) {
-          setPublicActionItems(actionRes.data as any);
+          setPublicActionItems(actionRes.data as StateHCDPublicActionItem[]);
         }
       } catch {
         // Non-blocking for public visitor portal
@@ -92,39 +268,154 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
     loadPublishedStateActivities();
   }, []);
 
-  const filteredStateActivities = useMemo(() => {
-    return publishedStateActivities.filter((act) => {
-      const matchCategory = selectedStateCategory === 'all' || act.category === selectedStateCategory;
-      const matchSearch =
-        !stateSearchQuery ||
-        act.title.toLowerCase().includes(stateSearchQuery.toLowerCase()) ||
-        act.lead_institution.toLowerCase().includes(stateSearchQuery.toLowerCase()) ||
-        (act.location && act.location.toLowerCase().includes(stateSearchQuery.toLowerCase())) ||
-        (act.description && act.description.toLowerCase().includes(stateSearchQuery.toLowerCase()));
-      return matchCategory && matchSearch;
-    });
-  }, [publishedStateActivities, selectedStateCategory, stateSearchQuery]);
-
   // Only published activities are displayed on the public transparency portal
   const publishedActivities = useMemo(() => {
     return activities.filter((a) => a.status === 'PUBLISHED');
   }, [activities]);
 
-  // Aggregate Key Counters
-  const totalBeneficiaries = useMemo(() => {
-    return publishedActivities.reduce((acc, a) => acc + a.beneficiariesTotal, 0);
+  // Dynamic background reel cycling through all verified project dossier photos & videos
+  const heroBackdropReel = useHeroDossierReel({
+    publishedActivities,
+    publishedStateActivities,
+    curatedFallbacks: HERO_CURATED_FALLBACKS,
+  });
+
+  // Featured Spotlight items for the Living Hero Carousel
+  const spotlightActivities = useMemo(() => {
+    return [...publishedActivities]
+      .sort((a, b) => (b.beneficiariesTotal || 0) - (a.beneficiariesTotal || 0))
+      .slice(0, 6);
   }, [publishedActivities]);
 
-  const totalBudget = useMemo(() => {
-    return publishedActivities.reduce((acc, a) => acc + a.budgetNgn, 0);
-  }, [publishedActivities]);
+  // Auto-cycle hero spotlight when not paused and reduced motion is off
+  useEffect(() => {
+    if (prefersReduced || heroPaused || spotlightActivities.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setHeroSlideIdx((prev) => (prev + 1) % spotlightActivities.length);
+    }, 5500);
+    return () => window.clearInterval(timer);
+  }, [prefersReduced, heroPaused, spotlightActivities.length]);
+
+  const currentHeroSpotlight =
+    spotlightActivities.length > 0
+      ? spotlightActivities[heroSlideIdx % spotlightActivities.length]
+      : null;
+
+  // Aggregate Key Counters
+  const totalBeneficiaries = useMemo(
+    () => publishedActivities.reduce((acc, a) => acc + (a.beneficiariesTotal || 0), 0),
+    [publishedActivities]
+  );
+
+  const totalBudget = useMemo(
+    () => publishedActivities.reduce((acc, a) => acc + (a.budgetNgn || 0), 0),
+    [publishedActivities]
+  );
 
   const activeLgasCount = useMemo(() => {
     const set = new Set(publishedActivities.map((a) => a.lgaId));
     return set.size;
   }, [publishedActivities]);
 
-  // Filtered Activities
+  // Senatorial District live comparison dataset
+  const districtAnalytics = useMemo(() => {
+    const buckets = [
+      {
+        id: 'uyo',
+        label: 'Uyo (North-East)',
+        shortLabel: 'Uyo NE',
+        councils: 9,
+        beneficiaries: 0,
+        budgetNgn: 0,
+        projects: 0,
+        color: '#0B4619',
+      },
+      {
+        id: 'ikot-ekpene',
+        label: 'Ikot Ekpene (North-West)',
+        shortLabel: 'Ikot Ekpene NW',
+        councils: 10,
+        beneficiaries: 0,
+        budgetNgn: 0,
+        projects: 0,
+        color: '#047857',
+      },
+      {
+        id: 'eket',
+        label: 'Eket (South)',
+        shortLabel: 'Eket South',
+        councils: 12,
+        beneficiaries: 0,
+        budgetNgn: 0,
+        projects: 0,
+        color: '#B89226',
+      },
+    ];
+
+    publishedActivities.forEach((act) => {
+      const lga = getLgaById(act.lgaId);
+      const dist = lga?.senatorialDistrict || '';
+      const target = dist.includes('North-East')
+        ? buckets[0]
+        : dist.includes('North-West')
+        ? buckets[1]
+        : dist.includes('South')
+        ? buckets[2]
+        : null;
+      if (target) {
+        target.beneficiaries += act.beneficiariesTotal || 0;
+        target.budgetNgn += act.budgetNgn || 0;
+        target.projects += 1;
+      }
+    });
+
+    return buckets.map((b) => ({
+      ...b,
+      budgetM: Number((b.budgetNgn / 1_000_000).toFixed(2)),
+      metricValue:
+        districtChartMetric === 'beneficiaries'
+          ? b.beneficiaries
+          : districtChartMetric === 'budget'
+          ? Number((b.budgetNgn / 1_000_000).toFixed(2))
+          : b.projects,
+    }));
+  }, [publishedActivities, districtChartMetric]);
+
+  // Active Spotlight Pillar Analytics
+  const activeSpotlightPillar = useMemo(() => {
+    const pObj = pillars.find((p) => p.pillar_code === spotlightPillarCode) || pillars[0];
+    if (!pObj) return null;
+
+    const pActs = publishedActivities.filter((a) => a.pillar === pObj.pillar_code);
+    const totalBen = pActs.reduce((acc, a) => acc + (a.beneficiariesTotal || 0), 0);
+    const maleBen = pActs.reduce((acc, a) => acc + (a.beneficiariesMale || 0), 0);
+    const femaleBen = pActs.reduce((acc, a) => acc + (a.beneficiariesFemale || 0), 0);
+    const youthBen = pActs.reduce((acc, a) => acc + (a.youthBeneficiaries || 0), 0);
+    const budgetNgn = pActs.reduce((acc, a) => acc + (a.budgetNgn || 0), 0);
+    const lgaSet = new Set(pActs.map((a) => a.lgaName));
+    const topLgas = Array.from(lgaSet).slice(0, 4);
+
+    const genderTotal = maleBen + femaleBen;
+    const malePct = genderTotal > 0 ? Math.round((maleBen / genderTotal) * 100) : 0;
+    const femalePct = genderTotal > 0 ? 100 - malePct : 0;
+    const youthPct = totalBen > 0 ? Math.min(100, Math.round((youthBen / totalBen) * 100)) : 0;
+
+    return {
+      pillar: pObj,
+      meta: PILLARS[pObj.pillar_code],
+      visual: PILLAR_VISUALS[pObj.pillar_code] || { src: heroImpactImg, alt: pObj.display_name },
+      activitiesCount: pActs.length,
+      totalBen,
+      malePct,
+      femalePct,
+      youthPct,
+      budgetNgn,
+      councilsCount: lgaSet.size,
+      topLgas,
+    };
+  }, [pillars, spotlightPillarCode, publishedActivities]);
+
+  // Filtered LGA Activities
   const filteredActivities = useMemo(() => {
     return publishedActivities.filter((a) => {
       const matchLga = !selectedLgaId || a.lgaId.toLowerCase() === selectedLgaId.toLowerCase();
@@ -147,677 +438,1431 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
     });
   }, [publishedActivities, selectedLgaId, selectedPillar, searchQuery, districtFilter]);
 
+  const filteredStateActivities = useMemo(() => {
+    return publishedStateActivities.filter((act) => {
+      const matchCategory = selectedStateCategory === 'all' || act.category === selectedStateCategory;
+      const matchSearch =
+        !stateSearchQuery ||
+        act.title.toLowerCase().includes(stateSearchQuery.toLowerCase()) ||
+        act.lead_institution.toLowerCase().includes(stateSearchQuery.toLowerCase()) ||
+        (act.location && act.location.toLowerCase().includes(stateSearchQuery.toLowerCase())) ||
+        (act.description && act.description.toLowerCase().includes(stateSearchQuery.toLowerCase()));
+      return matchCategory && matchSearch;
+    });
+  }, [publishedStateActivities, selectedStateCategory, stateSearchQuery]);
+
   const selectedLgaObj = selectedLgaId ? getLgaById(selectedLgaId) : null;
 
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+    }
+  };
+
+  const renderPillarIcon = (code: string, className = 'w-4 h-4') => {
+    if (code === 'education') return <GraduationCap className={className} />;
+    if (code === 'health') return <HeartPulse className={className} />;
+    if (code === 'vocational') return <Wrench className={className} />;
+    if (code === 'agriculture') return <Sprout className={className} />;
+    if (code === 'cross_cutting_enablers') return <Layers className={className} />;
+    return <ShieldCheck className={className} />;
+  };
+
+  const marqueeItems = useMemo(() => {
+    if (publishedActivities.length === 0) return [];
+    const base = publishedActivities.slice(0, 10);
+    return [...base, ...base];
+  }, [publishedActivities]);
+
+  const hasActiveFilters =
+    Boolean(selectedLgaId) || selectedPillar !== 'all' || districtFilter !== 'all' || Boolean(searchQuery);
+
   return (
-    <div className="space-y-section pb-16 bg-[#FAF8F2]">
-      {/* 1. HERO LEADERSHIP SPOTLIGHT & ARISE AGENDA BANNER (Inspired by reference screenshot) */}
-      <section className="bg-gradient-to-b from-emerald-950 via-[#0B4619] to-emerald-900 text-white pt-8 pb-14 px-4 sm:px-6 lg:px-8 border-b-4 border-[#D4AF37] relative overflow-hidden">
-        {/* Subtle patterned backdrop */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    <div className="relative bg-[#FAF8F2] text-slate-900 pb-20 overflow-x-clip">
+      {/* Global Ambient Scroll-Parallax Abstract Civic Geometry */}
+      <AmbientParallaxGeometry />
+
+      {/* =====================================================================
+          1. KINETIC CIVIC HERO STAGE (Multi-Plane Scroll Parallax)
+          ===================================================================== */}
+      <section
+        id="hero-section"
+        ref={heroRef}
+        className="kinetic-snap-section relative z-10 overflow-hidden bg-[#062611] text-white border-b-4 border-[#D4AF37]"
+      >
+        {/* Plane 1: Dynamic Verified Project Dossier Photos & Videos Reel with Scroll Parallax Depth */}
+        <motion.div
+          style={
+            prefersReduced
+              ? undefined
+              : { y: heroBgY, scale: heroBgScale, willChange: 'transform' }
+          }
+          className="absolute inset-0 pointer-events-none origin-center"
+        >
+          <HeroDossierBackdropCanvas reel={heroBackdropReel} />
+        </motion.div>
+
+        {/* Measured Directional Contrast Scrims — Keeps Headline Crisp While Letting Dossier Media Shine Clearly */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#041A0B]/74 via-[#052110]/34 to-[#041A0B]/16" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#051F0E]/82 via-transparent to-[#041A0B]/28" />
+
+        {/* Plane 2: Subtle Mid-Ground Crest Gold Architectural Lattice & Luminous Arcs */}
+        <motion.div
+          aria-hidden="true"
+          style={
+            prefersReduced
+              ? undefined
+              : {
+                  y: heroDecorY,
+                  opacity: heroDecorOpacity,
+                  willChange: 'transform, opacity',
+                }
+          }
+          className="no-print absolute inset-0 pointer-events-none overflow-hidden"
+        >
+          <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <pattern id="hero-pattern" width="60" height="60" patternUnits="userSpaceOnUse">
-                <circle cx="30" cy="30" r="1.5" fill="#D4AF37" />
+              <pattern id="hero-kinetic-lattice" width="56" height="56" patternUnits="userSpaceOnUse">
+                <circle cx="28" cy="28" r="1.2" fill="#D4AF37" />
+                <path d="M 56 0 L 0 0 0 56" fill="none" stroke="#D4AF37" strokeWidth="0.3" opacity="0.28" />
               </pattern>
             </defs>
-            <rect width="100%" height="100%" fill="url(#hero-pattern)" />
+            <rect width="100%" height="100%" fill="url(#hero-kinetic-lattice)" />
           </svg>
-        </div>
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left Headline & Strategic Mandate (7 cols) */}
-            <div className="lg:col-span-8 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-semibold backdrop-blur-xs">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Akwa Ibom State Human Capital Development Blueprint · ARISE Agenda</span>
+          <motion.svg
+            style={prefersReduced ? undefined : { rotate: heroDecorRotate, willChange: 'transform' }}
+            className="absolute -right-28 -top-24 w-[520px] h-[520px] text-[#D4AF37]/20"
+            viewBox="0 0 400 400"
+            fill="none"
+          >
+            <circle cx="200" cy="200" r="185" stroke="currentColor" strokeWidth="1" strokeDasharray="5 10" />
+            <circle cx="200" cy="200" r="138" stroke="currentColor" strokeWidth="0.8" />
+            <circle cx="200" cy="200" r="90" stroke="currentColor" strokeWidth="0.6" strokeDasharray="2 6" />
+          </motion.svg>
+
+          <div className="absolute -left-24 bottom-0 w-96 h-96 rounded-full bg-radial from-[#D4AF37]/14 via-emerald-500/8 to-transparent blur-3xl" />
+        </motion.div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-16 lg:pb-24 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
+            {/* Left Dominant Focal Carrier (7 cols) with Subtle Foreground Parallax */}
+            <motion.div
+              initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={prefersReduced ? undefined : { y: heroLeftY, willChange: 'transform' }}
+              transition={{ duration: 0.6, ease: KINETIC_EASE }}
+              className="lg:col-span-7 flex flex-col justify-center space-y-6"
+            >
+              {/* Clean Editorial Kicker (Zero-Pill Discipline) */}
+              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-[#F0CC56] drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
+                <span>Akwa Ibom State Government</span>
+                <span aria-hidden="true" className="text-white/50">·</span>
+                <span className="text-emerald-100">ARISE Agenda Human Capital Blueprint</span>
+                <span aria-hidden="true" className="text-white/50">·</span>
+                <span className="text-emerald-100/95">31 Autonomous Councils</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight text-balance">
-                ARISE Human Capital Development Implementation Dashboard
+              <h1
+                className="font-display font-bold text-white tracking-tight leading-[1.08] text-balance drop-shadow-[0_2px_16px_rgba(0,0,0,0.68)]"
+                style={{ fontSize: 'clamp(2.25rem, 4.2vw, 3.75rem)' }}
+              >
+                Verified Human Capital Impact Across Every Council in Akwa Ibom.
               </h1>
 
-              <p className="text-sm sm:text-base text-emerald-100/90 leading-relaxed max-w-2xl text-balance">
-                Measuring real-time grassroots investments in Education and Life long learning, Health, Skill and labour participation, Agriculture, Cross-cutting Enablers, and Values, Ethics & Social Behaviour. Isolated municipal workflows unified into an open state impact repository.
+              <p className="text-sm sm:text-base text-white/95 leading-relaxed max-w-2xl drop-shadow-[0_1px_10px_rgba(0,0,0,0.7)]">
+                Track Cabinet-verified grassroots investments in Education, Healthcare, Technical Skills, Agriculture, Cross-Cutting Enablers, and Civic Values—complete with geospatial coordinates, photographic proof, and biometric beneficiary rolls.
               </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <a
-                  href="#map-section"
-                  className="px-5 py-3 rounded-xl bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 flex items-center gap-2"
+              {/* Single Dominant Primary CTA + Crisp Secondary Action */}
+              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('map-section')}
+                  className="px-6 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e0bd4c] text-[#051F0E] font-bold text-xs sm:text-sm shadow-lg shadow-black/30 transition-all duration-200 active:scale-[0.98] inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
                 >
                   <MapPin className="w-4 h-4" />
-                  Explore 31-LGA Interactive Map
-                </a>
+                  Explore 31-LGA Impact Map
+                </button>
 
                 <button
+                  type="button"
                   onClick={onOpenReportExport}
-                  className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/20 transition-colors flex items-center gap-2"
+                  className="px-5 py-3.5 rounded-xl bg-[#041B0C]/55 hover:bg-[#041B0C]/75 text-white font-semibold text-xs sm:text-sm border border-white/30 backdrop-blur-md shadow-lg shadow-black/20 transition-all duration-200 inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
                 >
-                  <Download className="w-4 h-4 text-emerald-300" />
-                  Official Executive Briefing
+                  <Download className="w-4 h-4 text-[#D4AF37]" />
+                  Executive Briefing Report
                 </button>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Right AKS | ARISE Placeholder Card (Official ARISE Logo) */}
-            <div className="lg:col-span-4">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 sm:p-7 shadow-xl text-center space-y-4">
-                {/* Official ARISE Logo - Maintained Rounded Form, Shape, and Pixel Fidelity */}
-                <div className="flex flex-col items-center justify-center py-2">
-                  <div className="w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 aspect-square rounded-full bg-white p-5 sm:p-6 shadow-2xl border-4 border-[#D4AF37] ring-4 ring-white/25 flex items-center justify-center hover:scale-105 transition-transform duration-300 overflow-hidden shrink-0">
+            {/* Right Living ARISE Showcase & Verified Field Spotlight Card (5 cols) */}
+            <motion.div
+              initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={prefersReduced ? undefined : { y: heroRightY, willChange: 'transform' }}
+              transition={{ duration: 0.65, delay: 0.1, ease: KINETIC_EASE }}
+              onMouseEnter={() => setHeroPaused(true)}
+              onMouseLeave={() => setHeroPaused(false)}
+              className="lg:col-span-5 flex flex-col"
+            >
+              <div className="h-full bg-[#062411]/62 backdrop-blur-md rounded-2xl border border-white/20 p-6 sm:p-7 shadow-2xl flex flex-col justify-between gap-6">
+                {/* Official ARISE Agenda Crest Header */}
+                <div className="flex items-center gap-4 pb-5 border-b border-white/12">
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 aspect-square rounded-full bg-white p-2.5 shadow-xl border-[3px] border-[#D4AF37] flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-105">
                     <AriseLogo className="w-full h-full object-contain" />
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <h3 className="text-lg sm:text-xl font-black text-white tracking-wide">
-                    ARISE AGENDA
-                  </h3>
-                  <p className="text-xs text-[#D4AF37] font-semibold tracking-wide">
-                    Government of Akwa Ibom State
-                  </p>
-                  <p className="text-xs text-emerald-100/95 italic mt-2.5 leading-relaxed text-balance">
-                    "Anchor on the ARISE Agenda and the Human Capital Development Framework, across all 31 Local Government Areas."
-                  </p>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. LIVE STATE KPI STATS BANNER */}
-      <section className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg -mt-10 relative z-20">
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/90 p-card-pad grid grid-cols-2 md:grid-cols-4 gap-card-gap lg:gap-card-gap-lg divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-          <div className="space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-              Verified Beneficiaries
-            </span>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-950 font-mono tabular-nums">
-              {totalBeneficiaries.toLocaleString()}
-            </div>
-            <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              Biometrically Documented
-            </div>
-          </div>
-
-          <div className="space-y-1 pt-3 sm:pt-0 sm:pl-6">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-              Published Grassroots Projects
-            </span>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tabular-nums">
-              {publishedActivities.length}
-            </div>
-            <div className="text-[11px] text-slate-500 font-medium">
-              Cabinet Approved & Audited
-            </div>
-          </div>
-
-          <div className="space-y-1 pt-3 sm:pt-0 sm:pl-6">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-              31 Local Governments
-            </span>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tabular-nums">
-              31 / 31
-            </div>
-            <div className="text-[11px] text-emerald-700 font-medium">
-              {activeLgasCount} Councils With Active Records
-            </div>
-          </div>
-
-          <div className="space-y-1 pt-3 sm:pt-0 sm:pl-6">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-              Capacity Capital Deployed
-            </span>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-900 font-mono tabular-nums">
-              ₦ {(totalBudget / 1000000).toFixed(1)}M
-            </div>
-            <div className="text-[11px] text-slate-500 font-medium">
-              Direct Beneficiary Subventions
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. STRATEGIC DEVELOPMENT PILLARS & CROSS-CUTTING ENABLERS */}
-      <section className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg space-y-subsection">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Strategic Human Capital Pillars & Enablers
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Grassroots activities categorically aligned with the Akwa Ibom State HCD Blueprint and Cross-Cutting Metrics
-            </p>
-          </div>
-          <button
-            onClick={() => setSelectedPillar('all')}
-            className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
-              selectedPillar === 'all'
-                ? 'bg-emerald-950 text-white'
-                : 'text-slate-600 hover:text-slate-900 bg-slate-100'
-            }`}
-          >
-            Show All Pillars
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-card-gap lg:gap-card-gap-lg">
-          {pillars.map((p) => {
-            const pillarInfo = PILLARS[p.pillar_code];
-            const isSelected = selectedPillar === p.pillar_code;
-            const pActs = publishedActivities.filter((a) => a.pillar === p.pillar_code);
-            const pBen = pActs.reduce((acc, a) => acc + a.beneficiariesTotal, 0);
-
-            return (
-              <div
-                key={p.pillar_code}
-                onClick={() => setSelectedPillar(isSelected ? 'all' : p.pillar_code)}
-                className={`p-card-pad rounded-2xl border cursor-pointer transition-all flex flex-col justify-between ${
-                  isSelected
-                    ? 'border-emerald-700 bg-emerald-50/70 shadow-md ring-2 ring-emerald-700/20'
-                    : 'border-slate-200/90 bg-white hover:border-slate-300 hover:shadow-sm'
-                }`}
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-xs"
-                      style={{ backgroundColor: pillarInfo?.color || '#0B4619' }}
-                    >
-                      {p.pillar_code === 'education' && <GraduationCap className="w-5 h-5" />}
-                      {p.pillar_code === 'health' && <HeartPulse className="w-5 h-5" />}
-                      {p.pillar_code === 'vocational' && <Wrench className="w-5 h-5" />}
-                      {p.pillar_code === 'agriculture' && <Sprout className="w-5 h-5" />}
-                      {p.pillar_code === 'cross_cutting_enablers' && <Layers className="w-5 h-5" />}
-                      {p.pillar_code === 'values_ethics_social_behaviour' && <ShieldCheck className="w-5 h-5" />}
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-[#D4AF37] tracking-wide">
+                      ARISE AGENDA
                     </div>
-                    <span className="text-xs font-bold text-slate-500 font-mono tabular-nums">
-                      {pActs.length} {pActs.length === 1 ? 'project' : 'projects'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">{p.display_name}</h3>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                      {p.pillar_code === 'agriculture'
-                        ? 'Building Human Capital Development in Homes, Communities, Learning Institutions & Workplaces.'
-                        : p.description || pillarInfo?.tagline || ''}
+                    <h2 className="font-display text-lg sm:text-xl font-bold text-white leading-snug">
+                      Live Verified Spotlight
+                    </h2>
+                    <p className="text-xs text-emerald-200/85 mt-0.5 leading-snug">
+                      Real-time Cabinet-audited community interventions across Akwa Ibom State.
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Beneficiaries</span>
-                  <strong className="text-slate-900 font-mono tabular-nums font-bold">
-                    {pBen.toLocaleString()}
-                  </strong>
+                {/* Live Cycling Verified Activity Spotlight */}
+                <div className="flex-1 flex flex-col justify-between">
+                  {currentHeroSpotlight ? (
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentHeroSpotlight.id}
+                        initial={prefersReduced ? { opacity: 1 } : { opacity: 0, x: 14 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={prefersReduced ? { opacity: 1 } : { opacity: 0, x: -14 }}
+                        transition={{ duration: 0.3, ease: KINETIC_EASE }}
+                        className="space-y-4"
+                      >
+                        <div className="text-xs text-emerald-200/90 flex flex-wrap items-center gap-1.5">
+                          <span className="font-semibold text-[#D4AF37]">
+                            {currentHeroSpotlight.lgaName} LGA
+                          </span>
+                          <span aria-hidden="true">·</span>
+                          <span>{getPillarDisplayName(currentHeroSpotlight.pillar)}</span>
+                        </div>
+
+                        <h3 className="font-display text-lg sm:text-xl font-semibold text-white leading-snug line-clamp-2">
+                          {currentHeroSpotlight.title}
+                        </h3>
+
+                        <div className="grid grid-cols-2 gap-3 pt-1">
+                          <div className="p-3 rounded-xl bg-white/8 border border-white/10">
+                            <span className="text-[11px] text-emerald-200/80 block">
+                              Verified Reach
+                            </span>
+                            <span className="text-lg font-bold text-white font-mono tabular-nums">
+                              {currentHeroSpotlight.beneficiariesTotal.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="p-3 rounded-xl bg-white/8 border border-white/10">
+                            <span className="text-[11px] text-emerald-200/80 block">
+                              Invested Capital
+                            </span>
+                            <span className="text-lg font-bold text-[#D4AF37] font-mono tabular-nums">
+                              ₦{(currentHeroSpotlight.budgetNgn / 1_000_000).toFixed(1)}M
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2">
+                          <button
+                            type="button"
+                            onClick={() => onViewActivity(currentHeroSpotlight)}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF37] hover:text-amber-200 transition-colors cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            Inspect Dossier & Proof
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </button>
+
+                          {spotlightActivities.length > 1 && (
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[11px] font-mono tabular-nums text-emerald-200/80 mr-1">
+                                {(heroSlideIdx % spotlightActivities.length) + 1}/{spotlightActivities.length}
+                              </span>
+                              <button
+                                type="button"
+                                aria-label="Previous featured project"
+                                onClick={() =>
+                                  setHeroSlideIdx(
+                                    (prev) => (prev - 1 + spotlightActivities.length) % spotlightActivities.length
+                                  )
+                                }
+                                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                aria-label="Next featured project"
+                                onClick={() =>
+                                  setHeroSlideIdx((prev) => (prev + 1) % spotlightActivities.length)
+                                }
+                                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  ) : (
+                    <div className="py-4 text-xs text-emerald-100/85 leading-relaxed">
+                      Published grassroots activities across all 31 Local Government Areas will appear here automatically upon State Executive verification.
+                    </div>
+                  )}
                 </div>
               </div>
-            );
-          })}
+            </motion.div>
+          </div>
+
+          {/* Interactive Background Dossier Reel Caption, Progress & Controls */}
+          <HeroDossierReelBar
+            reel={heroBackdropReel}
+            onInspectActivity={onViewActivity}
+            onInspectStateActivity={(act) => setInspectedStateActivity(act)}
+          />
         </div>
       </section>
 
-      {/* 4. GEOSPATIAL 31-LGA INTERACTIVE MAP SECTION */}
-      <section id="map-section" className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg space-y-subsection">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-3">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              31 Local Government Areas Vector Map
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Select or hover any LGA polygon to query verified grassroots metrics and isolate territory data
+      {/* =====================================================================
+          2. ROLLING SPRING KPI STRIP + INTERACTIVE GRASSROOTS PULSE MARQUEE
+          ===================================================================== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 space-y-4">
+        <div className="bg-white rounded-2xl shadow-lg shadow-emerald-950/8 border border-[#E5E2D9] p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:divide-x lg:divide-[#ECE8DD]">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-slate-500 block">
+              Verified Beneficiaries
+            </span>
+            <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
+              <AnimatedCounter value={totalBeneficiaries} />
+            </div>
+            <p className="text-xs text-emerald-800 font-medium">
+              Biometrically documented citizens
             </p>
           </div>
 
+          <div className="space-y-1 lg:pl-6">
+            <span className="text-xs font-semibold text-slate-500 block">
+              Published Grassroots Projects
+            </span>
+            <div className="text-2xl sm:text-3xl font-bold text-slate-950 font-mono tabular-nums">
+              <AnimatedCounter value={publishedActivities.length} />
+            </div>
+            <p className="text-xs text-slate-500">
+              Cabinet approved & EXIF verified
+            </p>
+          </div>
+
+          <div className="space-y-1 lg:pl-6">
+            <span className="text-xs font-semibold text-slate-500 block">
+              Active Local Governments
+            </span>
+            <div className="text-2xl sm:text-3xl font-bold text-slate-950 font-mono tabular-nums">
+              <AnimatedCounter value={activeLgasCount} suffix=" / 31" />
+            </div>
+            <p className="text-xs text-emerald-800 font-medium">
+              Across 3 Senatorial Districts
+            </p>
+          </div>
+
+          <div className="space-y-1 lg:pl-6">
+            <span className="text-xs font-semibold text-slate-500 block">
+              Capacity Capital Deployed
+            </span>
+            <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
+              <AnimatedCounter value={totalBudget / 1_000_000} prefix="₦" suffix="M" decimals={1} />
+            </div>
+            <p className="text-xs text-slate-500">
+              Direct grassroots investments
+            </p>
+          </div>
+        </div>
+
+        {/* Pause-on-Hover Interactive Grassroots Highlights Strip */}
+        {marqueeItems.length > 0 && (
+          <div
+            aria-label="Verified grassroots impact stream"
+            className="kinetic-marquee-viewport overflow-hidden bg-white rounded-xl border border-[#E5E2D9] py-2.5"
+          >
+            <div className="kinetic-marquee-track items-center gap-3 px-3">
+              {marqueeItems.map((act, idx) => (
+                <button
+                  key={`${act.id}-${idx}`}
+                  type="button"
+                  onClick={() => onViewActivity(act)}
+                  className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg bg-[#FAF8F2] hover:bg-emerald-50 border border-[#ECE8DD] hover:border-emerald-300 transition-colors text-xs whitespace-nowrap shrink-0 cursor-pointer group"
+                >
+                  <span className="font-semibold text-[#0B4619]">{act.lgaName}</span>
+                  <span aria-hidden="true" className="text-slate-300">·</span>
+                  <span className="text-slate-800 font-medium max-w-[230px] truncate group-hover:text-[#0B4619]">
+                    {act.title}
+                  </span>
+                  <span aria-hidden="true" className="text-slate-300">·</span>
+                  <span className="font-mono tabular-nums font-semibold text-slate-600">
+                    {act.beneficiariesTotal.toLocaleString()} reached
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* =====================================================================
+          3. INTERACTIVE 6-PILLAR SPOTLIGHT STAGE (01. – 06.)
+          ===================================================================== */}
+      <section id="pillars-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-16">
+        <ParallaxDecorativeField variant="gold-contours" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-8 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E5E2D9] pb-4">
+          <KineticSectionHeader
+            kicker="Strategic Mandate · Six Pillars"
+            title="Human Capital Development Pillars & Cross-Cutting Enablers"
+            description="Select any pillar to inspect live beneficiary reach, demographic balance, and council coverage across the ARISE HCD Blueprint."
+            className="max-w-2xl"
+          />
+
+          {selectedPillar !== 'all' && (
+            <button
+              type="button"
+              onClick={() => setSelectedPillar('all')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0B4619] text-white text-xs font-semibold hover:bg-emerald-900 transition-colors cursor-pointer whitespace-nowrap self-start md:self-auto"
+            >
+              Clear Pillar Filter
+            </button>
+          )}
+        </div>
+
+        <ScrollReveal delay={0.06}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left: Numbered Interactive Pillar Selector Rail (5 cols) */}
+            <div className="lg:col-span-5 flex flex-col gap-2">
+              {pillars.map((p, index) => {
+                const isSpotlight = activeSpotlightPillar?.pillar.pillar_code === p.pillar_code;
+                const pActs = publishedActivities.filter((a) => a.pillar === p.pillar_code);
+                const pBen = pActs.reduce((acc, a) => acc + (a.beneficiariesTotal || 0), 0);
+                const color = PILLARS[p.pillar_code]?.color || '#0B4619';
+
+                return (
+                  <button
+                    key={p.pillar_code}
+                    type="button"
+                    onClick={() => setSpotlightPillarCode(p.pillar_code)}
+                    className={`relative text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
+                      isSpotlight
+                        ? 'border-[#0B4619] bg-white shadow-md shadow-emerald-950/6'
+                        : 'border-[#E5E2D9] bg-white/70 hover:bg-white hover:border-slate-300'
+                    }`}
+                  >
+                    {isSpotlight && (
+                      <motion.div
+                        layoutId="activePillarHighlight"
+                        transition={{ duration: 0.25, ease: KINETIC_EASE }}
+                        className="absolute inset-0 rounded-xl ring-2 ring-[#0B4619]/20 pointer-events-none"
+                      />
+                    )}
+
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <span className="font-mono text-xs font-bold text-slate-400 tabular-nums shrink-0">
+                        0{index + 1}.
+                      </span>
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0"
+                        style={{ backgroundColor: color }}
+                      >
+                        {renderPillarIcon(p.pillar_code, 'w-4 h-4')}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-900 truncate">
+                          {p.display_name}
+                        </div>
+                        <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                          <span className="font-mono tabular-nums">{pActs.length} projects</span>
+                          <span aria-hidden="true">·</span>
+                          <span className="font-mono tabular-nums font-medium text-slate-700">
+                            {pBen.toLocaleString()} reached
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <ChevronRight
+                      className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
+                        isSpotlight ? 'text-[#0B4619] translate-x-0.5' : 'text-slate-300'
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right: Animated Pillar Spotlight Stage (7 cols) */}
+            <div className="lg:col-span-7 flex">
+              {activeSpotlightPillar && (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeSpotlightPillar.pillar.pillar_code}
+                    initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={prefersReduced ? { opacity: 1 } : { opacity: 0, y: -10 }}
+                    transition={{ duration: 0.26, ease: KINETIC_EASE }}
+                    className="w-full bg-white rounded-2xl border border-[#E5E2D9] overflow-hidden flex flex-col justify-between shadow-sm"
+                  >
+                    {/* Editorial Visual Header with Scroll Parallax & Measured Contrast Scrim */}
+                    <div className="relative h-56 sm:h-64 w-full overflow-hidden">
+                      <ParallaxLayer
+                        offsetY={[-16, 16]}
+                        scaleRange={[1.08, 1.14]}
+                        className="w-full h-full"
+                      >
+                        <ShowcaseImage
+                          src={activeSpotlightPillar.visual.src}
+                          alt={activeSpotlightPillar.visual.alt}
+                          fallbackTitle={activeSpotlightPillar.pillar.display_name}
+                          className="w-full h-full"
+                          imgClassName="transition-transform duration-700 hover:scale-105"
+                        />
+                      </ParallaxLayer>
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#051F0E]/90 via-[#051F0E]/35 to-transparent pointer-events-none" />
+                      <div className="absolute bottom-5 left-6 right-6 text-white space-y-1.5">
+                        <div className="text-xs font-semibold text-[#D4AF37] flex items-center gap-2">
+                          <span>Active Pillar Spotlight</span>
+                          <span aria-hidden="true">·</span>
+                          <span className="font-mono tabular-nums">
+                            {activeSpotlightPillar.councilsCount} Active Councils
+                          </span>
+                        </div>
+                        <h3 className="font-display text-2xl sm:text-3xl font-bold text-white leading-tight text-balance">
+                          {activeSpotlightPillar.pillar.display_name}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Spotlight Body & Live Metrics */}
+                    <div className="p-6 space-y-6 flex-1 flex flex-col justify-between">
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {activeSpotlightPillar.pillar.pillar_code === 'agriculture'
+                          ? 'Building Human Capital Development in Homes, Communities, Learning Institutions & Workplaces through modern agricultural empowerment and food security skills.'
+                          : activeSpotlightPillar.pillar.description ||
+                            activeSpotlightPillar.meta?.tagline ||
+                            'Targeted grassroots human capital investments tracked across all 31 Local Government Areas.'}
+                      </p>
+
+                      {/* 3 Crisp Tabular Metrics */}
+                      <div className="grid grid-cols-3 gap-4 py-4 border-y border-[#ECE8DD]">
+                        <div>
+                          <span className="text-xs text-slate-500 block">Beneficiaries</span>
+                          <strong className="text-xl sm:text-2xl font-bold text-[#0B4619] font-mono tabular-nums">
+                            {activeSpotlightPillar.totalBen.toLocaleString()}
+                          </strong>
+                        </div>
+                        <div>
+                          <span className="text-xs text-slate-500 block">Capital Deployed</span>
+                          <strong className="text-xl sm:text-2xl font-bold text-slate-900 font-mono tabular-nums">
+                            ₦{(activeSpotlightPillar.budgetNgn / 1_000_000).toFixed(1)}M
+                          </strong>
+                        </div>
+                        <div>
+                          <span className="text-xs text-slate-500 block">Verified Projects</span>
+                          <strong className="text-xl sm:text-2xl font-bold text-slate-900 font-mono tabular-nums">
+                            {activeSpotlightPillar.activitiesCount}
+                          </strong>
+                        </div>
+                      </div>
+
+                      {/* Animated Gender & Youth Proportion Bar */}
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <span className="font-semibold text-slate-800">
+                            Beneficiary Demographic Mix
+                          </span>
+                          <span className="font-mono tabular-nums text-slate-600">
+                            Male {activeSpotlightPillar.malePct}% · Female {activeSpotlightPillar.femalePct}% · Youth {activeSpotlightPillar.youthPct}%
+                          </span>
+                        </div>
+                        <div className="h-2.5 w-full rounded-full overflow-hidden bg-[#F1EEE5] flex">
+                          <motion.div
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ duration: prefersReduced ? 0 : 0.45, ease: KINETIC_EASE }}
+                            style={{
+                              width: `${activeSpotlightPillar.malePct}%`,
+                              transformOrigin: 'left',
+                            }}
+                            className="bg-[#0B4619] h-full"
+                          />
+                          <motion.div
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{
+                              duration: prefersReduced ? 0 : 0.45,
+                              delay: 0.08,
+                              ease: KINETIC_EASE,
+                            }}
+                            style={{
+                              width: `${activeSpotlightPillar.femalePct}%`,
+                              transformOrigin: 'left',
+                            }}
+                            className="bg-[#D4AF37] h-full"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Active Councils + Direct Registry Filter Action */}
+                      <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                        <div className="text-xs text-slate-600">
+                          {activeSpotlightPillar.topLgas.length > 0 ? (
+                            <>
+                              <span className="font-semibold text-slate-900">Active in: </span>
+                              <span>{activeSpotlightPillar.topLgas.join(' · ')}</span>
+                            </>
+                          ) : (
+                            <span>Awaiting newly published council submissions for this pillar.</span>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedPillar(activeSpotlightPillar.pillar.pillar_code);
+                            setPortalScope('lga');
+                            scrollToSection('registry-section');
+                          }}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B4619] hover:bg-emerald-900 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                        >
+                          <span>Filter Verified Dossiers</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+        </ScrollReveal>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          4. SENATORIAL DISTRICT LIVE ANALYTICS STRIP
+          ===================================================================== */}
+      <section id="districts-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-16">
+        <ParallaxDecorativeField variant="emerald-compass" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
+        <ScrollReveal>
+          <div className="bg-white rounded-2xl border border-[#E5E2D9] p-6 sm:p-8 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#ECE8DD]">
+              <KineticSectionHeader
+                kicker={
+                  <span className="inline-flex items-center gap-1.5">
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span>Regional Distribution · Live Comparison</span>
+                  </span>
+                }
+                title="Senatorial District Performance Pulse"
+                description="Compare verified human capital reach across Uyo, Ikot Ekpene, and Eket districts. Click any district card to isolate its verified dossiers."
+                className="max-w-2xl"
+              />
+
+              {/* Interactive Metric Switcher */}
+              <div className="flex items-center gap-1 p-1 bg-[#FAF8F2] border border-[#E5E2D9] rounded-xl text-xs self-start md:self-auto">
+                {(
+                  [
+                    { id: 'beneficiaries', label: 'Beneficiaries' },
+                    { id: 'budget', label: 'Capital (₦M)' },
+                    { id: 'projects', label: 'Projects' },
+                  ] as const
+                ).map((m) => {
+                  const active = districtChartMetric === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setDistrictChartMetric(m.id)}
+                      className={`relative px-3 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer ${
+                        active ? 'text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {active && (
+                        <motion.span
+                          layoutId="districtMetricActive"
+                          transition={{ duration: 0.22, ease: KINETIC_EASE }}
+                          className="absolute inset-0 bg-[#0B4619] rounded-lg"
+                        />
+                      )}
+                      <span className="relative z-10">{m.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 items-center">
+              {/* Recharts Animated District Bar Chart (7 cols) */}
+              <div className="lg:col-span-7 h-[240px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={districtAnalytics}
+                    margin={{ top: 12, right: 20, left: 0, bottom: 4 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ECE8DD" vertical={false} />
+                    <XAxis
+                      dataKey="shortLabel"
+                      tick={{ fontSize: 12, fill: '#334155', fontWeight: 600 }}
+                      axisLine={{ stroke: '#E5E2D9' }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={54}
+                    />
+                    <Tooltip
+                      cursor={{ fill: 'rgba(11, 70, 25, 0.05)' }}
+                      contentStyle={{
+                        backgroundColor: '#062611',
+                        border: '1px solid rgba(212, 175, 55, 0.5)',
+                        borderRadius: '10px',
+                        color: '#ffffff',
+                        fontSize: '12px',
+                      }}
+                      formatter={(val: any) => {
+                        if (districtChartMetric === 'beneficiaries') {
+                          return [`${Number(val).toLocaleString()} citizens`, 'Verified Beneficiaries'];
+                        }
+                        if (districtChartMetric === 'budget') {
+                          return [`₦${Number(val).toFixed(2)}M`, 'Capital Deployed'];
+                        }
+                        return [`${val} verified projects`, 'Published Dossiers'];
+                      }}
+                    />
+                    <Bar
+                      dataKey="metricValue"
+                      radius={[8, 8, 0, 0]}
+                      barSize={54}
+                      isAnimationActive={!prefersReduced}
+                    >
+                      {districtAnalytics.map((entry) => (
+                        <Cell key={entry.id} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Interactive Senatorial District Cards (5 cols) */}
+              <div className="lg:col-span-5 space-y-3">
+                {districtAnalytics.map((dist) => {
+                  const isActive = districtFilter === dist.id;
+                  return (
+                    <button
+                      key={dist.id}
+                      type="button"
+                      onClick={() => {
+                        setDistrictFilter(isActive ? 'all' : dist.id);
+                        setPortalScope('lga');
+                        scrollToSection('registry-section');
+                      }}
+                      className={`w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
+                        isActive
+                          ? 'border-[#0B4619] bg-emerald-50/60 shadow-xs'
+                          : 'border-[#ECE8DD] bg-[#FAF8F2]/60 hover:bg-[#FAF8F2] hover:border-slate-300'
+                      }`}
+                    >
+                      <div>
+                        <div className="text-sm font-bold text-slate-900">{dist.label}</div>
+                        <div className="text-xs text-slate-500 mt-0.5 font-mono tabular-nums">
+                          {dist.councils} LGAs · {dist.projects} projects · ₦{dist.budgetM.toFixed(1)}M
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-base font-bold text-[#0B4619] font-mono tabular-nums">
+                          {dist.beneficiaries.toLocaleString()}
+                        </div>
+                        <div className="text-[11px] text-slate-500">beneficiaries</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          5. UPGRADED AKWA IBOM STATE GEOSPATIAL IMPACT MAP (CENTERPIECE)
+          ===================================================================== */}
+      <section
+        id="map-section"
+        className="kinetic-snap-section relative overflow-x-clip scroll-mt-20"
+      >
+        <ParallaxDecorativeField variant="civic-prism" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <KineticSectionHeader
+            kicker="Territorial Intelligence · Live Spatial Workbench"
+            title="31 Local Government Areas Impact Explorer"
+          />
+
           {selectedLgaId && (
             <button
+              type="button"
               onClick={() => setSelectedLgaId(null)}
-              className="text-xs font-semibold text-emerald-800 hover:underline"
+              className="text-xs font-semibold text-[#0B4619] hover:underline cursor-pointer self-start sm:self-auto"
             >
               Reset to All 31 LGAs
             </button>
           )}
         </div>
 
-        <AkwaIbomStateMap
-          activities={activities}
-          selectedLgaId={selectedLgaId}
-          onSelectLga={(id) => setSelectedLgaId(id)}
-        />
+        <ScrollReveal delay={0.05}>
+          <AkwaIbomStateMap
+            activities={activities}
+            selectedLgaId={selectedLgaId}
+            onSelectLga={(id) => setSelectedLgaId(id)}
+            onViewActivity={onViewActivity}
+            onJumpToRegistry={() => {
+              setPortalScope('lga');
+              scrollToSection('registry-section');
+            }}
+          />
+        </ScrollReveal>
+        </div>
       </section>
 
-      {/* 5. VERIFIED ACTIVITIES SEARCH & REGISTRY EXPLORER */}
-      <section className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg space-y-subsection">
-        {/* Scope Selector: 31-LGA Grassroots vs State-Level Executive */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
-          <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl text-xs font-semibold overflow-x-auto max-w-full">
-            <button
-              onClick={() => setPortalScope('lga')}
-              className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
-                portalScope === 'lga'
-                  ? 'bg-white text-emerald-950 font-bold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+      {/* =====================================================================
+          6. FLUID VERIFIED DOSSIERS & STATE EXECUTIVE REGISTER
+          ===================================================================== */}
+      <section
+        id="registry-section"
+        className="kinetic-snap-section relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 scroll-mt-20"
+      >
+        <ScrollReveal>
+          {/* Scope Selector: 31-LGA Grassroots vs State-Level Executive */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E5E2D9] pb-4">
+            <div
+              role="tablist"
+              aria-label="Portal transparency scope"
+              className="flex items-center gap-1 p-1 bg-white border border-[#E5E2D9] rounded-xl text-xs font-semibold overflow-x-auto max-w-full"
             >
-              <Building2 className="w-3.5 h-3.5 text-emerald-700" />
-              <span>31-LGA Community Projects ({publishedActivities.length})</span>
-            </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={portalScope === 'lga'}
+                onClick={() => setPortalScope('lga')}
+                className={`relative px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shrink-0 cursor-pointer whitespace-nowrap ${
+                  portalScope === 'lga' ? 'text-white font-bold' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {portalScope === 'lga' && (
+                  <motion.span
+                    layoutId="registryScopeBg"
+                    transition={{ duration: 0.24, ease: KINETIC_EASE }}
+                    className="absolute inset-0 bg-[#0B4619] rounded-lg shadow-xs"
+                  />
+                )}
+                <Building2 className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">
+                  31-LGA Community Projects ({publishedActivities.length})
+                </span>
+              </button>
 
-            <button
-              onClick={() => setPortalScope('state')}
-              className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
-                portalScope === 'state'
-                  ? 'bg-white text-emerald-950 font-bold shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5 text-emerald-700" />
-              <span>State-Level Executive Activities ({publishedStateActivities.length})</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-bold">
-                Resolutions & Actions
-              </span>
-            </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={portalScope === 'state'}
+                onClick={() => setPortalScope('state')}
+                className={`relative px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shrink-0 cursor-pointer whitespace-nowrap ${
+                  portalScope === 'state' ? 'text-white font-bold' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {portalScope === 'state' && (
+                  <motion.span
+                    layoutId="registryScopeBg"
+                    transition={{ duration: 0.24, ease: KINETIC_EASE }}
+                    className="absolute inset-0 bg-[#0B4619] rounded-lg shadow-xs"
+                  />
+                )}
+                <Layers className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">
+                  State-Level Executive Activities ({publishedStateActivities.length})
+                </span>
+              </button>
+            </div>
+
+            <div className="text-xs text-slate-600 font-medium">
+              {portalScope === 'lga'
+                ? 'Verified Local Government Grassroots Dossiers'
+                : 'Steering Council Meetings, M&E Missions & Partnerships'}
+            </div>
           </div>
+        </ScrollReveal>
 
-          <div className="text-xs text-slate-500 font-medium">
-            {portalScope === 'lga'
-              ? 'Local Government Area Verified Grassroots Projects'
-              : 'Official State Steering Council Meetings, M&E & Partnerships'}
-          </div>
-        </div>
-
-        {/* SECTION 5A: 31-LGA GRASSROOTS PROJECTS */}
+        {/* SECTION 6A: 31-LGA COMMUNITY PROJECTS */}
         {portalScope === 'lga' && (
-          <>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-4">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  Verified Project Dossiers
-                  {selectedLgaObj && (
-                    <span className="text-xs font-bold text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                      {selectedLgaObj.name} LGA
-                    </span>
-                  )}
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500">
-                  Grassroots activities verified with photo proofs, attendance rolls, and State Cabinet approvals
-                </p>
-              </div>
+          <div className="space-y-6">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+              <KineticSectionHeader
+                kicker="Grassroots Audit Trail · Open Registry"
+                title="Verified Project Dossiers"
+                description={
+                  <>
+                    Showing <strong className="font-mono tabular-nums text-slate-900">{filteredActivities.length}</strong> audited grassroots records with photographic proof and biometric attendance rolls.
+                  </>
+                }
+              />
 
-              {/* Search & District Filter Controls */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="relative min-w-[240px]">
+              {/* Search, District Filter & Grid/List Toggle */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="relative min-w-[230px] flex-1 sm:flex-initial">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search community, title, or skill..."
-                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-700"
+                    placeholder="Search community, title, or skill…"
+                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4619]"
                   />
                 </div>
 
                 <select
+                  aria-label="Filter by Senatorial District"
                   value={districtFilter}
                   onChange={(e) => setDistrictFilter(e.target.value)}
-                  className="text-xs p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-700"
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0B4619] cursor-pointer"
                 >
                   <option value="all">All Senatorial Districts</option>
                   <option value="uyo">Uyo District (North-East)</option>
                   <option value="ikot-ekpene">Ikot Ekpene District (North-West)</option>
                   <option value="eket">Eket District (South)</option>
                 </select>
+
+                <select
+                  aria-label="Filter by HCD Pillar"
+                  value={selectedPillar}
+                  onChange={(e) => setSelectedPillar(e.target.value)}
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0B4619] cursor-pointer"
+                >
+                  <option value="all">All 6 Pillars</option>
+                  {pillars.map((p) => (
+                    <option key={p.pillar_code} value={p.pillar_code}>
+                      {p.display_name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Grid vs List View Switcher */}
+                <div className="flex items-center gap-0.5 p-1 bg-white border border-[#D8D3C5] rounded-xl">
+                  <button
+                    type="button"
+                    aria-label="Grid View"
+                    onClick={() => setViewMode('grid')}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                      viewMode === 'grid'
+                        ? 'bg-[#0B4619] text-white'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Compact List View"
+                    onClick={() => setViewMode('list')}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                      viewMode === 'list'
+                        ? 'bg-[#0B4619] text-white'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    <List className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
-        {/* Projects Cards Grid */}
-        {filteredActivities.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-            <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
-            <h4 className="text-base font-bold text-slate-800">
-              No matching verified activities found
-            </h4>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try adjusting your search criteria, clearing the LGA map filter, or switching pillars.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedLgaId(null);
-                setSelectedPillar('all');
-                setSearchQuery('');
-                setDistrictFilter('all');
-              }}
-              className="px-4 py-2 bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors"
-            >
-              Reset Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredActivities.map((activity) => {
-              const pillar = PILLARS[activity.pillar];
-
-              return (
-                <div
-                  key={activity.id}
-                  className="activity-card bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/10 hover:border-emerald-700/30 group"
+            {/* Active Filter Dismiss Bar (Functional Interactive Buttons Only) */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-slate-500 font-medium">Active filters:</span>
+                {selectedLgaObj && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedLgaId(null)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0B4619] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
+                  >
+                    <span>LGA: {selectedLgaObj.name}</span>
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+                {selectedPillar !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPillar('all')}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0B4619] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
+                  >
+                    <span>Pillar: {getPillarDisplayName(selectedPillar)}</span>
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+                {districtFilter !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setDistrictFilter('all')}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0B4619] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
+                  >
+                    <span>District: {districtFilter.toUpperCase()}</span>
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedLgaId(null);
+                    setSelectedPillar('all');
+                    setSearchQuery('');
+                    setDistrictFilter('all');
+                  }}
+                  className="text-slate-600 hover:text-slate-950 font-semibold underline underline-offset-2 ml-1 cursor-pointer"
                 >
-                  <div>
-                    {/* Visual Media Header with secure resolver and neutral branded fallback */}
-                    <ActivityMediaImage
-                      media={activity.mediaAssets && activity.mediaAssets.length > 0 ? activity.mediaAssets[0] : null}
-                      activityTitle={activity.title}
-                      pillar={activity.pillar}
-                      lgaName={activity.lgaName}
-                      community={activity.community}
-                      aspectRatioClass="h-48 w-full"
-                    />
+                  Clear all
+                </button>
+              </div>
+            )}
 
-                    {/* Card Content */}
-                    <div className="p-5 space-y-3">
-                      {/* Unboxed Metadata (Zero-pill discipline) */}
-                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+            {/* Empty State or Populated Grid/List */}
+            {filteredActivities.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-[#E5E2D9] p-12 text-center space-y-3">
+                <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
+                <h4 className="font-display text-lg font-bold text-slate-900">
+                  No matching verified dossiers found
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
+                  Adjust your search query, switch pillars, or reset the territorial map selection to explore all published activities.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedLgaId(null);
+                    setSelectedPillar('all');
+                    setSearchQuery('');
+                    setDistrictFilter('all');
+                  }}
+                  className="px-4 py-2.5 bg-[#0B4619] hover:bg-emerald-900 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            ) : viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredActivities.map((activity, idx) => {
+                  const progressPct =
+                    activity.overallProgress !== undefined
+                      ? activity.overallProgress
+                      : activity.status === 'PUBLISHED'
+                      ? 100
+                      : 65;
+
+                  return (
+                    <KineticActivityCard
+                      key={activity.id}
+                      animateEntrance
+                      delayIndex={idx}
+                      className="bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#0B4619]/35 overflow-hidden flex flex-col justify-between group"
+                    >
+                      <div>
+                        <ActivityMediaImage
+                          media={
+                            activity.mediaAssets && activity.mediaAssets.length > 0
+                              ? activity.mediaAssets[0]
+                              : null
+                          }
+                          activityTitle={activity.title}
+                          pillar={activity.pillar}
+                          lgaName={activity.lgaName}
+                          community={activity.community}
+                          aspectRatioClass="h-48 w-full"
+                        />
+
+                        <div className="p-5 space-y-3.5">
+                          {/* Clean Unboxed Metadata */}
+                          <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                            <span className="font-semibold text-[#0B4619]">
+                              {getPillarDisplayName(activity.pillar)}
+                            </span>
+                            <span aria-hidden="true">·</span>
+                            <span>{activity.lgaName}</span>
+                            {activity.community && (
+                              <>
+                                <span aria-hidden="true">·</span>
+                                <span className="truncate max-w-[140px]">{activity.community}</span>
+                              </>
+                            )}
+                          </div>
+
+                          <h3 className="font-display text-base sm:text-lg font-bold text-slate-950 line-clamp-2 leading-snug group-hover:text-[#0B4619] transition-colors">
+                            {activity.title}
+                          </h3>
+
+                          {/* Tabular Quantitative Metrics */}
+                          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#ECE8DD] text-xs">
+                            <div>
+                              <span className="text-[11px] text-slate-500 block">Beneficiaries</span>
+                              <strong className="text-base font-bold text-slate-950 font-mono tabular-nums">
+                                {activity.beneficiariesTotal.toLocaleString()}
+                              </strong>
+                              <span className="text-[11px] text-slate-500 block font-mono tabular-nums">
+                                M {activity.beneficiariesMale} · F {activity.beneficiariesFemale}
+                              </span>
+                            </div>
+
+                            <div>
+                              <span className="text-[11px] text-slate-500 block">Capital Deployed</span>
+                              <strong className="text-base font-bold text-[#0B4619] font-mono tabular-nums">
+                                ₦{(activity.budgetNgn / 1_000_000).toFixed(1)}M
+                              </strong>
+                              <span className="text-[11px] text-slate-500 block truncate">
+                                {activity.leadOfficer}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Milestone Progress Bar */}
+                          <div className="pt-2.5 border-t border-[#ECE8DD] space-y-1.5">
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="text-slate-600 font-medium flex items-center gap-1">
+                                <Flag className="w-3 h-3 text-[#0B4619]" />
+                                Milestones ({activity.milestones?.length || 3} Phases)
+                              </span>
+                              <span className="font-bold text-[#0B4619] font-mono tabular-nums">
+                                {progressPct}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-[#EFECE3] rounded-full h-1.5 overflow-hidden">
+                              <motion.div
+                                initial={{ scaleX: 0 }}
+                                whileInView={{ scaleX: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: prefersReduced ? 0 : 0.6, ease: KINETIC_EASE }}
+                                style={{ width: `${progressPct}%`, transformOrigin: 'left' }}
+                                className="bg-[#0B4619] h-1.5 rounded-full"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="px-5 py-3.5 bg-[#FAF8F2]/80 border-t border-[#ECE8DD] flex items-center justify-between text-xs">
+                        <button
+                          type="button"
+                          onClick={() => onViewActivity(activity)}
+                          className="font-bold text-[#0B4619] hover:text-emerald-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          Inspect Dossier & Proof
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => onNavigateToLga(activity.lgaId)}
+                          className="text-slate-600 hover:text-slate-950 inline-flex items-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <span>LGA Desk</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </KineticActivityCard>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Compact Registry List View */
+              <div className="space-y-3">
+                {filteredActivities.map((activity, idx) => (
+                  <KineticActivityCard
+                    key={activity.id}
+                    variant="compact"
+                    animateEntrance
+                    delayIndex={idx}
+                    className="p-4 sm:px-6 bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#0B4619]/35 flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="text-xs text-slate-500 flex flex-wrap items-center gap-1.5">
+                        <span className="font-semibold text-[#0B4619]">{activity.lgaName} LGA</span>
+                        <span aria-hidden="true">·</span>
                         <span>{getPillarDisplayName(activity.pillar)}</span>
                         <span aria-hidden="true">·</span>
-                        <span>{activity.projectDescription || activity.subCategory}</span>
-                        {activity.pillar === 'cross_cutting_enablers' && activity.pillarSegment && (
-                          <span className="text-[10px] font-bold text-cyan-800 bg-cyan-100 px-1.5 py-0.5 rounded capitalize">
-                            {activity.pillarSegment.replace('_', ' ')}
-                          </span>
-                        )}
+                        <span>{activity.community}</span>
                       </div>
-
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-emerald-900 transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-slate-950 group-hover:text-[#0B4619] transition-colors truncate">
                         {activity.title}
                       </h3>
-
-                      {/* Quantitative Demographic Splits */}
-                      <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-100">
-                        <div className="bg-slate-50 p-2 rounded-lg">
-                          <span className="text-[10px] text-slate-500 block">Total Beneficiaries</span>
-                          <strong className="text-sm font-black text-slate-900 font-mono tabular-nums">
-                            {activity.beneficiariesTotal.toLocaleString()}
-                          </strong>
-                          <span className="text-[10px] text-slate-500 block">
-                            ♂ {activity.beneficiariesMale} · ♀ {activity.beneficiariesFemale}
-                          </span>
-                        </div>
-
-                        <div className="bg-slate-50 p-2 rounded-lg">
-                          <span className="text-[10px] text-slate-500 block">Invested Capital</span>
-                          <strong className="text-sm font-black text-emerald-950 font-mono tabular-nums">
-                            ₦ {(activity.budgetNgn / 1000000).toFixed(1)}M
-                          </strong>
-                          <span className="text-[10px] text-slate-500 block truncate">
-                            Desk: {activity.leadOfficer}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Milestone Phased Progress Bar */}
-                      <div className="pt-2 border-t border-slate-100 space-y-1">
-                        <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-slate-500 font-medium flex items-center gap-1">
-                            <Flag className="w-3 h-3 text-emerald-700" />
-                            Milestones (
-                            {activity.milestones?.length || 3} Phases)
-                          </span>
-                          <span className="font-bold text-emerald-900 font-mono">
-                            {activity.overallProgress !== undefined
-                              ? `${activity.overallProgress}%`
-                              : activity.status === 'PUBLISHED'
-                              ? '100%'
-                              : '65%'}
-                          </span>
-                        </div>
-                        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className="bg-emerald-700 h-1.5 rounded-full transition-all"
-                            style={{
-                              width: `${
-                                activity.overallProgress !== undefined
-                                  ? activity.overallProgress
-                                  : activity.status === 'PUBLISHED'
-                                  ? 100
-                                  : 65
-                              }%`,
-                            }}
-                          />
-                        </div>
-                      </div>
                     </div>
-                  </div>
 
-                  {/* Card Footer Actions */}
-                  <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <button
-                      onClick={() => onViewActivity(activity)}
-                      className="font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 transition-colors"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      Inspect Dossier & Proof
-                    </button>
-
-                    <button
-                      onClick={() => onNavigateToLga(activity.lgaId)}
-                      className="text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors"
-                    >
-                      <span>LGA Desk</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                    <div className="flex flex-wrap items-center gap-5 shrink-0 text-xs">
+                      <div className="text-right">
+                        <span className="text-[11px] text-slate-500 block">Beneficiaries</span>
+                        <strong className="font-mono tabular-nums text-slate-900">
+                          {activity.beneficiariesTotal.toLocaleString()}
+                        </strong>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[11px] text-slate-500 block">Capital</span>
+                        <strong className="font-mono tabular-nums text-[#0B4619]">
+                          ₦{(activity.budgetNgn / 1_000_000).toFixed(1)}M
+                        </strong>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onViewActivity(activity)}
+                        className="px-3.5 py-2 rounded-lg bg-[#0B4619] hover:bg-emerald-900 text-white font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        Inspect
+                      </button>
+                    </div>
+                  </KineticActivityCard>
+                ))}
+              </div>
+            )}
           </div>
         )}
-      </>
-    )}
 
-    {/* SECTION 5B: STATE-LEVEL EXECUTIVE INITIATIVES & RESOLUTIONS */}
-    {portalScope === 'state' && (
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              Published State-Level Activities & Communiques
-              <span className="text-xs font-bold text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                Executive Register
-              </span>
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Steering Council convocations, high-level M&E missions, and inter-agency partnerships published for public verification
-            </p>
-          </div>
-
-          {/* State Category and Search Filters */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-[240px]">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={stateSearchQuery}
-                onChange={(e) => setStateSearchQuery(e.target.value)}
-                placeholder="Search state activity or MDA..."
-                className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-700"
+        {/* SECTION 6B: STATE-LEVEL EXECUTIVE INITIATIVES & RESOLUTIONS */}
+        {portalScope === 'state' && (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <KineticSectionHeader
+                kicker="Executive Register · Official Communiques"
+                title="Published State-Level Activities & Resolutions"
+                description="Steering Council convocations, M&E missions, and inter-agency partnerships verified for public access."
               />
+
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="relative min-w-[230px]">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={stateSearchQuery}
+                    onChange={(e) => setStateSearchQuery(e.target.value)}
+                    placeholder="Search state activity or MDA…"
+                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4619]"
+                  />
+                </div>
+
+                <select
+                  aria-label="Filter by state activity category"
+                  value={selectedStateCategory}
+                  onChange={(e) => setSelectedStateCategory(e.target.value as StateActivityCategory | 'all')}
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 cursor-pointer"
+                >
+                  <option value="all">All State Categories</option>
+                  <option value="monitoring_evaluation">Monitoring & Evaluation (M&E)</option>
+                  <option value="partnerships_stakeholder_engagement">Partnerships & Stakeholder</option>
+                  <option value="national_level_engagements">National-Level Engagements</option>
+                  <option value="state_hcd_council_meetings">Council Meetings</option>
+                  <option value="state_hcd_working_group_activities">Working Group Activities</option>
+                  <option value="other_state_level_initiatives">Other State Initiatives</option>
+                </select>
+              </div>
             </div>
 
-            <select
-              value={selectedStateCategory}
-              onChange={(e) => setSelectedStateCategory(e.target.value as any)}
-              className="text-xs p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-700"
-            >
-              <option value="all">All State Categories</option>
-              <option value="monitoring_evaluation">Monitoring & Evaluation (M&E)</option>
-              <option value="partnerships_stakeholder_engagement">Partnerships & Stakeholder</option>
-              <option value="national_level_engagements">National-Level Engagements</option>
-              <option value="state_hcd_council_meetings">Council Meetings</option>
-              <option value="state_hcd_working_group_activities">Working Group Activities</option>
-              <option value="other_state_level_initiatives">Other State Initiatives</option>
-            </select>
-          </div>
-        </div>
-
-        {/* State Activities Grid */}
-        {isStateLoading ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-xs text-slate-500">
-            <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            Loading published state activities...
-          </div>
-        ) : filteredStateActivities.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-            <Layers className="w-10 h-10 text-slate-300 mx-auto" />
-            <h4 className="text-base font-bold text-slate-800">
-              No published state-level activities found
-            </h4>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              No executive activities currently match your filter criteria or have been published to the open portal yet.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedStateCategory('all');
-                setStateSearchQuery('');
-              }}
-              className="px-4 py-2 bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
-            >
-              Clear State Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredStateActivities.map((act) => {
-              const stakeholderCount = Array.isArray(act.participating_stakeholders)
-                ? act.participating_stakeholders.length
-                : 0;
-              const evidenceCount = Array.isArray(act.evidence_files)
-                ? act.evidence_files.length
-                : 0;
-              const associatedActions = publicActionItems.filter((i) => i.activity_id === act.id);
-
-              return (
-                <div
-                  key={act.id}
-                  className="activity-card bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-950/10 hover:border-emerald-700/30 group"
+            {isStateLoading ? (
+              <div className="bg-white rounded-2xl border border-[#E5E2D9] p-12 text-center text-xs text-slate-500">
+                <div className="w-5 h-5 border-2 border-[#0B4619] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                Loading published state activities…
+              </div>
+            ) : filteredStateActivities.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-[#E5E2D9] p-12 text-center space-y-3">
+                <Layers className="w-10 h-10 text-slate-300 mx-auto" />
+                <h4 className="font-display text-lg font-bold text-slate-900">
+                  No published state-level activities found
+                </h4>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  No executive records currently match your filter criteria.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedStateCategory('all');
+                    setStateSearchQuery('');
+                  }}
+                  className="px-4 py-2 bg-[#0B4619] text-white rounded-xl text-xs font-bold cursor-pointer"
                 >
-                  <div className="p-5 space-y-3">
-                    {/* Header Badges */}
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-[11px] font-bold text-emerald-950 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        {act.activity_code}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                        {act.activity_date}
-                      </span>
-                    </div>
+                  Clear State Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredStateActivities.map((act, idx) => {
+                  const stakeholderCount = Array.isArray(act.participating_stakeholders)
+                    ? act.participating_stakeholders.length
+                    : 0;
+                  const evidenceCount = Array.isArray(act.evidence_files)
+                    ? act.evidence_files.length
+                    : 0;
+                  const associatedActions = publicActionItems.filter((i) => i.activity_id === act.id);
 
-                    {/* Category & Title */}
-                    <div>
-                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block mb-1">
-                        {STATE_CATEGORY_LABELS[act.category]}
-                      </span>
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-emerald-900 transition-colors line-clamp-2 leading-snug">
-                        {act.title}
-                      </h3>
-                    </div>
-
-                    {/* Lead MDA & Location */}
-                    <div className="space-y-1 text-xs text-slate-600 pt-2 border-t border-slate-100">
-                      <div className="flex items-center gap-1.5 font-medium truncate" title={act.lead_institution}>
-                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span className="truncate">{act.lead_institution}</span>
-                      </div>
-                      {act.location && (
-                        <div className="flex items-center gap-1.5 text-slate-500 text-[11px] truncate">
-                          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="truncate">{act.location}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Outcomes Preview */}
-                    {act.key_outcomes && (
-                      <div className="p-2.5 rounded-lg bg-emerald-50/50 border border-emerald-100 text-[11px] text-slate-700 line-clamp-2">
-                        <strong>Outcomes:</strong> {act.key_outcomes}
-                      </div>
-                    )}
-
-                    {/* Metadata Pills */}
-                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-                      {stakeholderCount > 0 && (
-                        <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded text-slate-600">
-                          <Users className="w-3 h-3 text-slate-400" />
-                          {stakeholderCount} Stakeholders
-                        </span>
-                      )}
-                      {evidenceCount > 0 && (
-                        <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded text-slate-600">
-                          <Paperclip className="w-3 h-3 text-slate-400" />
-                          {evidenceCount} Evidence Files
-                        </span>
-                      )}
-                      {associatedActions.length > 0 && (
-                        <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 px-2 py-0.5 rounded font-semibold border border-amber-200">
-                          <Clock className="w-3 h-3 text-amber-600" />
-                          {associatedActions.length} Action Commitments
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Card Footer Action */}
-                  <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <button
-                      onClick={() => setInspectedStateActivity(act)}
-                      className="font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  return (
+                    <KineticActivityCard
+                      key={act.id}
+                      animateEntrance
+                      delayIndex={idx}
+                      className="bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#0B4619]/35 overflow-hidden flex flex-col justify-between group"
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Inspect Communique & Outcomes</span>
-                    </button>
-                    <span className="text-[10px] text-slate-400">Official Dossier</span>
-                  </div>
-                </div>
-              );
-            })}
+                      <div className="p-5 space-y-3.5">
+                        <div className="flex items-center justify-between gap-2 text-xs text-slate-500 font-mono tabular-nums">
+                          <span className="font-semibold text-[#0B4619]">{act.activity_code}</span>
+                          <span>{act.activity_date}</span>
+                        </div>
+
+                        <div>
+                          <div className="text-xs font-semibold text-emerald-800 mb-1">
+                            {STATE_CATEGORY_LABELS[act.category]}
+                          </div>
+                          <h3 className="font-display text-base font-bold text-slate-950 group-hover:text-[#0B4619] transition-colors line-clamp-2 leading-snug">
+                            {act.title}
+                          </h3>
+                        </div>
+
+                        <div className="space-y-1 text-xs text-slate-600 pt-2.5 border-t border-[#ECE8DD]">
+                          <div className="flex items-center gap-1.5 font-medium truncate" title={act.lead_institution}>
+                            <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className="truncate">{act.lead_institution}</span>
+                          </div>
+                          {act.location && (
+                            <div className="flex items-center gap-1.5 text-slate-500 text-xs truncate">
+                              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                              <span className="truncate">{act.location}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {act.key_outcomes && (
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed bg-[#FAF8F2] p-3 rounded-xl border border-[#ECE8DD]">
+                            <strong className="text-slate-800">Outcomes:</strong> {act.key_outcomes}
+                          </p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#ECE8DD] text-xs text-slate-500">
+                          {stakeholderCount > 0 && (
+                            <span className="inline-flex items-center gap-1">
+                              <Users className="w-3 h-3" />
+                              {stakeholderCount} Stakeholders
+                            </span>
+                          )}
+                          {evidenceCount > 0 && (
+                            <>
+                              {stakeholderCount > 0 && <span aria-hidden="true">·</span>}
+                              <span className="inline-flex items-center gap-1">
+                                <Paperclip className="w-3 h-3" />
+                                {evidenceCount} Evidence Files
+                              </span>
+                            </>
+                          )}
+                          {associatedActions.length > 0 && (
+                            <>
+                              {(stakeholderCount > 0 || evidenceCount > 0) && <span aria-hidden="true">·</span>}
+                              <span className="inline-flex items-center gap-1 text-amber-800 font-semibold">
+                                <Clock className="w-3 h-3" />
+                                {associatedActions.length} Actions
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="px-5 py-3.5 bg-[#FAF8F2]/80 border-t border-[#ECE8DD] flex items-center justify-between text-xs">
+                        <button
+                          type="button"
+                          onClick={() => setInspectedStateActivity(act)}
+                          className="font-bold text-[#0B4619] hover:text-emerald-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Inspect Communique & Outcomes</span>
+                        </button>
+                      </div>
+                    </KineticActivityCard>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
-      </div>
-    )}
-  </section>
-
-  {/* 6. CITIZEN TRANSPARENCY & ASSURANCE BANNER */}
-  <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-emerald-950 text-white rounded-2xl p-6 sm:p-8 border border-[#D4AF37]/30 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
-              <CheckCircle2 className="w-4 h-4" />
-              Civil Society & Independent Auditing
-            </div>
-            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Open Public Reporting & Verification Standards
-            </h3>
-            <p className="text-xs sm:text-sm text-emerald-200/80 max-w-xl leading-relaxed">
-              Every data point published on this portal requires signed biometric registers, photographic GPS assets within state boundaries, and State Super-Admin verification.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={onOpenReportExport}
-              className="px-5 py-2.5 bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
-            >
-              Export Public Transparency Brief
-            </button>
-          </div>
-        </div>
       </section>
+
+      {/* =====================================================================
+          7. CITIZEN TRANSPARENCY & VERIFICATION ASSURANCE BAND
+          ===================================================================== */}
+      <section
+        id="assurance-section"
+        ref={assuranceRef}
+        className="kinetic-snap-section relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 scroll-mt-16"
+      >
+        <ScrollReveal>
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#062611] via-[#0B4619] to-[#083416] text-white rounded-2xl p-7 sm:p-10 border border-[#D4AF37]/35 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-md">
+            {/* Scroll-Triggered Decorative Crest Arcs & Luminous Glow */}
+            <motion.div
+              aria-hidden="true"
+              style={
+                prefersReduced
+                  ? undefined
+                  : { y: assuranceDecorY, rotate: assuranceDecorRotate, willChange: 'transform' }
+              }
+              className="no-print pointer-events-none absolute -right-20 -top-24 w-80 h-80 text-[#D4AF37]/20"
+            >
+              <svg viewBox="0 0 320 320" fill="none" className="w-full h-full">
+                <circle cx="160" cy="160" r="145" stroke="currentColor" strokeWidth="1" strokeDasharray="4 8" />
+                <circle cx="160" cy="160" r="102" stroke="currentColor" strokeWidth="0.8" />
+              </svg>
+            </motion.div>
+            <motion.div
+              aria-hidden="true"
+              style={prefersReduced ? undefined : { y: assuranceDecorY, willChange: 'transform' }}
+              className="no-print pointer-events-none absolute -left-16 -bottom-24 w-72 h-72 rounded-full bg-radial from-[#D4AF37]/18 via-transparent to-transparent blur-2xl"
+            />
+
+            <KineticSectionHeader
+              theme="dark"
+              headingAs="h3"
+              kicker={
+                <span className="inline-flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Civil Society & Independent Verification Standard</span>
+                </span>
+              }
+              title="Open Public Reporting Backed by Physical & Geospatial Proof"
+              description="Every record published on this portal requires verifiable attendance registries, field photography validated against Akwa Ibom geographic boundaries, and State Executive approval."
+              className="relative z-10 max-w-2xl"
+            />
+
+            <div className="relative z-10 shrink-0">
+              <button
+                type="button"
+                onClick={onOpenReportExport}
+                className="px-6 py-3.5 bg-[#D4AF37] hover:bg-[#e0bd4c] text-[#051F0E] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-[0.98] inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
+              >
+                <Download className="w-4 h-4" />
+                Export Public Transparency Brief
+              </button>
+            </div>
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* Desktop Vertical Scroll-Snap Section Navigation Rail */}
+      <SectionSnapRail sections={PUBLIC_SNAP_SECTIONS} />
 
       {/* Public State Activity Inspection Modal */}
       <PublicStateActivityModal

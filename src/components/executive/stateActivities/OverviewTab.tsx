@@ -9,6 +9,7 @@ import {
   STATE_STATUS_LABELS,
   ACTION_ITEM_STATUS_LABELS,
 } from '../../../types';
+import { KineticActivityCard } from '../../common/MotionPrimitives';
 import {
   FileText,
   Clock,
@@ -463,7 +464,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             </div>
           ) : (
             <div className="space-y-3">
-              {recentActivities.map((act) => {
+              {recentActivities.map((act, idx) => {
                 const statusBadge =
                   act.status === 'published'
                     ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
@@ -474,10 +475,14 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
                     : 'bg-slate-100 text-slate-700 border-slate-300';
 
                 return (
-                  <div
+                  <KineticActivityCard
                     key={act.id}
+                    variant="compact"
+                    interactive
+                    animateEntrance
+                    delayIndex={idx}
                     onClick={() => onViewActivity(act)}
-                    className="activity-card p-3.5 rounded-xl border border-slate-200 shadow-2xs transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:shadow-emerald-950/10 hover:border-emerald-300 hover:bg-emerald-50/30 cursor-pointer group"
+                    className="p-3.5 rounded-xl border border-slate-200 shadow-2xs hover:border-emerald-400 hover:bg-emerald-50/30 cursor-pointer group"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -506,7 +511,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </KineticActivityCard>
                 );
               })}
             </div>

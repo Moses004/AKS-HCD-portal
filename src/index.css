@@ -1,13 +1,18 @@
 @import "tailwindcss";
 
 @theme {
+  /* Typography System (2+1 Font Rule) */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
   /* Global Dashboard Spatial & Rhythm Constants */
   --spacing-dashboard-x: 1rem;       /* 16px mobile container padding */
   --spacing-dashboard-x-sm: 1.5rem;  /* 24px tablet container padding */
   --spacing-dashboard-x-lg: 2rem;    /* 32px desktop container padding */
   --spacing-dashboard-y: 2.5rem;     /* 40px vertical dashboard margin/padding */
-  --spacing-section: 2.5rem;         /* 40px vertical rhythm between sections */
-  --spacing-subsection: 1.5rem;      /* 24px vertical rhythm within sections */
+  --spacing-section: 3.5rem;         /* 56px generous vertical rhythm between sections */
+  --spacing-subsection: 1.75rem;     /* 28px vertical rhythm within sections */
   --spacing-card-gap: 1.25rem;       /* 20px consistent gutter between cards */
   --spacing-card-gap-lg: 1.5rem;     /* 24px desktop gutter between cards */
   --spacing-card-pad-sm: 1.25rem;    /* 20px compact metric card inner padding */
@@ -16,12 +21,48 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 4.5rem;
+  }
+
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
+    background-color: #FAF8F2;
+    color: #0F172A;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
   }
 
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes kinetic-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes map-beacon-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale(2.15);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.15);
+    opacity: 0;
   }
 }
 
@@ -46,14 +87,46 @@
   }
 
   .activity-card {
-    transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
-                border-color 250ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: border-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .activity-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px -8px rgba(6, 78, 59, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06);
+  .kinetic-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: kinetic-marquee 42s linear infinite;
+    will-change: transform;
+  }
+
+  .kinetic-marquee-viewport:hover .kinetic-marquee-track,
+  .kinetic-marquee-viewport:focus-within .kinetic-marquee-track {
+    animation-play-state: paused;
+  }
+
+  .map-beacon-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: map-beacon-ring 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  .kinetic-snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+
+  .kinetic-marquee-track {
+    animation: none;
+  }
+
+  .map-beacon-pulse {
+    animation: none;
+    opacity: 0;
   }
 }
 
@@ -93,6 +166,7 @@
     color: #0f172a !important;
     font-size: 11pt !important;
     line-height: 1.45 !important;
+    scroll-snap-type: none !important;
     -webkit-font-smoothing: antialiased;
   }
 

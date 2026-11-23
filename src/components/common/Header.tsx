@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValueEvent,
+  useReducedMotion,
+} from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { HcdLogo } from './Logos';
+import { KINETIC_EASE } from './MotionPrimitives';
 import {
   ShieldCheck,
   Building2,
@@ -45,6 +54,33 @@ export const Header: React.FC<HeaderProps> = ({
   const { currentUser, signOut } = useAuth();
   const { isOnline, pendingSyncCount } = useData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const prefersReduced = useReducedMotion();
+  const { scrollY, scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 110,
+    damping: 26,
+    restDelta: 0.001,
+  });
+  const smoothScrollY = useSpring(scrollY, {
+    stiffness: 140,
+    damping: 28,
+    restDelta: 0.001,
+  });
+
+  // Parallax depth transforms for the navigation bar surfaces
+  const utilitySheenX = useTransform(smoothProgress, [0, 1], ['-18%', '82%']);
+  const navGeoX = useTransform(smoothProgress, [0, 1], ['0%', '-10%']);
+  const navGeoY = useTransform(smoothScrollY, [0, 280], [0, -6]);
+  const goldBorderOpacity = useTransform(smoothScrollY, [0, 120], [0.15, 0.9]);
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const elevated = latest > 24;
+    if (elevated !== isScrolled) {
+      setIsScrolled(elevated);
+    }
+  });
 
   const isLgaOfficer = currentUser.isAuthenticated && currentUser.isPrivileged && currentUser.role === 'lga_admin';
   const isStateExecutive = currentUser.isAuthenticated && currentUser.isPrivileged && currentUser.role === 'state_admin';
@@ -56,10 +92,50 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-emerald-50/90 via-white to-emerald-50/80 backdrop-blur-md border-b border-emerald-200/80 shadow-xs">
+    <header
+      className={`sticky top-0 z-40 overflow-x-clip backdrop-blur-md border-b transition-[background-color,box-shadow,border-color] duration-300 ${
+        isScrolled
+          ? 'bg-white/92 border-[#D4AF37]/45 shadow-lg shadow-emerald-950/10'
+          : 'bg-gradient-to-r from-[#FAF8F2]/95 via-white/95 to-emerald-50/85 border-emerald-200/80 shadow-xs'
+      }`}
+    >
+      {/* Parallax Abstract Geometric Sheen Layer inside Header (uses <span> to preserve div:nth-of-type selectors) */}
+      <motion.span
+        aria-hidden="true"
+        style={
+          prefersReduced
+            ? undefined
+            : { x: navGeoX, y: navGeoY, willChange: 'transform' }
+        }
+        className="no-print pointer-events-none absolute inset-y-0 -inset-x-12 z-0 overflow-hidden opacity-60"
+      >
+        <svg className="w-full h-full text-[#0B4619]/[0.055]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="header-kinetic-geo" width="64" height="64" patternUnits="userSpaceOnUse">
+              <path d="M 32 0 L 64 32 L 32 64 L 0 32 Z" fill="none" stroke="currentColor" strokeWidth="0.7" />
+              <circle cx="32" cy="32" r="1.1" fill="#D4AF37" opacity="0.55" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#header-kinetic-geo)" />
+        </svg>
+      </motion.span>
+
+      {/* Scroll-Triggered Crest Gold Lower Rim Luminescence */}
+      <motion.span
+        aria-hidden="true"
+        style={prefersReduced ? undefined : { opacity: goldBorderOpacity }}
+        className="no-print pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] z-20 bg-gradient-to-r from-transparent via-[#D4AF37]/80 to-transparent"
+      />
+
       {/* Official State Government Top Utility Bar */}
-      <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white text-[11px] py-1.5 px-4 sm:px-8 flex items-center justify-between border-b border-[#D4AF37]/30">
-        <div className="flex items-center gap-3">
+      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white text-[11px] py-1.5 px-4 sm:px-8 flex items-center justify-between border-b border-[#D4AF37]/30 z-10">
+        {/* Scroll-Linked Parallax Gold Light Sweep across Utility Bar */}
+        <motion.span
+          aria-hidden="true"
+          style={prefersReduced ? undefined : { x: utilitySheenX, willChange: 'transform' }}
+          className="no-print pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent skew-x-[-24deg]"
+        />
+        <div className="relative z-10 flex items-center gap-3">
           <div className="flex items-center gap-1.5 font-medium tracking-wide">
             <span className="w-2 h-2 rounded-full bg-[#D4AF37] inline-block" />
             <span className="font-semibold text-[#D4AF37]">AKWA IBOM STATE GOVERNMENT</span>
@@ -94,7 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Top Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Zone 1: Single text element wordmark with official HCD emblem */}
         <div className="flex items-center gap-3">
           <button
@@ -118,13 +194,20 @@ export const Header: React.FC<HeaderProps> = ({
               setCurrentTab('public');
               onNavigate('/');
             }}
-            className={`px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
+            className={`relative px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
               currentRoute === '/' && currentTab === 'public'
-                ? 'bg-emerald-50 text-emerald-900 font-bold border border-emerald-200/80 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'text-emerald-950 font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/80'
             }`}
           >
-            Public Transparency
+            <span>Public Transparency</span>
+            {currentRoute === '/' && currentTab === 'public' && (
+              <motion.span
+                layoutId="headerActiveNavIndicator"
+                transition={{ duration: 0.24, ease: KINETIC_EASE }}
+                className="absolute left-2.5 right-2.5 -bottom-[1px] h-[2.5px] rounded-full bg-[#0B4619]"
+              />
+            )}
           </button>
 
           {/* LGA Desk Workspace: Only visible to approved, active LGA Desk Workers */}
