@@ -72,13 +72,13 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
         {/* Card Container */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200/90 overflow-hidden">
           {/* Header Banner */}
-          <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white p-6 sm:p-7 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white p-6 sm:p-7 relative overflow-hidden">
             <div className="flex items-center gap-3.5 mb-2">
-              <div className="p-1.5 rounded-xl bg-white border border-[#D4AF37]/50 shadow-xs shrink-0">
+              <div className="p-1.5 rounded-xl bg-white border border-[#D97706]/50 shadow-xs shrink-0">
                 <HcdLogo className="w-8 h-8 object-contain" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] block">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F59E0B] block">
                   Credential Recovery
                 </span>
                 <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
@@ -169,7 +169,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
                       </>
                     ) : (
                       <>
-                        <KeyRound className="w-4 h-4 text-[#D4AF37]" />
+                        <KeyRound className="w-4 h-4 text-[#F59E0B]" />
                         <span>Transmit Password Recovery Link</span>
                       </>
                     )}

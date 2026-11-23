@@ -354,7 +354,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         beneficiaries: 0,
         budgetNgn: 0,
         projects: 0,
-        color: '#0B4619',
+        color: '#0F5C3A',
       },
       {
         id: 'ikot-ekpene',
@@ -505,7 +505,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
     Boolean(selectedLgaId) || selectedPillar !== 'all' || districtFilter !== 'all' || Boolean(searchQuery);
 
   return (
-    <div className="relative bg-[#FAF8F2] text-slate-900 pb-20 overflow-x-clip">
+    <div className="relative bg-[#F6F8F7] text-slate-900 pb-20 overflow-x-clip">
       {/* Global Ambient Scroll-Parallax Abstract Civic Geometry */}
       <AmbientParallaxGeometry />
 
@@ -515,7 +515,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       <section
         id="hero-section"
         ref={heroRef}
-        className="kinetic-snap-section relative z-10 overflow-hidden bg-[#062611] text-white border-b-4 border-[#D4AF37]"
+        className="kinetic-snap-section relative z-10 overflow-hidden bg-[#0A2E1F] text-white border-b-4 border-[#D97706]"
       >
         {/* Plane 1: Dynamic Verified Project Dossier Photos & Videos Reel with Scroll Parallax Depth */}
         <motion.div
@@ -531,7 +531,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
         {/* Measured Directional Contrast Scrims — Keeps Headline Crisp While Letting Dossier Media Shine Clearly */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#041A0B]/74 via-[#052110]/34 to-[#041A0B]/16" />
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#051F0E]/82 via-transparent to-[#041A0B]/28" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0A2E1F]/82 via-transparent to-[#041A0B]/28" />
 
         {/* Plane 2: Subtle Mid-Ground Crest Gold Architectural Lattice & Luminous Arcs */}
         <motion.div
@@ -550,8 +550,8 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           <svg className="w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="hero-kinetic-lattice" width="56" height="56" patternUnits="userSpaceOnUse">
-                <circle cx="28" cy="28" r="1.2" fill="#D4AF37" />
-                <path d="M 56 0 L 0 0 0 56" fill="none" stroke="#D4AF37" strokeWidth="0.3" opacity="0.28" />
+                <circle cx="28" cy="28" r="1.2" fill="#D97706" />
+                <path d="M 56 0 L 0 0 0 56" fill="none" stroke="#D97706" strokeWidth="0.3" opacity="0.28" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#hero-kinetic-lattice)" />
@@ -559,7 +559,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
           <motion.svg
             style={prefersReduced ? undefined : { rotate: heroDecorRotate, willChange: 'transform' }}
-            className="absolute -right-28 -top-24 w-[520px] h-[520px] text-[#D4AF37]/20"
+            className="absolute -right-28 -top-24 w-[520px] h-[520px] text-[#F59E0B]/20"
             viewBox="0 0 400 400"
             fill="none"
           >
@@ -568,7 +568,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             <circle cx="200" cy="200" r="90" stroke="currentColor" strokeWidth="0.6" strokeDasharray="2 6" />
           </motion.svg>
 
-          <div className="absolute -left-24 bottom-0 w-96 h-96 rounded-full bg-radial from-[#D4AF37]/14 via-emerald-500/8 to-transparent blur-3xl" />
+          <div className="absolute -left-24 bottom-0 w-96 h-96 rounded-full bg-radial from-[#D97706]/14 via-emerald-500/8 to-transparent blur-3xl" />
         </motion.div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-16 lg:pb-24 relative z-10">
@@ -582,7 +582,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               className="lg:col-span-7 flex flex-col justify-center space-y-6"
             >
               {/* Clean Editorial Kicker (Zero-Pill Discipline) */}
-              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-[#F0CC56] drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-[#FBBF24] drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
                 <span>Akwa Ibom State Government</span>
                 <span aria-hidden="true" className="text-white/50">·</span>
                 <span className="text-emerald-100">ARISE Agenda Human Capital Blueprint</span>
@@ -606,7 +606,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 <button
                   type="button"
                   onClick={() => scrollToSection('map-section')}
-                  className="px-6 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e0bd4c] text-[#051F0E] font-bold text-xs sm:text-sm shadow-lg shadow-black/30 transition-all duration-200 active:scale-[0.98] inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                  className="px-6 py-3.5 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white font-bold text-xs sm:text-sm shadow-lg shadow-black/30 transition-all duration-200 active:scale-[0.98] inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
                 >
                   <MapPin className="w-4 h-4" />
                   Explore 31-LGA Impact Map
@@ -615,9 +615,9 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 <button
                   type="button"
                   onClick={onOpenReportExport}
-                  className="px-5 py-3.5 rounded-xl bg-[#041B0C]/55 hover:bg-[#041B0C]/75 text-white font-semibold text-xs sm:text-sm border border-white/30 backdrop-blur-md shadow-lg shadow-black/20 transition-all duration-200 inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                  className="px-5 py-3.5 rounded-xl bg-[#0A2E1F]/55 hover:bg-[#0A2E1F]/75 text-white font-semibold text-xs sm:text-sm border border-white/30 backdrop-blur-md shadow-lg shadow-black/20 transition-all duration-200 inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
                 >
-                  <Download className="w-4 h-4 text-[#D4AF37]" />
+                  <Download className="w-4 h-4 text-[#F59E0B]" />
                   Executive Briefing Report
                 </button>
               </div>
@@ -633,14 +633,14 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               onMouseLeave={() => setHeroPaused(false)}
               className="lg:col-span-5 flex flex-col"
             >
-              <div className="h-full bg-[#062411]/62 backdrop-blur-md rounded-2xl border border-white/20 p-6 sm:p-7 shadow-2xl flex flex-col justify-between gap-6">
+              <div className="h-full bg-[#0A2E1F]/62 backdrop-blur-md rounded-2xl border border-white/20 p-6 sm:p-7 shadow-2xl flex flex-col justify-between gap-6">
                 {/* Official ARISE Agenda Crest Header */}
                 <div className="flex items-center gap-4 pb-5 border-b border-white/12">
-                  <div className="w-20 h-20 sm:w-22 sm:h-22 aspect-square rounded-full bg-white p-2.5 shadow-xl border-[3px] border-[#D4AF37] flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-105">
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 aspect-square rounded-full bg-white p-2.5 shadow-xl border-[3px] border-[#D97706] flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-105">
                     <AriseLogo className="w-full h-full object-contain" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs font-semibold text-[#D4AF37] tracking-wide">
+                    <div className="text-xs font-semibold text-[#F59E0B] tracking-wide">
                       ARISE AGENDA
                     </div>
                     <h2 className="font-display text-lg sm:text-xl font-bold text-white leading-snug">
@@ -665,7 +665,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         className="space-y-4"
                       >
                         <div className="text-xs text-emerald-200/90 flex flex-wrap items-center gap-1.5">
-                          <span className="font-semibold text-[#D4AF37]">
+                          <span className="font-semibold text-[#F59E0B]">
                             {currentHeroSpotlight.lgaName} LGA
                           </span>
                           <span aria-hidden="true">·</span>
@@ -689,7 +689,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                             <span className="text-[11px] text-emerald-200/80 block">
                               Invested Capital
                             </span>
-                            <span className="text-lg font-bold text-[#D4AF37] font-mono tabular-nums">
+                            <span className="text-lg font-bold text-[#F59E0B] font-mono tabular-nums">
                               ₦{(currentHeroSpotlight.budgetNgn / 1_000_000).toFixed(1)}M
                             </span>
                           </div>
@@ -699,7 +699,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                           <button
                             type="button"
                             onClick={() => onViewActivity(currentHeroSpotlight)}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D4AF37] hover:text-amber-200 transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#F59E0B] hover:text-amber-200 transition-colors cursor-pointer"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             Inspect Dossier & Proof
@@ -761,7 +761,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           2. ROLLING SPRING KPI STRIP + IMPACT PULSE + GRASSROOTS MARQUEE
           ===================================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 space-y-4">
-        <div className="relative bg-white rounded-2xl shadow-lg shadow-emerald-950/8 border border-[#E5E2D9] overflow-hidden">
+        <div className="relative bg-white rounded-2xl shadow-lg shadow-emerald-950/8 border border-[#E2E8E5] overflow-hidden">
           {/* Grassroots HCD Heartbeat Bar */}
           <ImpactPulse
             variant="bar"
@@ -770,12 +770,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             beneficiariesTotal={totalBeneficiaries}
           />
 
-          <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:divide-x lg:divide-[#ECE8DD]">
+          <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:divide-x lg:divide-[#EAEFED]">
             <div className="space-y-1">
               <span className="text-xs font-semibold text-slate-500 block">
                 Verified Beneficiaries
               </span>
-              <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
+              <div className="text-2xl sm:text-3xl font-bold text-[#0F5C3A] font-mono tabular-nums">
                 <AnimatedCounter value={totalBeneficiaries} />
               </div>
               <p className="text-xs text-emerald-800 font-medium">
@@ -811,7 +811,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               <span className="text-xs font-semibold text-slate-500 block">
                 Capacity Capital Deployed
               </span>
-              <div className="text-2xl sm:text-3xl font-bold text-[#0B4619] font-mono tabular-nums">
+              <div className="text-2xl sm:text-3xl font-bold text-[#0F5C3A] font-mono tabular-nums">
                 <AnimatedCounter value={totalBudget / 1_000_000} prefix="₦" suffix="M" decimals={1} />
               </div>
               <p className="text-xs text-slate-500">
@@ -821,9 +821,9 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           </div>
 
           {/* Historical Impact Trend Overlay Trigger Bar */}
-          <div className="no-print px-6 py-3 bg-[#FAF8F2]/80 border-t border-[#ECE8DD] flex flex-wrap items-center justify-between gap-3">
+          <div className="no-print px-6 py-3 bg-[#F6F8F7]/80 border-t border-[#EAEFED] flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
-              <TrendingUp className="w-3.5 h-3.5 text-[#0B4619] shrink-0" />
+              <TrendingUp className="w-3.5 h-3.5 text-[#0F5C3A] shrink-0" />
               <span className="font-semibold text-slate-800">Historical Impact Trend</span>
               <span aria-hidden="true" className="text-slate-300">·</span>
               <span>Month-over-month capacity building growth &amp; cumulative citizen trajectory</span>
@@ -835,11 +835,11 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 setTrendOverlayMetric('activities');
                 setIsTrendOverlayOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0B4619] hover:bg-emerald-900 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#0F5C3A] hover:bg-emerald-900 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
-              <TrendingUp className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <TrendingUp className="w-3.5 h-3.5 text-[#F59E0B]" />
               <span>View MoM Trend Overlay</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#F59E0B]" />
             </button>
           </div>
         </div>
@@ -848,7 +848,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         {marqueeItems.length > 0 && (
           <div
             aria-label="Verified grassroots impact stream"
-            className="kinetic-marquee-viewport overflow-hidden bg-white rounded-xl border border-[#E5E2D9] py-2.5"
+            className="kinetic-marquee-viewport overflow-hidden bg-white rounded-xl border border-[#E2E8E5] py-2.5"
           >
             <div className="kinetic-marquee-track items-center gap-3 px-3">
               {marqueeItems.map((act, idx) => (
@@ -856,11 +856,11 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   key={`${act.id}-${idx}`}
                   type="button"
                   onClick={() => onViewActivity(act)}
-                  className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg bg-[#FAF8F2] hover:bg-emerald-50 border border-[#ECE8DD] hover:border-emerald-300 transition-colors text-xs whitespace-nowrap shrink-0 cursor-pointer group"
+                  className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg bg-[#F6F8F7] hover:bg-emerald-50 border border-[#EAEFED] hover:border-emerald-300 transition-colors text-xs whitespace-nowrap shrink-0 cursor-pointer group"
                 >
-                  <span className="font-semibold text-[#0B4619]">{act.lgaName}</span>
+                  <span className="font-semibold text-[#0F5C3A]">{act.lgaName}</span>
                   <span aria-hidden="true" className="text-slate-300">·</span>
-                  <span className="text-slate-800 font-medium max-w-[230px] truncate group-hover:text-[#0B4619]">
+                  <span className="text-slate-800 font-medium max-w-[230px] truncate group-hover:text-[#0F5C3A]">
                     {act.title}
                   </span>
                   <span aria-hidden="true" className="text-slate-300">·</span>
@@ -880,7 +880,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       <section id="pillars-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-16">
         <ParallaxDecorativeField variant="gold-contours" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-8 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E5E2D9] pb-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E2E8E5] pb-4">
           <KineticSectionHeader
             kicker="Strategic Mandate · Six Pillars"
             title="Human Capital Development Pillars & Cross-Cutting Enablers"
@@ -892,7 +892,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             <button
               type="button"
               onClick={() => setSelectedPillar('all')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0B4619] text-white text-xs font-semibold hover:bg-emerald-900 transition-colors cursor-pointer whitespace-nowrap self-start md:self-auto"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0F5C3A] text-white text-xs font-semibold hover:bg-emerald-900 transition-colors cursor-pointer whitespace-nowrap self-start md:self-auto"
             >
               Clear Pillar Filter
             </button>
@@ -907,7 +907,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 const isSpotlight = activeSpotlightPillar?.pillar.pillar_code === p.pillar_code;
                 const pActs = publishedActivities.filter((a) => a.pillar === p.pillar_code);
                 const pBen = pActs.reduce((acc, a) => acc + (a.beneficiariesTotal || 0), 0);
-                const color = PILLARS[p.pillar_code]?.color || '#0B4619';
+                const color = PILLARS[p.pillar_code]?.color || '#0F5C3A';
 
                 return (
                   <button
@@ -916,15 +916,15 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     onClick={() => setSpotlightPillarCode(p.pillar_code)}
                     className={`relative text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
                       isSpotlight
-                        ? 'border-[#0B4619] bg-white shadow-md shadow-emerald-950/6'
-                        : 'border-[#E5E2D9] bg-white/70 hover:bg-white hover:border-slate-300'
+                        ? 'border-[#0F5C3A] bg-white shadow-md shadow-emerald-950/6'
+                        : 'border-[#E2E8E5] bg-white/70 hover:bg-white hover:border-slate-300'
                     }`}
                   >
                     {isSpotlight && (
                       <motion.div
                         layoutId="activePillarHighlight"
                         transition={{ duration: 0.25, ease: KINETIC_EASE }}
-                        className="absolute inset-0 rounded-xl ring-2 ring-[#0B4619]/20 pointer-events-none"
+                        className="absolute inset-0 rounded-xl ring-2 ring-[#0F5C3A]/20 pointer-events-none"
                       />
                     )}
 
@@ -954,7 +954,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
                     <ChevronRight
                       className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                        isSpotlight ? 'text-[#0B4619] translate-x-0.5' : 'text-slate-300'
+                        isSpotlight ? 'text-[#0F5C3A] translate-x-0.5' : 'text-slate-300'
                       }`}
                     />
                   </button>
@@ -972,7 +972,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={prefersReduced ? { opacity: 1 } : { opacity: 0, y: -10 }}
                     transition={{ duration: 0.26, ease: KINETIC_EASE }}
-                    className="w-full bg-white rounded-2xl border border-[#E5E2D9] overflow-hidden flex flex-col justify-between shadow-sm"
+                    className="w-full bg-white rounded-2xl border border-[#E2E8E5] overflow-hidden flex flex-col justify-between shadow-sm"
                   >
                     {/* Editorial Visual Header with Scroll Parallax & Measured Contrast Scrim */}
                     <div className="relative h-56 sm:h-64 w-full overflow-hidden">
@@ -989,9 +989,9 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                           imgClassName="transition-transform duration-700 hover:scale-105"
                         />
                       </ParallaxLayer>
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#051F0E]/90 via-[#051F0E]/35 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0A2E1F]/90 via-[#0A2E1F]/35 to-transparent pointer-events-none" />
                       <div className="absolute bottom-5 left-6 right-6 text-white space-y-1.5">
-                        <div className="text-xs font-semibold text-[#D4AF37] flex items-center gap-2">
+                        <div className="text-xs font-semibold text-[#F59E0B] flex items-center gap-2">
                           <span>Active Pillar Spotlight</span>
                           <span aria-hidden="true">·</span>
                           <span className="font-mono tabular-nums">
@@ -1015,10 +1015,10 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       </p>
 
                       {/* 3 Crisp Tabular Metrics */}
-                      <div className="grid grid-cols-3 gap-4 py-4 border-y border-[#ECE8DD]">
+                      <div className="grid grid-cols-3 gap-4 py-4 border-y border-[#EAEFED]">
                         <div>
                           <span className="text-xs text-slate-500 block">Beneficiaries</span>
-                          <strong className="text-xl sm:text-2xl font-bold text-[#0B4619] font-mono tabular-nums">
+                          <strong className="text-xl sm:text-2xl font-bold text-[#0F5C3A] font-mono tabular-nums">
                             {activeSpotlightPillar.totalBen.toLocaleString()}
                           </strong>
                         </div>
@@ -1055,7 +1055,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                               width: `${activeSpotlightPillar.malePct}%`,
                               transformOrigin: 'left',
                             }}
-                            className="bg-[#0B4619] h-full"
+                            className="bg-[#0F5C3A] h-full"
                           />
                           <motion.div
                             initial={{ scaleX: 0 }}
@@ -1069,7 +1069,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                               width: `${activeSpotlightPillar.femalePct}%`,
                               transformOrigin: 'left',
                             }}
-                            className="bg-[#D4AF37] h-full"
+                            className="bg-[#D97706] h-full"
                           />
                         </div>
                       </div>
@@ -1094,7 +1094,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                             setPortalScope('lga');
                             scrollToSection('registry-section');
                           }}
-                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B4619] hover:bg-emerald-900 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0F5C3A] hover:bg-emerald-900 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
                         >
                           <span>Filter Verified Dossiers</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -1117,8 +1117,8 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         <ParallaxDecorativeField variant="emerald-compass" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
         <ScrollReveal>
-          <div className="bg-white rounded-2xl border border-[#E5E2D9] p-6 sm:p-8 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#ECE8DD]">
+          <div className="bg-white rounded-2xl border border-[#E2E8E5] p-6 sm:p-8 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#EAEFED]">
               <KineticSectionHeader
                 kicker={
                   <span className="inline-flex items-center gap-1.5">
@@ -1132,7 +1132,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               />
 
               {/* Interactive Metric Switcher */}
-              <div className="flex items-center gap-1 p-1 bg-[#FAF8F2] border border-[#E5E2D9] rounded-xl text-xs self-start md:self-auto">
+              <div className="flex items-center gap-1 p-1 bg-[#F6F8F7] border border-[#E2E8E5] rounded-xl text-xs self-start md:self-auto">
                 {(
                   [
                     { id: 'beneficiaries', label: 'Beneficiaries' },
@@ -1154,7 +1154,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         <motion.span
                           layoutId="districtMetricActive"
                           transition={{ duration: 0.22, ease: KINETIC_EASE }}
-                          className="absolute inset-0 bg-[#0B4619] rounded-lg"
+                          className="absolute inset-0 bg-[#0F5C3A] rounded-lg"
                         />
                       )}
                       <span className="relative z-10">{m.label}</span>
@@ -1172,11 +1172,11 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     data={districtAnalytics}
                     margin={{ top: 12, right: 20, left: 0, bottom: 4 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ECE8DD" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#EAEFED" vertical={false} />
                     <XAxis
                       dataKey="shortLabel"
                       tick={{ fontSize: 12, fill: '#334155', fontWeight: 600 }}
-                      axisLine={{ stroke: '#E5E2D9' }}
+                      axisLine={{ stroke: '#E2E8E5' }}
                       tickLine={false}
                     />
                     <YAxis
@@ -1186,10 +1186,10 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       width={54}
                     />
                     <Tooltip
-                      cursor={{ fill: 'rgba(11, 70, 25, 0.05)' }}
+                      cursor={{ fill: 'rgba(15, 92, 58, 0.05)' }}
                       contentStyle={{
-                        backgroundColor: '#062611',
-                        border: '1px solid rgba(212, 175, 55, 0.5)',
+                        backgroundColor: '#0A2E1F',
+                        border: '1px solid rgba(217, 119, 6, 0.5)',
                         borderRadius: '10px',
                         color: '#ffffff',
                         fontSize: '12px',
@@ -1233,8 +1233,8 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       }}
                       className={`w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
                         isActive
-                          ? 'border-[#0B4619] bg-emerald-50/60 shadow-xs'
-                          : 'border-[#ECE8DD] bg-[#FAF8F2]/60 hover:bg-[#FAF8F2] hover:border-slate-300'
+                          ? 'border-[#0F5C3A] bg-emerald-50/60 shadow-xs'
+                          : 'border-[#EAEFED] bg-[#F6F8F7]/60 hover:bg-[#F6F8F7] hover:border-slate-300'
                       }`}
                     >
                       <div>
@@ -1244,7 +1244,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-base font-bold text-[#0B4619] font-mono tabular-nums">
+                        <div className="text-base font-bold text-[#0F5C3A] font-mono tabular-nums">
                           {dist.beneficiaries.toLocaleString()}
                         </div>
                         <div className="text-[11px] text-slate-500">beneficiaries</div>
@@ -1310,7 +1310,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             <button
               type="button"
               onClick={() => setSelectedLgaId(null)}
-              className="text-xs font-semibold text-[#0B4619] hover:underline cursor-pointer self-start sm:self-auto"
+              className="text-xs font-semibold text-[#0F5C3A] hover:underline cursor-pointer self-start sm:self-auto"
             >
               Reset to All 31 LGAs
             </button>
@@ -1341,11 +1341,11 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       >
         <ScrollReveal>
           {/* Scope Selector: 31-LGA Grassroots vs State-Level Executive */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E5E2D9] pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E2E8E5] pb-4">
             <div
               role="tablist"
               aria-label="Portal transparency scope"
-              className="flex items-center gap-1 p-1 bg-white border border-[#E5E2D9] rounded-xl text-xs font-semibold overflow-x-auto max-w-full"
+              className="flex items-center gap-1 p-1 bg-white border border-[#E2E8E5] rounded-xl text-xs font-semibold overflow-x-auto max-w-full"
             >
               <button
                 type="button"
@@ -1360,7 +1360,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   <motion.span
                     layoutId="registryScopeBg"
                     transition={{ duration: 0.24, ease: KINETIC_EASE }}
-                    className="absolute inset-0 bg-[#0B4619] rounded-lg shadow-xs"
+                    className="absolute inset-0 bg-[#0F5C3A] rounded-lg shadow-xs"
                   />
                 )}
                 <Building2 className="w-3.5 h-3.5 relative z-10" />
@@ -1382,7 +1382,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   <motion.span
                     layoutId="registryScopeBg"
                     transition={{ duration: 0.24, ease: KINETIC_EASE }}
-                    className="absolute inset-0 bg-[#0B4619] rounded-lg shadow-xs"
+                    className="absolute inset-0 bg-[#0F5C3A] rounded-lg shadow-xs"
                   />
                 )}
                 <Layers className="w-3.5 h-3.5 relative z-10" />
@@ -1423,7 +1423,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search community, title, or skill…"
-                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4619]"
+                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]"
                   />
                 </div>
 
@@ -1431,7 +1431,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   aria-label="Filter by Senatorial District"
                   value={districtFilter}
                   onChange={(e) => setDistrictFilter(e.target.value)}
-                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0B4619] cursor-pointer"
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
                 >
                   <option value="all">All Senatorial Districts</option>
                   <option value="uyo">Uyo District (North-East)</option>
@@ -1443,7 +1443,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   aria-label="Filter by HCD Pillar"
                   value={selectedPillar}
                   onChange={(e) => setSelectedPillar(e.target.value)}
-                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0B4619] cursor-pointer"
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
                 >
                   <option value="all">All 6 Pillars</option>
                   {pillars.map((p) => (
@@ -1461,7 +1461,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     onClick={() => setViewMode('grid')}
                     className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                       viewMode === 'grid'
-                        ? 'bg-[#0B4619] text-white'
+                        ? 'bg-[#0F5C3A] text-white'
                         : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
@@ -1473,7 +1473,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     onClick={() => setViewMode('list')}
                     className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                       viewMode === 'list'
-                        ? 'bg-[#0B4619] text-white'
+                        ? 'bg-[#0F5C3A] text-white'
                         : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
@@ -1491,7 +1491,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   <button
                     type="button"
                     onClick={() => setSelectedLgaId(null)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0B4619] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0F5C3A] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
                   >
                     <span>LGA: {selectedLgaObj.name}</span>
                     <X className="w-3 h-3" />
@@ -1501,7 +1501,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   <button
                     type="button"
                     onClick={() => setSelectedPillar('all')}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0B4619] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0F5C3A] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
                   >
                     <span>Pillar: {getPillarDisplayName(selectedPillar)}</span>
                     <X className="w-3 h-3" />
@@ -1511,7 +1511,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   <button
                     type="button"
                     onClick={() => setDistrictFilter('all')}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0B4619] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-[#0F5C3A] border border-emerald-200 font-semibold hover:bg-emerald-100 cursor-pointer"
                   >
                     <span>District: {districtFilter.toUpperCase()}</span>
                     <X className="w-3 h-3" />
@@ -1534,7 +1534,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
             {/* Empty State or Populated Grid/List */}
             {filteredActivities.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-[#E5E2D9] p-12 text-center space-y-3">
+              <div className="bg-white rounded-2xl border border-[#E2E8E5] p-12 text-center space-y-3">
                 <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
                 <h4 className="font-display text-lg font-bold text-slate-900">
                   No matching verified dossiers found
@@ -1550,7 +1550,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     setSearchQuery('');
                     setDistrictFilter('all');
                   }}
-                  className="px-4 py-2.5 bg-[#0B4619] hover:bg-emerald-900 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2.5 bg-[#0F5C3A] hover:bg-emerald-900 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
                 >
                   Reset All Filters
                 </button>
@@ -1570,7 +1570,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       key={activity.id}
                       animateEntrance
                       delayIndex={idx}
-                      className="bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#0B4619]/35 overflow-hidden flex flex-col justify-between group"
+                      className="bg-white rounded-2xl border border-[#E2E8E5] hover:border-[#0F5C3A]/35 overflow-hidden flex flex-col justify-between group"
                     >
                       <div>
                         <ActivityMediaImage
@@ -1589,7 +1589,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         <div className="p-5 space-y-3.5">
                           {/* Clean Unboxed Metadata */}
                           <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-                            <span className="font-semibold text-[#0B4619]">
+                            <span className="font-semibold text-[#0F5C3A]">
                               {getPillarDisplayName(activity.pillar)}
                             </span>
                             <span aria-hidden="true">·</span>
@@ -1602,12 +1602,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                             )}
                           </div>
 
-                          <h3 className="font-display text-base sm:text-lg font-bold text-slate-950 line-clamp-2 leading-snug group-hover:text-[#0B4619] transition-colors">
+                          <h3 className="font-display text-base sm:text-lg font-bold text-slate-950 line-clamp-2 leading-snug group-hover:text-[#0F5C3A] transition-colors">
                             {activity.title}
                           </h3>
 
                           {/* Tabular Quantitative Metrics */}
-                          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#ECE8DD] text-xs">
+                          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#EAEFED] text-xs">
                             <div>
                               <span className="text-[11px] text-slate-500 block">Beneficiaries</span>
                               <strong className="text-base font-bold text-slate-950 font-mono tabular-nums">
@@ -1620,7 +1620,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
                             <div>
                               <span className="text-[11px] text-slate-500 block">Capital Deployed</span>
-                              <strong className="text-base font-bold text-[#0B4619] font-mono tabular-nums">
+                              <strong className="text-base font-bold text-[#0F5C3A] font-mono tabular-nums">
                                 ₦{(activity.budgetNgn / 1_000_000).toFixed(1)}M
                               </strong>
                               <span className="text-[11px] text-slate-500 block truncate">
@@ -1630,35 +1630,35 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                           </div>
 
                           {/* Milestone Progress Bar */}
-                          <div className="pt-2.5 border-t border-[#ECE8DD] space-y-1.5">
+                          <div className="pt-2.5 border-t border-[#EAEFED] space-y-1.5">
                             <div className="flex items-center justify-between text-[11px]">
                               <span className="text-slate-600 font-medium flex items-center gap-1">
-                                <Flag className="w-3 h-3 text-[#0B4619]" />
+                                <Flag className="w-3 h-3 text-[#0F5C3A]" />
                                 Milestones ({activity.milestones?.length || 3} Phases)
                               </span>
-                              <span className="font-bold text-[#0B4619] font-mono tabular-nums">
+                              <span className="font-bold text-[#0F5C3A] font-mono tabular-nums">
                                 {progressPct}%
                               </span>
                             </div>
-                            <div className="w-full bg-[#EFECE3] rounded-full h-1.5 overflow-hidden">
+                            <div className="w-full bg-[#EFF4F1] rounded-full h-1.5 overflow-hidden">
                               <motion.div
                                 initial={{ scaleX: 0 }}
                                 whileInView={{ scaleX: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: prefersReduced ? 0 : 0.6, ease: KINETIC_EASE }}
                                 style={{ width: `${progressPct}%`, transformOrigin: 'left' }}
-                                className="bg-[#0B4619] h-1.5 rounded-full"
+                                className="bg-[#0F5C3A] h-1.5 rounded-full"
                               />
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="px-5 py-3.5 bg-[#FAF8F2]/80 border-t border-[#ECE8DD] flex items-center justify-between text-xs">
+                      <div className="px-5 py-3.5 bg-[#F6F8F7]/80 border-t border-[#EAEFED] flex items-center justify-between text-xs">
                         <button
                           type="button"
                           onClick={() => onViewActivity(activity)}
-                          className="font-bold text-[#0B4619] hover:text-emerald-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="font-bold text-[#0F5C3A] hover:text-emerald-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           Inspect Dossier & Proof
@@ -1686,17 +1686,17 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     variant="compact"
                     animateEntrance
                     delayIndex={idx}
-                    className="p-4 sm:px-6 bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#0B4619]/35 flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                    className="p-4 sm:px-6 bg-white rounded-2xl border border-[#E2E8E5] hover:border-[#0F5C3A]/35 flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                   >
                     <div className="space-y-1 min-w-0">
                       <div className="text-xs text-slate-500 flex flex-wrap items-center gap-1.5">
-                        <span className="font-semibold text-[#0B4619]">{activity.lgaName} LGA</span>
+                        <span className="font-semibold text-[#0F5C3A]">{activity.lgaName} LGA</span>
                         <span aria-hidden="true">·</span>
                         <span>{getPillarDisplayName(activity.pillar)}</span>
                         <span aria-hidden="true">·</span>
                         <span>{activity.community}</span>
                       </div>
-                      <h3 className="text-sm sm:text-base font-bold text-slate-950 group-hover:text-[#0B4619] transition-colors truncate">
+                      <h3 className="text-sm sm:text-base font-bold text-slate-950 group-hover:text-[#0F5C3A] transition-colors truncate">
                         {activity.title}
                       </h3>
                     </div>
@@ -1710,14 +1710,14 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       </div>
                       <div className="text-right">
                         <span className="text-[11px] text-slate-500 block">Capital</span>
-                        <strong className="font-mono tabular-nums text-[#0B4619]">
+                        <strong className="font-mono tabular-nums text-[#0F5C3A]">
                           ₦{(activity.budgetNgn / 1_000_000).toFixed(1)}M
                         </strong>
                       </div>
                       <button
                         type="button"
                         onClick={() => onViewActivity(activity)}
-                        className="px-3.5 py-2 rounded-lg bg-[#0B4619] hover:bg-emerald-900 text-white font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                        className="px-3.5 py-2 rounded-lg bg-[#0F5C3A] hover:bg-emerald-900 text-white font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         Inspect
@@ -1748,7 +1748,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     value={stateSearchQuery}
                     onChange={(e) => setStateSearchQuery(e.target.value)}
                     placeholder="Search state activity or MDA…"
-                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4619]"
+                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]"
                   />
                 </div>
 
@@ -1770,12 +1770,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             </div>
 
             {isStateLoading ? (
-              <div className="bg-white rounded-2xl border border-[#E5E2D9] p-12 text-center text-xs text-slate-500">
-                <div className="w-5 h-5 border-2 border-[#0B4619] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              <div className="bg-white rounded-2xl border border-[#E2E8E5] p-12 text-center text-xs text-slate-500">
+                <div className="w-5 h-5 border-2 border-[#0F5C3A] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                 Loading published state activities…
               </div>
             ) : filteredStateActivities.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-[#E5E2D9] p-12 text-center space-y-3">
+              <div className="bg-white rounded-2xl border border-[#E2E8E5] p-12 text-center space-y-3">
                 <Layers className="w-10 h-10 text-slate-300 mx-auto" />
                 <h4 className="font-display text-lg font-bold text-slate-900">
                   No published state-level activities found
@@ -1789,7 +1789,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     setSelectedStateCategory('all');
                     setStateSearchQuery('');
                   }}
-                  className="px-4 py-2 bg-[#0B4619] text-white rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-2 bg-[#0F5C3A] text-white rounded-xl text-xs font-bold cursor-pointer"
                 >
                   Clear State Filters
                 </button>
@@ -1810,11 +1810,11 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       key={act.id}
                       animateEntrance
                       delayIndex={idx}
-                      className="bg-white rounded-2xl border border-[#E5E2D9] hover:border-[#0B4619]/35 overflow-hidden flex flex-col justify-between group"
+                      className="bg-white rounded-2xl border border-[#E2E8E5] hover:border-[#0F5C3A]/35 overflow-hidden flex flex-col justify-between group"
                     >
                       <div className="p-5 space-y-3.5">
                         <div className="flex items-center justify-between gap-2 text-xs text-slate-500 font-mono tabular-nums">
-                          <span className="font-semibold text-[#0B4619]">{act.activity_code}</span>
+                          <span className="font-semibold text-[#0F5C3A]">{act.activity_code}</span>
                           <span>{act.activity_date}</span>
                         </div>
 
@@ -1822,12 +1822,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                           <div className="text-xs font-semibold text-emerald-800 mb-1">
                             {STATE_CATEGORY_LABELS[act.category]}
                           </div>
-                          <h3 className="font-display text-base font-bold text-slate-950 group-hover:text-[#0B4619] transition-colors line-clamp-2 leading-snug">
+                          <h3 className="font-display text-base font-bold text-slate-950 group-hover:text-[#0F5C3A] transition-colors line-clamp-2 leading-snug">
                             {act.title}
                           </h3>
                         </div>
 
-                        <div className="space-y-1 text-xs text-slate-600 pt-2.5 border-t border-[#ECE8DD]">
+                        <div className="space-y-1 text-xs text-slate-600 pt-2.5 border-t border-[#EAEFED]">
                           <div className="flex items-center gap-1.5 font-medium truncate" title={act.lead_institution}>
                             <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span className="truncate">{act.lead_institution}</span>
@@ -1841,12 +1841,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         </div>
 
                         {act.key_outcomes && (
-                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed bg-[#FAF8F2] p-3 rounded-xl border border-[#ECE8DD]">
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed bg-[#F6F8F7] p-3 rounded-xl border border-[#EAEFED]">
                             <strong className="text-slate-800">Outcomes:</strong> {act.key_outcomes}
                           </p>
                         )}
 
-                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#ECE8DD] text-xs text-slate-500">
+                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#EAEFED] text-xs text-slate-500">
                           {stakeholderCount > 0 && (
                             <span className="inline-flex items-center gap-1">
                               <Users className="w-3 h-3" />
@@ -1874,11 +1874,11 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         </div>
                       </div>
 
-                      <div className="px-5 py-3.5 bg-[#FAF8F2]/80 border-t border-[#ECE8DD] flex items-center justify-between text-xs">
+                      <div className="px-5 py-3.5 bg-[#F6F8F7]/80 border-t border-[#EAEFED] flex items-center justify-between text-xs">
                         <button
                           type="button"
                           onClick={() => setInspectedStateActivity(act)}
-                          className="font-bold text-[#0B4619] hover:text-emerald-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="font-bold text-[#0F5C3A] hover:text-emerald-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>Inspect Communique & Outcomes</span>
@@ -1902,7 +1902,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         className="kinetic-snap-section relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 scroll-mt-16"
       >
         <ScrollReveal>
-          <div className="relative overflow-hidden bg-gradient-to-r from-[#062611] via-[#0B4619] to-[#083416] text-white rounded-2xl p-7 sm:p-10 border border-[#D4AF37]/35 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-md">
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0D3B27] text-white rounded-2xl p-7 sm:p-10 border border-[#D97706]/35 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-md">
             {/* Scroll-Triggered Decorative Crest Arcs & Luminous Glow */}
             <motion.div
               aria-hidden="true"
@@ -1911,7 +1911,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   ? undefined
                   : { y: assuranceDecorY, rotate: assuranceDecorRotate, willChange: 'transform' }
               }
-              className="no-print pointer-events-none absolute -right-20 -top-24 w-80 h-80 text-[#D4AF37]/20"
+              className="no-print pointer-events-none absolute -right-20 -top-24 w-80 h-80 text-[#F59E0B]/20"
             >
               <svg viewBox="0 0 320 320" fill="none" className="w-full h-full">
                 <circle cx="160" cy="160" r="145" stroke="currentColor" strokeWidth="1" strokeDasharray="4 8" />
@@ -1921,7 +1921,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             <motion.div
               aria-hidden="true"
               style={prefersReduced ? undefined : { y: assuranceDecorY, willChange: 'transform' }}
-              className="no-print pointer-events-none absolute -left-16 -bottom-24 w-72 h-72 rounded-full bg-radial from-[#D4AF37]/18 via-transparent to-transparent blur-2xl"
+              className="no-print pointer-events-none absolute -left-16 -bottom-24 w-72 h-72 rounded-full bg-radial from-[#D97706]/18 via-transparent to-transparent blur-2xl"
             />
 
             <KineticSectionHeader
@@ -1942,7 +1942,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               <button
                 type="button"
                 onClick={onOpenReportExport}
-                className="px-6 py-3.5 bg-[#D4AF37] hover:bg-[#e0bd4c] text-[#051F0E] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-[0.98] inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                className="px-6 py-3.5 bg-[#D97706] hover:bg-[#B45309] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-[0.98] inline-flex items-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 <Download className="w-4 h-4" />
                 Export Public Transparency Brief

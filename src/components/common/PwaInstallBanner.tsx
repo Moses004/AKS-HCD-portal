@@ -92,7 +92,7 @@ export const PwaInstallBanner: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-800 border border-emerald-600/50 flex items-center justify-center shrink-0 text-[#D4AF37]">
+            <div className="w-8 h-8 rounded-lg bg-emerald-800 border border-emerald-600/50 flex items-center justify-center shrink-0 text-[#F59E0B]">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
@@ -111,7 +111,7 @@ export const PwaInstallBanner: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleInstallClick}
-              className="px-3.5 py-1.5 bg-[#D4AF37] hover:bg-[#c29f30] text-emerald-950 font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-2xs transition-transform active:scale-95"
+              className="px-3.5 py-1.5 bg-[#D97706] hover:bg-[#c29f30] text-emerald-950 font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-2xs transition-transform active:scale-95"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Install to Device</span>

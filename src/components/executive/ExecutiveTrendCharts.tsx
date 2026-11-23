@@ -597,7 +597,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                 onClick={() => setMonthlyTrajectory('velocity')}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
                   monthlyTrajectory === 'velocity'
-                    ? 'bg-[#0B4619] text-white shadow-xs font-bold'
+                    ? 'bg-[#0F5C3A] text-white shadow-xs font-bold'
                     : 'hover:text-slate-900'
                 }`}
               >
@@ -607,7 +607,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                 onClick={() => setMonthlyTrajectory('cumulative')}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
                   monthlyTrajectory === 'cumulative'
-                    ? 'bg-[#0B4619] text-white shadow-xs font-bold'
+                    ? 'bg-[#0F5C3A] text-white shadow-xs font-bold'
                     : 'hover:text-slate-900'
                 }`}
               >
@@ -660,7 +660,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 bg-slate-50/70 p-3 rounded-xl border border-slate-100">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#0B4619]" />
+              <span className="w-3 h-3 rounded-full bg-[#0F5C3A]" />
               <span className="font-bold text-slate-900">State Total (Verified)</span>
             </div>
             {forecastAnalysis && showForecast && (
@@ -672,15 +672,15 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
               </div>
             )}
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#2563EB]" />
+              <span className="w-3 h-3 rounded-full bg-[#10B981]" />
               <span>Uyo District</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#D4AF37]" />
+              <span className="w-3 h-3 rounded-full bg-[#0E7490]" />
               <span>Ikot Ekpene District</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#DC2626]" />
+              <span className="w-3 h-3 rounded-full bg-[#D97706]" />
               <span>Eket District</span>
             </div>
           </div>
@@ -846,7 +846,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
 
                         return (
                           <div className="bg-slate-900/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-xl border border-slate-700 text-xs min-w-[250px] space-y-2">
-                            <div className="font-bold text-[#D4AF37] border-b border-slate-700 pb-1.5 flex items-center justify-between">
+                            <div className="font-bold text-[#F59E0B] border-b border-slate-700 pb-1.5 flex items-center justify-between">
                               <span>{label}</span>
                               {isForecastPoint ? (
                                 <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-300 bg-emerald-900/80 px-2 py-0.5 rounded border border-emerald-600/50 flex items-center gap-1">
@@ -900,25 +900,25 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   <Line
                     type="monotone"
                     dataKey="Uyo Senatorial District"
-                    stroke="#2563EB"
+                    stroke="#10B981"
                     strokeWidth={2}
-                    dot={{ r: 3, fill: '#2563EB' }}
+                    dot={{ r: 3, fill: '#10B981' }}
                     activeDot={{ r: 5 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="Ikot Ekpene Senatorial District"
-                    stroke="#D4AF37"
+                    stroke="#0E7490"
                     strokeWidth={2}
-                    dot={{ r: 3, fill: '#D4AF37' }}
+                    dot={{ r: 3, fill: '#0E7490' }}
                     activeDot={{ r: 5 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="Eket Senatorial District"
-                    stroke="#DC2626"
+                    stroke="#D97706"
                     strokeWidth={2}
-                    dot={{ r: 3, fill: '#DC2626' }}
+                    dot={{ r: 3, fill: '#D97706' }}
                     activeDot={{ r: 5 }}
                   />
 
@@ -926,10 +926,10 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   <Line
                     type="monotone"
                     dataKey="State Total (All 31 LGAs)"
-                    stroke="#0B4619"
+                    stroke="#0F5C3A"
                     strokeWidth={3.5}
-                    dot={{ r: 4, fill: '#0B4619', stroke: '#D4AF37', strokeWidth: 1.5 }}
-                    activeDot={{ r: 7, fill: '#0B4619', stroke: '#fff', strokeWidth: 2 }}
+                    dot={{ r: 4, fill: '#0F5C3A', stroke: '#D97706', strokeWidth: 1.5 }}
+                    activeDot={{ r: 7, fill: '#0F5C3A', stroke: '#fff', strokeWidth: 2 }}
                   />
 
                   {/* Linear Regression Forecast Line */}
@@ -1046,7 +1046,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   onClick={() => setYoyMetric('beneficiaries')}
                   className={`px-3 py-1.5 rounded-lg transition-all ${
                     yoyMetric === 'beneficiaries'
-                      ? 'bg-[#0B4619] text-white shadow-xs font-bold'
+                      ? 'bg-[#0F5C3A] text-white shadow-xs font-bold'
                       : 'hover:text-slate-900'
                   }`}
                 >
@@ -1056,7 +1056,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   onClick={() => setYoyMetric('projects')}
                   className={`px-3 py-1.5 rounded-lg transition-all ${
                     yoyMetric === 'projects'
-                      ? 'bg-[#0B4619] text-white shadow-xs font-bold'
+                      ? 'bg-[#0F5C3A] text-white shadow-xs font-bold'
                       : 'hover:text-slate-900'
                   }`}
                 >
@@ -1111,7 +1111,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-slate-900/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-xl border border-slate-700 text-xs min-w-[240px] space-y-2">
-                            <div className="font-bold text-[#D4AF37] border-b border-slate-700 pb-1.5 flex items-center justify-between">
+                            <div className="font-bold text-[#F59E0B] border-b border-slate-700 pb-1.5 flex items-center justify-between">
                               <span>{label}</span>
                               <span className="text-[10px] text-emerald-300 font-mono">
                                 Verified Database Pillars
@@ -1198,10 +1198,10 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   <Line
                     type="monotone"
                     dataKey="Total State Wide"
-                    stroke="#0B4619"
+                    stroke="#0F5C3A"
                     strokeWidth={3.5}
                     strokeDasharray="4 2"
-                    dot={{ r: 5, fill: '#0B4619', stroke: '#D4AF37', strokeWidth: 2 }}
+                    dot={{ r: 5, fill: '#0F5C3A', stroke: '#D97706', strokeWidth: 2 }}
                     activeDot={{ r: 7 }}
                   />
                 </LineChart>
@@ -1230,7 +1230,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-slate-900/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-xl border border-slate-700 text-xs min-w-[240px] space-y-2">
-                            <div className="font-bold text-[#D4AF37] border-b border-slate-700 pb-1.5 flex items-center justify-between">
+                            <div className="font-bold text-[#F59E0B] border-b border-slate-700 pb-1.5 flex items-center justify-between">
                               <span>{label}</span>
                               <span className="text-[10px] text-emerald-300 font-mono">
                                 Verified Districts
@@ -1269,31 +1269,31 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   <Line
                     type="monotone"
                     dataKey="Uyo Senatorial District (9 LGAs)"
-                    stroke="#2563EB"
+                    stroke="#10B981"
                     strokeWidth={2.5}
                     dot={{ r: 4 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="Ikot Ekpene Senatorial District (10 LGAs)"
-                    stroke="#D4AF37"
+                    stroke="#0E7490"
                     strokeWidth={2.5}
                     dot={{ r: 4 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="Eket Senatorial District (12 LGAs)"
-                    stroke="#DC2626"
+                    stroke="#D97706"
                     strokeWidth={2.5}
                     dot={{ r: 4 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="All 31 LGAs Combined"
-                    stroke="#0B4619"
+                    stroke="#0F5C3A"
                     strokeWidth={3.5}
                     strokeDasharray="4 2"
-                    dot={{ r: 5, fill: '#0B4619', stroke: '#D4AF37', strokeWidth: 2 }}
+                    dot={{ r: 5, fill: '#0F5C3A', stroke: '#D97706', strokeWidth: 2 }}
                   />
                 </LineChart>
               ) : (
@@ -1320,7 +1320,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-slate-900/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-xl border border-slate-700 text-xs min-w-[220px] space-y-2">
-                            <div className="font-bold text-[#D4AF37] border-b border-slate-700 pb-1.5">
+                            <div className="font-bold text-[#F59E0B] border-b border-slate-700 pb-1.5">
                               {label}
                             </div>
                             <div className="space-y-1">
@@ -1352,16 +1352,16 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
                   <Line
                     type="monotone"
                     dataKey="Active LGA Councils"
-                    stroke="#0B4619"
+                    stroke="#0F5C3A"
                     strokeWidth={3}
-                    dot={{ r: 5, fill: '#0B4619' }}
+                    dot={{ r: 5, fill: '#0F5C3A' }}
                   />
                   <Line
                     type="monotone"
                     dataKey="Coverage Rate (%)"
-                    stroke="#D4AF37"
+                    stroke="#D97706"
                     strokeWidth={2.5}
-                    dot={{ r: 4, fill: '#D4AF37' }}
+                    dot={{ r: 4, fill: '#D97706' }}
                   />
                 </LineChart>
               )}

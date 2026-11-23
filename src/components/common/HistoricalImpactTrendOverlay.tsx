@@ -76,8 +76,8 @@ const ExecutiveTrendTooltip: React.FC<CustomTooltipProps> = ({
     metric === 'beneficiaries' ? pt.momBeneficiariesPct : pt.momActivitiesPct;
 
   return (
-    <div className="bg-white/98 backdrop-blur-md border border-[#E5E2D9] rounded-xl shadow-lg shadow-emerald-950/12 p-3.5 min-w-[228px] text-xs">
-      <div className="flex items-center justify-between gap-3 pb-2 mb-2 border-b border-[#ECE8DD]">
+    <div className="bg-white/98 backdrop-blur-md border border-[#E2E8E5] rounded-xl shadow-lg shadow-emerald-950/12 p-3.5 min-w-[228px] text-xs">
+      <div className="flex items-center justify-between gap-3 pb-2 mb-2 border-b border-[#EAEFED]">
         <span className="font-display font-bold text-slate-950 text-sm">
           {pt.label}
         </span>
@@ -86,7 +86,7 @@ const ExecutiveTrendTooltip: React.FC<CustomTooltipProps> = ({
             activeMomPct === null
               ? 'text-slate-500'
               : activeMomPct > 0
-              ? 'text-[#0B4619]'
+              ? 'text-[#0F5C3A]'
               : activeMomPct < 0
               ? 'text-amber-700'
               : 'text-slate-600'
@@ -99,7 +99,7 @@ const ExecutiveTrendTooltip: React.FC<CustomTooltipProps> = ({
       <div className="space-y-1.5 font-mono tabular-nums">
         <div className="flex items-center justify-between gap-4">
           <span className="font-sans text-slate-500">Capacity Activities</span>
-          <span className="font-bold text-[#0B4619]">
+          <span className="font-bold text-[#0F5C3A]">
             {mode === 'cumulative'
               ? `${pt.cumulativeActivities} total (${pt.activities} new)`
               : `${pt.activities} activities`}
@@ -122,9 +122,9 @@ const ExecutiveTrendTooltip: React.FC<CustomTooltipProps> = ({
           </span>
         </div>
 
-        <div className="flex items-center justify-between gap-4 pt-1.5 mt-1 border-t border-[#ECE8DD]">
+        <div className="flex items-center justify-between gap-4 pt-1.5 mt-1 border-t border-[#EAEFED]">
           <span className="font-sans text-slate-500">Monthly Capital</span>
-          <span className="font-bold text-[#9A7410]">
+          <span className="font-bold text-[#B45309]">
             ₦{pt.budgetMillions.toFixed(1)}M
           </span>
         </div>
@@ -374,7 +374,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
           exit={prefersReduced ? { opacity: 0 } : { opacity: 0 }}
           transition={{ duration: 0.2, ease: KINETIC_EASE }}
           onClick={onClose}
-          className="fixed inset-0 z-50 bg-[#051F0E]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-[#0A2E1F]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         >
           <motion.div
             initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 18, scale: 0.985 }}
@@ -382,13 +382,13 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
             exit={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.985 }}
             transition={{ duration: 0.24, ease: KINETIC_EASE }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-5xl bg-white rounded-2xl border border-[#E5E2D9] shadow-2xl shadow-emerald-950/25 overflow-hidden my-auto max-h-[92vh] flex flex-col"
+            className="w-full max-w-5xl bg-white rounded-2xl border border-[#E2E8E5] shadow-2xl shadow-emerald-950/25 overflow-hidden my-auto max-h-[92vh] flex flex-col"
           >
             {/* Top Editorial Header */}
-            <div className="px-6 py-5 bg-[#FAF8F2] border-b border-[#E5E2D9] flex items-start justify-between gap-4 shrink-0">
+            <div className="px-6 py-5 bg-[#F6F8F7] border-b border-[#E2E8E5] flex items-start justify-between gap-4 shrink-0">
               <div className="space-y-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#0B4619]">
-                  <Activity className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#0F5C3A]">
+                  <Activity className="w-3.5 h-3.5 text-[#F59E0B]" />
                   <span>Historical Impact Trend</span>
                   <span aria-hidden="true" className="text-slate-300">
                     ·
@@ -410,7 +410,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                 type="button"
                 onClick={onClose}
                 aria-label="Close Historical Impact Trend overlay"
-                className="p-2 rounded-xl bg-white border border-[#E5E2D9] text-slate-600 hover:text-slate-950 hover:border-[#0B4619]/40 transition-colors cursor-pointer shrink-0"
+                className="p-2 rounded-xl bg-white border border-[#E2E8E5] text-slate-600 hover:text-slate-950 hover:border-[#0F5C3A]/40 transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -424,7 +424,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                 <div
                   role="group"
                   aria-label="Select trend metric"
-                  className="inline-flex items-center p-1 bg-[#F3EFE4] rounded-xl border border-[#E5E2D9]"
+                  className="inline-flex items-center p-1 bg-[#EFF4F1] rounded-xl border border-[#E2E8E5]"
                 >
                   {(
                     [
@@ -441,7 +441,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                         onClick={() => setMetric(tab.id)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                           active
-                            ? 'bg-[#0B4619] text-white shadow-xs'
+                            ? 'bg-[#0F5C3A] text-white shadow-xs'
                             : 'text-slate-600 hover:text-slate-950'
                         }`}
                       >
@@ -456,14 +456,14 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                   <div
                     role="group"
                     aria-label="Trajectory mode"
-                    className="inline-flex items-center p-1 bg-[#F3EFE4] rounded-xl border border-[#E5E2D9]"
+                    className="inline-flex items-center p-1 bg-[#EFF4F1] rounded-xl border border-[#E2E8E5]"
                   >
                     <button
                       type="button"
                       onClick={() => setTrajectoryMode('mom')}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                         trajectoryMode === 'mom'
-                          ? 'bg-white text-[#0B4619] shadow-2xs'
+                          ? 'bg-white text-[#0F5C3A] shadow-2xs'
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
@@ -474,7 +474,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                       onClick={() => setTrajectoryMode('cumulative')}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                         trajectoryMode === 'cumulative'
-                          ? 'bg-white text-[#0B4619] shadow-2xs'
+                          ? 'bg-white text-[#0F5C3A] shadow-2xs'
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
@@ -488,7 +488,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                       aria-label="Filter by HCD pillar"
                       value={selectedPillar}
                       onChange={(e) => setSelectedPillar(e.target.value)}
-                      className="pl-8 pr-7 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-[#E5E2D9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B4619]/30 cursor-pointer"
+                      className="pl-8 pr-7 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-[#E2E8E5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]/30 cursor-pointer"
                     >
                       <option value="all">All HCD Pillars</option>
                       {pillars.map((p) => (
@@ -506,7 +506,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                       onChange={(e) =>
                         setStatusScope(e.target.value as 'published' | 'all')
                       }
-                      className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-[#E5E2D9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B4619]/30 cursor-pointer"
+                      className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-[#E2E8E5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]/30 cursor-pointer"
                     >
                       <option value="published">Verified Published Only</option>
                       <option value="all">All Recorded Pipeline</option>
@@ -516,12 +516,12 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
               </div>
 
               {/* 4-Column Executive Summary Strip (Single Elevation, Hairline Dividers) */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-4 px-5 rounded-xl bg-[#FAF8F2] border border-[#ECE8DD] lg:divide-x lg:divide-[#E5E2D9]">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 py-4 px-5 rounded-xl bg-[#F6F8F7] border border-[#EAEFED] lg:divide-x lg:divide-[#E2E8E5]">
                 <div className="space-y-0.5">
                   <span className="text-[11px] font-semibold text-slate-500 block">
                     Latest Period ({stats.latestLabel})
                   </span>
-                  <div className="text-xl font-bold text-[#0B4619] font-mono tabular-nums">
+                  <div className="text-xl font-bold text-[#0F5C3A] font-mono tabular-nums">
                     {formatMetricNumber(stats.latestVal)}
                   </div>
                   <span className="text-[11px] text-slate-500 block">
@@ -538,7 +538,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                       stats.momPct === null
                         ? 'text-slate-700'
                         : stats.momPct > 0
-                        ? 'text-[#0B4619]'
+                        ? 'text-[#0F5C3A]'
                         : stats.momPct < 0
                         ? 'text-amber-700'
                         : 'text-slate-700'
@@ -571,7 +571,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                   <div className="text-xl font-bold text-slate-950 font-mono tabular-nums">
                     {formatMetricNumber(stats.peakVal)}
                   </div>
-                  <span className="text-[11px] text-[#9A7410] font-semibold block">
+                  <span className="text-[11px] text-[#B45309] font-semibold block">
                     Recorded in {stats.peakLabel}
                   </span>
                 </div>
@@ -590,20 +590,20 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
               </div>
 
               {/* Recharts Month-over-Month Growth Line Chart */}
-              <div className="rounded-xl border border-[#E5E2D9] bg-white p-4 sm:p-5 space-y-3">
+              <div className="rounded-xl border border-[#E2E8E5] bg-white p-4 sm:p-5 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2 font-semibold text-slate-800">
-                    <Calendar className="w-3.5 h-3.5 text-[#0B4619]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#0F5C3A]" />
                     <span>{primaryName}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-4 text-[11px] text-slate-500">
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="w-3 h-0.5 bg-[#0B4619] rounded-full" />
+                      <span className="w-3 h-0.5 bg-[#0F5C3A] rounded-full" />
                       <span>{primaryName}</span>
                     </span>
                     {secondaryKey && (
                       <span className="inline-flex items-center gap-1.5">
-                        <span className="w-3 h-0.5 bg-[#D4AF37] rounded-full" />
+                        <span className="w-3 h-0.5 bg-[#D97706] rounded-full" />
                         <span>{secondaryName} (Right Axis)</span>
                       </span>
                     )}
@@ -635,21 +635,21 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                       >
                         <defs>
                           <linearGradient id="histImpactAreaFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0B4619" stopOpacity={0.18} />
-                            <stop offset="100%" stopColor="#0B4619" stopOpacity={0.01} />
+                            <stop offset="0%" stopColor="#0F5C3A" stopOpacity={0.18} />
+                            <stop offset="100%" stopColor="#0F5C3A" stopOpacity={0.01} />
                           </linearGradient>
                         </defs>
 
                         <CartesianGrid
                           strokeDasharray="3 4"
                           vertical={false}
-                          stroke="#ECE8DD"
+                          stroke="#EAEFED"
                         />
 
                         <XAxis
                           dataKey="label"
                           tick={{ fill: '#475569', fontSize: 11 }}
-                          axisLine={{ stroke: '#E5E2D9' }}
+                          axisLine={{ stroke: '#E2E8E5' }}
                           tickLine={false}
                           dy={6}
                         />
@@ -670,7 +670,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                           <YAxis
                             yAxisId="right"
                             orientation="right"
-                            tick={{ fill: '#9A7410', fontSize: 11 }}
+                            tick={{ fill: '#B45309', fontSize: 11 }}
                             axisLine={false}
                             tickLine={false}
                             width={metric === 'beneficiaries' ? 56 : 40}
@@ -714,18 +714,18 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                           type="monotone"
                           dataKey={primaryKey}
                           name={primaryName}
-                          stroke="#0B4619"
+                          stroke="#0F5C3A"
                           strokeWidth={2.75}
                           dot={{
                             r: 4,
                             fill: '#FFFFFF',
-                            stroke: '#0B4619',
+                            stroke: '#0F5C3A',
                             strokeWidth: 2,
                           }}
                           activeDot={{
                             r: 6,
-                            fill: '#D4AF37',
-                            stroke: '#0B4619',
+                            fill: '#D97706',
+                            stroke: '#0F5C3A',
                             strokeWidth: 2,
                           }}
                           isAnimationActive={!prefersReduced}
@@ -737,19 +737,19 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                             type="monotone"
                             dataKey={secondaryKey}
                             name={secondaryName}
-                            stroke="#D4AF37"
+                            stroke="#D97706"
                             strokeWidth={2}
                             strokeDasharray="5 4"
                             dot={{
                               r: 3,
-                              fill: '#D4AF37',
+                              fill: '#D97706',
                               stroke: '#FFFFFF',
                               strokeWidth: 1.5,
                             }}
                             activeDot={{
                               r: 5,
-                              fill: '#D4AF37',
-                              stroke: '#0B4619',
+                              fill: '#D97706',
+                              stroke: '#0F5C3A',
                               strokeWidth: 1.5,
                             }}
                             isAnimationActive={!prefersReduced}
@@ -763,8 +763,8 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
 
               {/* Compact Month-over-Month Audit Ledger Table */}
               {trendData.length > 0 && (
-                <div className="rounded-xl border border-[#E5E2D9] overflow-hidden">
-                  <div className="px-4 py-2.5 bg-[#FAF8F2] border-b border-[#ECE8DD] flex items-center justify-between text-xs">
+                <div className="rounded-xl border border-[#E2E8E5] overflow-hidden">
+                  <div className="px-4 py-2.5 bg-[#F6F8F7] border-b border-[#EAEFED] flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-800">
                       Monthly Capacity Building Ledger
                     </span>
@@ -774,7 +774,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                   </div>
                   <div className="overflow-x-auto max-h-52">
                     <table className="w-full text-left border-collapse text-xs">
-                      <thead className="sticky top-0 bg-white border-b border-[#ECE8DD] text-[11px] text-slate-500 font-semibold">
+                      <thead className="sticky top-0 bg-white border-b border-[#EAEFED] text-[11px] text-slate-500 font-semibold">
                         <tr>
                           <th className="py-2.5 px-4">Month</th>
                           <th className="py-2.5 px-4 text-right">Activities</th>
@@ -784,16 +784,16 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                           <th className="py-2.5 px-4 text-right">Capital</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#F1EDE2] font-mono tabular-nums">
+                      <tbody className="divide-y divide-[#EAEFED] font-mono tabular-nums">
                         {[...trendData].reverse().map((row) => (
                           <tr
                             key={row.monthKey}
-                            className="hover:bg-[#FAF8F2]/80 transition-colors"
+                            className="hover:bg-[#F6F8F7]/80 transition-colors"
                           >
                             <td className="py-2.5 px-4 font-sans font-semibold text-slate-900 whitespace-nowrap">
                               {row.label}
                             </td>
-                            <td className="py-2.5 px-4 text-right font-bold text-[#0B4619]">
+                            <td className="py-2.5 px-4 text-right font-bold text-[#0F5C3A]">
                               {row.activities}
                             </td>
                             <td
@@ -801,7 +801,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                                 row.momActivitiesPct === null
                                   ? 'text-slate-400'
                                   : row.momActivitiesPct > 0
-                                  ? 'text-[#0B4619]'
+                                  ? 'text-[#0F5C3A]'
                                   : row.momActivitiesPct < 0
                                   ? 'text-amber-700'
                                   : 'text-slate-600'
@@ -816,7 +816,7 @@ export const HistoricalImpactTrendOverlay: React.FC<HistoricalImpactTrendOverlay
                               {row.cumulativeActivities} acts ·{' '}
                               {row.cumulativeBeneficiaries.toLocaleString()}
                             </td>
-                            <td className="py-2.5 px-4 text-right text-[#9A7410] font-semibold">
+                            <td className="py-2.5 px-4 text-right text-[#B45309] font-semibold">
                               ₦{row.budgetMillions.toFixed(1)}M
                             </td>
                           </tr>

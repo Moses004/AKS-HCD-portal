@@ -211,14 +211,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
         {/* Header */}
-        <div className="print-letterhead p-5 bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white flex items-center justify-between gap-3">
+        <div className="print-letterhead p-5 bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-1 bg-white rounded-xl border border-[#D4AF37] shadow-xs shrink-0">
+            <div className="p-1 bg-white rounded-xl border border-[#D97706] shadow-xs shrink-0">
               <HcdLogo className="w-10 h-10" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2 py-0.5 rounded">
                   {activity.lgaName} LGA Workspace
                 </span>
                 <span className="text-xs font-semibold text-emerald-200">
@@ -234,7 +234,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             <button
               onClick={() => void exportSingleActivityPdfDossier(activity)}
               title="Download Official Branded PDF Dossier with Site Logo"
-              className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
+              className="px-2.5 py-1.5 rounded-lg bg-[#D97706] hover:bg-[#B45309] text-white transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Download PDF</span>
@@ -244,7 +244,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               title="Print Project Dossier"
               className="p-1.5 rounded-lg text-emerald-200 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
             >
-              <Printer className="w-4 h-4 text-[#D4AF37]" />
+              <Printer className="w-4 h-4 text-[#F59E0B]" />
               <span className="hidden sm:inline">Print</span>
             </button>
             <button

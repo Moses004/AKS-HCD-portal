@@ -54,20 +54,20 @@ const ERA_META: Record<
   past: {
     label: 'Past',
     range: '2023–2025',
-    accentClass: 'text-[#0B4619]',
-    nodeStyle: 'bg-[#0B4619] border-[#0B4619]',
+    accentClass: 'text-[#0F5C3A]',
+    nodeStyle: 'bg-[#0F5C3A] border-[#0F5C3A]',
   },
   present: {
     label: 'Present',
     range: '2026 Live',
-    accentClass: 'text-[#9A7410]',
-    nodeStyle: 'bg-[#D4AF37] border-[#0B4619]',
+    accentClass: 'text-[#B45309]',
+    nodeStyle: 'bg-[#D97706] border-[#0F5C3A]',
   },
   future: {
     label: 'Future',
     range: '2027–2030',
     accentClass: 'text-emerald-800',
-    nodeStyle: 'bg-white border-[#0B4619]/60',
+    nodeStyle: 'bg-white border-[#0F5C3A]/60',
   },
 };
 
@@ -431,10 +431,10 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
       >
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-6">
           {/* Editorial Header + Era Quick-Jump Segmented Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 border-b border-[#E5E2D9] pb-5">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 border-b border-[#E2E8E5] pb-5">
             <div className="space-y-2 max-w-2xl">
-              <div className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[#0B4619]">
-                <Compass className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <div className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[#0F5C3A]">
+                <Compass className="w-3.5 h-3.5 text-[#F59E0B]" />
                 <span>Chronological Roadmap</span>
                 <span aria-hidden="true" className="text-slate-300">
                   ·
@@ -454,7 +454,7 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
               <div
                 role="group"
                 aria-label="Jump to timeline era"
-                className="inline-flex items-center p-1 bg-[#F3EFE4] rounded-xl border border-[#E5E2D9]"
+                className="inline-flex items-center p-1 bg-[#EFF4F1] rounded-xl border border-[#E2E8E5]"
               >
                 {(['past', 'present', 'future'] as MilestoneEra[]).map((era) => {
                   const isActiveEra = activeMilestone.era === era;
@@ -473,14 +473,14 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                         <motion.span
                           layoutId="hcd-evolution-era-pill"
                           transition={{ type: 'spring', stiffness: 360, damping: 30 }}
-                          className="absolute inset-0 rounded-lg bg-[#0B4619] shadow-xs"
+                          className="absolute inset-0 rounded-lg bg-[#0F5C3A] shadow-xs"
                         />
                       )}
                       <span className="relative z-10 flex items-center gap-1.5">
                         <span>{ERA_META[era].label}</span>
                         <span
                           className={`hidden sm:inline font-mono text-[10px] tabular-nums ${
-                            isActiveEra ? 'text-[#F0CC56]' : 'text-slate-400'
+                            isActiveEra ? 'text-[#FBBF24]' : 'text-slate-400'
                           }`}
                         >
                           {ERA_META[era].range}
@@ -497,7 +497,7 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                   onClick={() => scrubToMilestone(activeIndex - 1)}
                   disabled={activeIndex <= 0}
                   aria-label="Previous milestone"
-                  className="p-2 rounded-xl bg-white border border-[#E5E2D9] text-slate-700 hover:text-[#0B4619] hover:border-[#0B4619]/40 disabled:opacity-40 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl bg-white border border-[#E2E8E5] text-slate-700 hover:text-[#0F5C3A] hover:border-[#0F5C3A]/40 disabled:opacity-40 transition-colors cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -506,7 +506,7 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                   onClick={() => scrubToMilestone(activeIndex + 1)}
                   disabled={activeIndex >= milestones.length - 1}
                   aria-label="Next milestone"
-                  className="p-2 rounded-xl bg-white border border-[#E5E2D9] text-slate-700 hover:text-[#0B4619] hover:border-[#0B4619]/40 disabled:opacity-40 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl bg-white border border-[#E2E8E5] text-slate-700 hover:text-[#0F5C3A] hover:border-[#0F5C3A]/40 disabled:opacity-40 transition-colors cursor-pointer"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -531,11 +531,11 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
               <>
                 <div
                   aria-hidden="true"
-                  className="no-print pointer-events-none hidden lg:block absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#FAF8F2] to-transparent z-20"
+                  className="no-print pointer-events-none hidden lg:block absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#F6F8F7] to-transparent z-20"
                 />
                 <div
                   aria-hidden="true"
-                  className="no-print pointer-events-none hidden lg:block absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#FAF8F2] to-transparent z-20"
+                  className="no-print pointer-events-none hidden lg:block absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#F6F8F7] to-transparent z-20"
                 />
               </>
             )}
@@ -549,11 +549,11 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                 {/* Continuous Horizontal Meridian Rule Behind Milestone Nodes */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-6 right-16 top-[26px] h-[2px] bg-[#E5E2D9]"
+                  className="pointer-events-none absolute left-6 right-16 top-[26px] h-[2px] bg-[#E2E8E5]"
                 >
                   <motion.div
                     style={{ scaleX: meridianScaleX, transformOrigin: '0% 50%' }}
-                    className="h-full w-full bg-gradient-to-r from-[#0B4619] via-[#15803D] to-[#D4AF37]"
+                    className="h-full w-full bg-gradient-to-r from-[#0F5C3A] via-[#15803D] to-[#D97706]"
                   />
                 </div>
 
@@ -579,10 +579,10 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                 <div ref={trackRef} className="relative flex items-stretch gap-5 py-3 pr-6 w-max">
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute left-6 right-10 top-[22px] h-[2px] bg-[#E5E2D9]"
+                    className="pointer-events-none absolute left-6 right-10 top-[22px] h-[2px] bg-[#E2E8E5]"
                   >
                     <div
-                      className="h-full bg-gradient-to-r from-[#0B4619] via-[#15803D] to-[#D4AF37] transition-transform duration-200 origin-left"
+                      className="h-full bg-gradient-to-r from-[#0F5C3A] via-[#15803D] to-[#D97706] transition-transform duration-200 origin-left"
                       style={{
                         transform: `scaleX(${Math.max(0.08, progressFraction)})`,
                       }}
@@ -607,10 +607,10 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
           </div>
 
           {/* Interactive Timeline Scrubber Bar & Year Chapter Ticks */}
-          <div className="no-print bg-white rounded-2xl border border-[#E5E2D9] px-5 py-4 space-y-3.5 shadow-xs">
+          <div className="no-print bg-white rounded-2xl border border-[#E2E8E5] px-5 py-4 space-y-3.5 shadow-xs">
             <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="font-mono font-bold text-[#0B4619] tabular-nums">
+                <span className="font-mono font-bold text-[#0F5C3A] tabular-nums">
                   {activeMilestone.indexLabel} / 0{milestones.length}
                 </span>
                 <span aria-hidden="true" className="text-slate-300">
@@ -629,7 +629,7 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                 <span aria-hidden="true" className="text-slate-300">
                   ·
                 </span>
-                <span className="font-mono tabular-nums text-[#0B4619] font-semibold">
+                <span className="font-mono tabular-nums text-[#0F5C3A] font-semibold">
                   {Math.round(progressFraction * 100)}%
                 </span>
               </motion.div>
@@ -637,15 +637,15 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
 
             {/* Scrubber Track + Accessible Range Input */}
             <div className="relative pt-1 pb-1">
-              <div className="relative h-2 rounded-full bg-[#EFECE3] overflow-hidden">
+              <div className="relative h-2 rounded-full bg-[#EFF4F1] overflow-hidden">
                 {useStickyMode ? (
                   <motion.div
                     style={{ scaleX: meridianScaleX, transformOrigin: '0% 50%' }}
-                    className="h-full w-full bg-gradient-to-r from-[#0B4619] via-[#15803D] to-[#D4AF37] rounded-full"
+                    className="h-full w-full bg-gradient-to-r from-[#0F5C3A] via-[#15803D] to-[#D97706] rounded-full"
                   />
                 ) : (
                   <div
-                    className="h-full w-full bg-gradient-to-r from-[#0B4619] via-[#15803D] to-[#D4AF37] rounded-full origin-left transition-transform duration-150"
+                    className="h-full w-full bg-gradient-to-r from-[#0F5C3A] via-[#15803D] to-[#D97706] rounded-full origin-left transition-transform duration-150"
                     style={{ transform: `scaleX(${Math.max(0.06, progressFraction)})` }}
                   />
                 )}
@@ -676,23 +676,23 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
                     key={ms.id}
                     type="button"
                     onClick={() => scrubToMilestone(idx)}
-                    className={`group flex flex-col items-center gap-1 py-1 rounded-lg transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B4619]/40 ${
-                      isSelected ? 'bg-[#FAF8F2]' : 'hover:bg-[#FAF8F2]/70'
+                    className={`group flex flex-col items-center gap-1 py-1 rounded-lg transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5C3A]/40 ${
+                      isSelected ? 'bg-[#F6F8F7]' : 'hover:bg-[#F6F8F7]/70'
                     }`}
                   >
                     <span
                       className={`w-2 h-2 rounded-full border transition-transform duration-200 ${
                         isSelected
-                          ? 'scale-125 bg-[#D4AF37] border-[#0B4619]'
+                          ? 'scale-125 bg-[#D97706] border-[#0F5C3A]'
                           : idx < activeIndex
-                          ? 'bg-[#0B4619] border-[#0B4619]'
-                          : 'bg-white border-slate-300 group-hover:border-[#0B4619]/60'
+                          ? 'bg-[#0F5C3A] border-[#0F5C3A]'
+                          : 'bg-white border-slate-300 group-hover:border-[#0F5C3A]/60'
                       }`}
                     />
                     <span
                       className={`text-[11px] font-mono tabular-nums transition-colors ${
                         isSelected
-                          ? 'font-bold text-[#0B4619]'
+                          ? 'font-bold text-[#0F5C3A]'
                           : 'font-medium text-slate-500 group-hover:text-slate-800'
                       }`}
                     >
@@ -750,22 +750,22 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
           transition={{ duration: 0.22, ease: KINETIC_EASE }}
           className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
             isPresent
-              ? 'bg-[#D4AF37] border-[#0B4619] shadow-sm'
+              ? 'bg-[#D97706] border-[#0F5C3A] shadow-sm'
               : isActive || isPassed
-              ? 'bg-[#0B4619] border-[#0B4619]'
-              : 'bg-white border-[#0B4619]/45'
+              ? 'bg-[#0F5C3A] border-[#0F5C3A]'
+              : 'bg-white border-[#0F5C3A]/45'
           }`}
         >
           {(isActive || isPresent) && (
             <span
               className={`w-1.5 h-1.5 rounded-full ${
-                isPresent ? 'bg-[#0B4619]' : 'bg-[#D4AF37]'
+                isPresent ? 'bg-[#0F5C3A]' : 'bg-[#D97706]'
               }`}
             />
           )}
         </motion.div>
 
-        <span className="text-[11px] font-mono font-bold tabular-nums text-[#0B4619] bg-[#FAF8F2] px-1.5">
+        <span className="text-[11px] font-mono font-bold tabular-nums text-[#0F5C3A] bg-[#F6F8F7] px-1.5">
           {milestone.indexLabel} / {milestone.year}
         </span>
       </div>
@@ -782,26 +782,26 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
         transition={{ duration: 0.24, ease: KINETIC_EASE }}
         className={`flex-1 flex flex-col justify-between rounded-2xl p-6 border transition-all duration-200 ${
           isPresent
-            ? 'bg-gradient-to-b from-white via-white to-[#FAF6E9] border-[#D4AF37]/75 shadow-md shadow-emerald-950/8'
+            ? 'bg-gradient-to-b from-white via-white to-[#EFF4F1] border-[#D97706]/75 shadow-md shadow-emerald-950/8'
             : isActive
-            ? 'bg-white border-[#0B4619]/45 shadow-md shadow-emerald-950/6'
+            ? 'bg-white border-[#0F5C3A]/45 shadow-md shadow-emerald-950/6'
             : isFuture
-            ? 'bg-[#FCFBF7] border-[#E5E2D9] hover:border-[#0B4619]/30'
-            : 'bg-white border-[#E5E2D9] hover:border-[#0B4619]/30'
+            ? 'bg-[#F9FBFA] border-[#E2E8E5] hover:border-[#0F5C3A]/30'
+            : 'bg-white border-[#E2E8E5] hover:border-[#0F5C3A]/30'
         }`}
       >
         <div className="space-y-4">
           {/* Top Era & Year Editorial Row */}
-          <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-[#ECE8DD]">
+          <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-[#EAEFED]">
             <div className="space-y-1 min-w-0">
               <div className="flex items-center gap-1.5 text-xs font-semibold">
                 <span
                   className={
                     isPresent
-                      ? 'text-[#9A7410]'
+                      ? 'text-[#B45309]'
                       : isFuture
                       ? 'text-emerald-800'
-                      : 'text-[#0B4619]'
+                      : 'text-[#0F5C3A]'
                   }
                 >
                   {milestone.eraLabel}
@@ -810,14 +810,14 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
               <div className="text-xs text-slate-500 truncate">{milestone.phase}</div>
             </div>
 
-            <div className="font-display text-3xl font-bold tracking-tight font-mono tabular-nums text-[#0B4619] leading-none shrink-0">
+            <div className="font-display text-3xl font-bold tracking-tight font-mono tabular-nums text-[#0F5C3A] leading-none shrink-0">
               {milestone.year}
             </div>
           </div>
 
           {/* Headline & Narrative */}
           <div className="space-y-2">
-            <h3 className="font-display text-lg font-bold text-slate-950 leading-snug group-hover:text-[#0B4619] transition-colors text-balance">
+            <h3 className="font-display text-lg font-bold text-slate-950 leading-snug group-hover:text-[#0F5C3A] transition-colors text-balance">
               {milestone.title}
             </h3>
             <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
@@ -826,7 +826,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
           </div>
 
           {/* Key Quantitative Benchmark (Unboxed Hairline Strip) */}
-          <div className="flex items-baseline justify-between gap-3 py-3 border-y border-[#ECE8DD]">
+          <div className="flex items-baseline justify-between gap-3 py-3 border-y border-[#EAEFED]">
             <div>
               <div className="text-[11px] font-semibold text-slate-500">
                 {milestone.keyMetricLabel}
@@ -835,7 +835,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
                 {milestone.pillarFocus}
               </div>
             </div>
-            <div className="text-lg font-bold font-mono tabular-nums text-[#0B4619] shrink-0">
+            <div className="text-lg font-bold font-mono tabular-nums text-[#0F5C3A] shrink-0">
               {milestone.keyMetricValue}
             </div>
           </div>
@@ -846,7 +846,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
               <li key={item} className="flex items-start gap-2 leading-snug">
                 <span
                   aria-hidden="true"
-                  className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0"
+                  className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0"
                 />
                 <span>{item}</span>
               </li>
@@ -856,14 +856,14 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
 
         {/* Footer Action */}
         {milestone.actionLabel && (
-          <div className="pt-4 mt-4 border-t border-[#ECE8DD] flex items-center justify-between">
+          <div className="pt-4 mt-4 border-t border-[#EAEFED] flex items-center justify-between">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onAction();
               }}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0B4619] hover:text-emerald-800 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F5C3A] hover:text-emerald-800 transition-colors cursor-pointer"
             >
               {milestone.actionType === 'map' && <MapPin className="w-3.5 h-3.5" />}
               {milestone.actionType === 'export' && <Download className="w-3.5 h-3.5" />}

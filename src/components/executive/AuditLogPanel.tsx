@@ -663,7 +663,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-card-pad sm:p-card-pad-lg">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
-            <div className="p-1.5 rounded-xl border border-[#D4AF37] bg-white shadow-2xs shrink-0 mt-0.5">
+            <div className="p-1.5 rounded-xl border border-[#D97706] bg-white shadow-2xs shrink-0 mt-0.5">
               <HcdLogo className="w-11 h-11" />
             </div>
             <div className="space-y-1.5">
@@ -691,7 +691,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
                 onClick={() => setIsNoteModalOpen(true)}
                 className="px-3.5 py-2.5 rounded-xl bg-emerald-950 hover:bg-emerald-900 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-xs cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4 text-[#D4AF37]" />
+                <PlusCircle className="w-4 h-4 text-[#F59E0B]" />
                 <span>Log Compliance Attestation</span>
               </button>
             )}
@@ -716,7 +716,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
 
             <button
               onClick={handleExportAuditCsv}
-              className="px-3.5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              className="px-3.5 py-2.5 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Audit CSV ({filteredLogs.length})</span>
@@ -1104,7 +1104,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
                           <span
                             className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${
                               log.role === 'state_admin'
-                                ? 'bg-emerald-950 text-[#D4AF37] border-emerald-800'
+                                ? 'bg-emerald-950 text-[#F59E0B] border-emerald-800'
                                 : 'bg-slate-100 text-slate-700 border-slate-300'
                             }`}
                           >
@@ -1243,9 +1243,9 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
             aria-modal="true"
             aria-labelledby="audit-dossier-title"
           >
-            <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-slate-900 px-6 py-4 text-white flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-slate-900 px-6 py-4 text-white flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] block">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F59E0B] block">
                   Official State Audit Dossier
                 </span>
                 <h3 id="audit-dossier-title" className="text-base font-bold text-white mt-0.5">
@@ -1394,9 +1394,9 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
             aria-modal="true"
             aria-labelledby="compliance-note-title"
           >
-            <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-slate-900 px-6 py-4 text-white flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-slate-900 px-6 py-4 text-white flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] block">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#F59E0B] block">
                   State Administration Accountability
                 </span>
                 <h3 id="compliance-note-title" className="text-base font-bold text-white mt-0.5">

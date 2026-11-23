@@ -694,14 +694,14 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
   const containerContent = (
     <div className={`bg-white ${isPageMode ? 'rounded-2xl border border-slate-200 shadow-sm' : 'rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[94vh] flex flex-col'} w-full animate-in fade-in duration-200`}>
       {/* Top Official Banner with Embedded Site Logos */}
-      <div className="print-letterhead bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D4AF37]/40 shadow-sm shrink-0">
+      <div className="print-letterhead bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#D97706]/40 shadow-sm shrink-0">
         <div className="flex items-center gap-3.5">
-          <div className="p-1 bg-white rounded-xl border-2 border-[#D4AF37] shadow-sm shrink-0">
+          <div className="p-1 bg-white rounded-xl border-2 border-[#D97706] shadow-sm shrink-0">
             <HcdLogo className="w-10 h-10 sm:w-11 sm:h-11" />
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] uppercase tracking-wider font-bold text-[#D4AF37]">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-[#F59E0B]">
                 Akwa Ibom State Government • ARISE Agenda
               </span>
               <span className="bg-emerald-800 text-emerald-200 text-[10px] px-2 py-0.5 rounded-full font-semibold">
@@ -714,7 +714,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2.5 shrink-0">
-          <div className="hidden sm:flex p-1 bg-white rounded-lg border border-[#D4AF37]/50 shadow-2xs">
+          <div className="hidden sm:flex p-1 bg-white rounded-lg border border-[#D97706]/50 shadow-2xs">
             <AriseAgendaLogo className="w-9 h-9" />
           </div>
           <button
@@ -722,7 +722,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
             className="no-print px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1.5 border border-white/20 transition-colors cursor-pointer"
             title="Print Official Branded Dossier"
           >
-            <Printer className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <Printer className="w-3.5 h-3.5 text-[#F59E0B]" />
             <span className="hidden md:inline">Print Dossier</span>
           </button>
           {!isPageMode && onClose && (
@@ -1595,7 +1595,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
                 onClick={() => window.print()}
                 className="px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-900 hover:bg-slate-800 text-white font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <Printer className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <Printer className="w-3.5 h-3.5 text-[#F59E0B]" />
                 <span>Print Current Dossier</span>
               </button>
             </div>

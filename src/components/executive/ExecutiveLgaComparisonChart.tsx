@@ -36,22 +36,22 @@ interface ExecutiveLgaComparisonChartProps {
 // Senatorial District Accent Colors & Config
 const DISTRICT_COLORS: Record<string, { primary: string; hover: string; light: string; badge: string }> = {
   'Uyo (Akwa Ibom North-East)': {
-    primary: '#0B4619', // AKS Forest Emerald
-    hover: '#083312',
-    light: '#ECFDF5',
-    badge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    primary: '#0F5C3A', // Sovereign Akwa Ibom Emerald
+    hover: '#0B472D',
+    light: '#EFF4F1',
+    badge: 'bg-emerald-100 text-emerald-900 border-emerald-300',
   },
   'Ikot Ekpene (Akwa Ibom North-West)': {
-    primary: '#1D4ED8', // Royal Blue
-    hover: '#1E40AF',
-    light: '#EFF6FF',
-    badge: 'bg-blue-100 text-blue-800 border-blue-300',
+    primary: '#0E7490', // Coastal Teal
+    hover: '#0C5E75',
+    light: '#F0FDFA',
+    badge: 'bg-teal-100 text-teal-900 border-teal-300',
   },
   'Eket (Akwa Ibom South)': {
-    primary: '#D97706', // Gold Amber
+    primary: '#D97706', // ARISE Warm Amber
     hover: '#B45309',
     light: '#FFFBEB',
-    badge: 'bg-amber-100 text-amber-800 border-amber-300',
+    badge: 'bg-amber-100 text-amber-900 border-amber-300',
   },
 };
 
@@ -309,14 +309,14 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
         </div>
 
         {/* Runner-Up Region */}
-        <div className="p-3.5 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/60 border border-blue-200">
+        <div className="p-3.5 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100/60 border border-teal-200">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-blue-900 uppercase tracking-wider flex items-center gap-1">
-              <Award className="w-3.5 h-3.5 text-blue-700" />
+            <span className="text-[11px] font-semibold text-teal-900 uppercase tracking-wider flex items-center gap-1">
+              <Award className="w-3.5 h-3.5 text-[#0E7490]" />
               #2 Ranked Council
             </span>
             <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-              summaryKpis.runnerUp ? 'bg-blue-200 text-blue-900' : 'bg-slate-200 text-slate-700'
+              summaryKpis.runnerUp ? 'bg-teal-200 text-teal-900' : 'bg-slate-200 text-slate-700'
             }`}>
               {summaryKpis.runnerUp ? 'Silver' : 'Awaiting Data'}
             </span>
@@ -325,11 +325,11 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
             <span className="text-xl font-black text-slate-900">
               {summaryKpis.runnerUp ? summaryKpis.runnerUp.name : '—'}
             </span>
-            <span className="text-xs font-mono font-bold text-blue-800">
+            <span className="text-xs font-mono font-bold text-[#0E7490]">
               {summaryKpis.runnerUp ? `${summaryKpis.runnerUp.participants.toLocaleString()} pts` : '0 pts'}
             </span>
           </div>
-          <div className="mt-0.5 text-[11px] text-blue-800 flex items-center justify-between">
+          <div className="mt-0.5 text-[11px] text-teal-900 flex items-center justify-between">
             <span>
               {summaryKpis.runnerUp
                 ? `${summaryKpis.runnerUp.districtShort} District`
@@ -487,11 +487,11 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
         <div className="flex items-center gap-4">
           <span className="font-semibold text-slate-700 text-[11px]">Regional Legend:</span>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-[#0B4619] shadow-xs inline-block" />
+            <span className="w-3 h-3 rounded bg-[#0F5C3A] shadow-xs inline-block" />
             <span className="text-slate-700 font-medium">Uyo District</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-[#1D4ED8] shadow-xs inline-block" />
+            <span className="w-3 h-3 rounded bg-[#0E7490] shadow-xs inline-block" />
             <span className="text-slate-700 font-medium">Ikot Ekpene District</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -556,7 +556,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       const districtColor =
-                        DISTRICT_COLORS[data.senatorialDistrict]?.primary || '#0B4619';
+                        DISTRICT_COLORS[data.senatorialDistrict]?.primary || '#0F5C3A';
 
                       return (
                         <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700 text-white rounded-xl p-3.5 shadow-2xl text-xs space-y-2 min-w-[240px]">
@@ -641,7 +641,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
                 >
                   {lgaComparisonData.map((entry, index) => {
                     const color =
-                      DISTRICT_COLORS[entry.senatorialDistrict]?.primary || '#0B4619';
+                      DISTRICT_COLORS[entry.senatorialDistrict]?.primary || '#0F5C3A';
                     const isHovered = hoveredLga === entry.id;
                     return (
                       <Cell
@@ -686,7 +686,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       const districtColor =
-                        DISTRICT_COLORS[data.senatorialDistrict]?.primary || '#0B4619';
+                        DISTRICT_COLORS[data.senatorialDistrict]?.primary || '#0F5C3A';
 
                       return (
                         <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700 text-white rounded-xl p-3.5 shadow-2xl text-xs space-y-2 min-w-[240px]">
@@ -763,7 +763,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
                 >
                   {lgaComparisonData.map((entry) => {
                     const color =
-                      DISTRICT_COLORS[entry.senatorialDistrict]?.primary || '#0B4619';
+                      DISTRICT_COLORS[entry.senatorialDistrict]?.primary || '#0F5C3A';
                     const isHovered = hoveredLga === entry.id;
                     return (
                       <Cell
@@ -820,16 +820,16 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
           </div>
 
           {/* Insight 2: Senatorial District Equity */}
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+          <div className="p-3.5 bg-slate-50 rounded-xl border border-[#E2E8E5] text-xs">
             <div className="flex items-center gap-1.5 font-bold text-slate-800 mb-1">
-              <Compass className="w-3.5 h-3.5 text-blue-600" />
+              <Compass className="w-3.5 h-3.5 text-[#0E7490]" />
               <span>Senatorial District Reach</span>
             </div>
             <p className="text-slate-600 leading-relaxed text-[11px]">
               {summaryKpis.leadingDistrict ? (
                 <>
                   <strong className="text-slate-900">{summaryKpis.leadingDistrict.name}</strong> accounts for{' '}
-                  <strong className="font-mono text-blue-800">{summaryKpis.leadingDistrict.total.toLocaleString()}</strong> verified participants in the state database. Active reporting councils average{' '}
+                  <strong className="font-mono text-[#0E7490]">{summaryKpis.leadingDistrict.total.toLocaleString()}</strong> verified participants in the state database. Active reporting councils average{' '}
                   <strong>{summaryKpis.avgParticipants.toLocaleString()}</strong> participants.
                 </>
               ) : (

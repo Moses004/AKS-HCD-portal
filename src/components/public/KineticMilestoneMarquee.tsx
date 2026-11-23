@@ -254,19 +254,19 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
   return (
     <div
       aria-label="Verified Project Milestones and State-Wide HCD Achievements Marquee"
-      className="relative rounded-2xl border border-emerald-900/15 bg-gradient-to-r from-[#062411] via-[#0B4619] to-[#062411] shadow-md shadow-emerald-950/10 overflow-hidden"
+      className="relative rounded-2xl border border-emerald-900/15 bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] shadow-md shadow-emerald-950/10 overflow-hidden"
     >
       {/* Top Crest Gold Hairline Accent */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#D4AF37]/80 to-transparent" />
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#D97706]/80 to-transparent" />
 
       {/* Marquee Header Bar: Live Identity, Filter Tabs & Playback Control */}
       <div className="px-4 sm:px-5 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
             {!prefersReduced && !isManuallyPaused && (
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D97706] opacity-75" />
             )}
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#D4AF37]" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#D97706]" />
           </span>
           <span className="text-[11px] sm:text-xs font-bold tracking-wide text-white uppercase truncate">
             Live Status Feed · Verified Project Milestones &amp; State-Wide HCD Achievements
@@ -299,14 +299,14 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
                     baseX.set(0);
                   }}
                   className={`relative px-2.5 py-1 rounded-md font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                    active ? 'text-[#051F0E]' : 'text-emerald-100/85 hover:text-white'
+                    active ? 'text-[#0A2E1F]' : 'text-emerald-100/85 hover:text-white'
                   }`}
                 >
                   {active && (
                     <motion.span
                       layoutId="kineticMarqueeFilterBg"
                       transition={{ duration: 0.22, ease: KINETIC_EASE }}
-                      className="absolute inset-0 rounded-md bg-[#D4AF37]"
+                      className="absolute inset-0 rounded-md bg-[#D97706]"
                     />
                   )}
                   <span className="relative z-10">{tab.label}</span>
@@ -320,7 +320,7 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
               type="button"
               onClick={() => setIsManuallyPaused((p) => !p)}
               aria-label={isManuallyPaused ? 'Resume milestone marquee' : 'Pause milestone marquee'}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#D4AF37] border border-white/12 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#F59E0B] border border-white/12 transition-colors cursor-pointer"
               title={isManuallyPaused ? 'Resume marquee' : 'Pause marquee'}
             >
               {isManuallyPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
@@ -352,11 +352,11 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
           <>
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-20 z-10 bg-gradient-to-r from-[#062411] via-[#062411]/80 to-transparent"
+              className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-20 z-10 bg-gradient-to-r from-[#0A2E1F] via-[#0A2E1F]/80 to-transparent"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-20 z-10 bg-gradient-to-l from-[#062411] via-[#062411]/80 to-transparent"
+              className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-20 z-10 bg-gradient-to-l from-[#0A2E1F] via-[#0A2E1F]/80 to-transparent"
             />
           </>
         )}
@@ -378,7 +378,7 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
                 transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                 className={`group text-left w-[300px] sm:w-[340px] shrink-0 rounded-xl px-4 py-3 border backdrop-blur-md transition-colors cursor-pointer flex flex-col justify-between gap-2 ${
                   isAchievement
-                    ? 'bg-gradient-to-br from-[#D4AF37]/16 via-white/[0.08] to-emerald-950/40 border-[#D4AF37]/35 hover:border-[#D4AF37]/70'
+                    ? 'bg-gradient-to-br from-[#D97706]/16 via-white/[0.08] to-emerald-950/40 border-[#D97706]/35 hover:border-[#D97706]/70'
                     : 'bg-white/[0.08] hover:bg-white/[0.13] border-white/15 hover:border-emerald-300/45'
                 }`}
               >
@@ -403,7 +403,7 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
                   <span
                     className={`font-mono tabular-nums font-bold px-2 py-0.5 rounded-md text-[10px] shrink-0 ${
                       isAchievement
-                        ? 'bg-[#D4AF37]/20 text-[#F4D97A] border border-[#D4AF37]/35'
+                        ? 'bg-[#D97706]/20 text-[#F4D97A] border border-[#D97706]/35'
                         : 'bg-emerald-400/15 text-emerald-200 border border-emerald-300/25'
                     }`}
                   >
@@ -419,16 +419,16 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
                     <span className="inline-flex items-center gap-1 min-w-0 truncate">
                       {isAchievement ? (
                         item.stateActivity ? (
-                          <Sparkles className="w-3 h-3 text-[#D4AF37] shrink-0" />
+                          <Sparkles className="w-3 h-3 text-[#F59E0B] shrink-0" />
                         ) : (
-                          <Users className="w-3 h-3 text-[#D4AF37] shrink-0" />
+                          <Users className="w-3 h-3 text-[#F59E0B] shrink-0" />
                         )
                       ) : (
                         <MapPin className="w-3 h-3 text-emerald-300 shrink-0" />
                       )}
                       <span className="truncate">{item.detail}</span>
                     </span>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#D4AF37] opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#F59E0B] opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
                   </div>
                 </div>
               </motion.button>
@@ -443,7 +443,7 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
           <CheckCircle2 className="w-3 h-3 text-emerald-400" />
           <span>Hover any card to pause · Click to inspect verified dossier or impact section</span>
         </span>
-        <span className="hidden sm:inline font-mono tabular-nums text-[#D4AF37]/85">
+        <span className="hidden sm:inline font-mono tabular-nums text-[#F59E0B]/85">
           {milestoneItems.length} Milestones · {achievementItems.length} State Achievements
         </span>
       </div>

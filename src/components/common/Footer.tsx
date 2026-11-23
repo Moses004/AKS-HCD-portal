@@ -13,22 +13,22 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
   const { pillars } = useData();
 
   return (
-    <footer className="snap-end relative overflow-hidden bg-gradient-to-br from-emerald-950 via-[#0B4619] to-emerald-900 text-slate-300 pt-12 pb-8 border-t-4 border-[#D4AF37]">
-      {/* Subtle White & Emerald Government Identity Gradient Sheen */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-emerald-950/50" />
+    <footer className="snap-end relative overflow-hidden bg-gradient-to-br from-[#0A2E1F] via-[#0D3B27] to-[#0A2E1F] text-slate-300 pt-12 pb-8 border-t-4 border-[#D97706]">
+      {/* Subtle White & Sovereign Emerald Government Identity Gradient Sheen */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.05] via-transparent to-[#0A2E1F]/60" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-emerald-800/60">
           {/* Col 1: Government Identity */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center p-1 rounded-xl bg-white border border-[#D4AF37] shadow-sm shrink-0">
+              <div className="flex items-center justify-center p-1 rounded-xl bg-white border border-[#D97706] shadow-sm shrink-0">
                 <HcdLogo className="h-9 w-auto object-contain" />
               </div>
               <div>
                 <h4 className="text-white font-bold text-sm tracking-wide">
                   AKWA IBOM STATE
                 </h4>
-                <p className="text-[#D4AF37] text-xs font-semibold">
+                <p className="text-[#F59E0B] text-xs font-semibold">
                   ARISE Agenda · HCD Portal
                 </p>
               </div>
@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
               Unified digital infrastructure aggregating, measuring, and verifying human capacity investments across all 31 Local Government Areas in alignment with the ARISE Agenda.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-300">
-              <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <MapPin className="w-3.5 h-3.5 text-[#F59E0B]" />
               <span>Government House, Uyo, Akwa Ibom State</span>
             </div>
           </div>
@@ -50,7 +50,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
             <ul className="space-y-2 text-xs text-emerald-200/70">
               {pillars.map((p, idx) => (
                 <li key={p.pillar_code} className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" />
                   <span className="truncate" title={p.display_name}>
                     {idx + 1}. {p.display_name}
                   </span>
@@ -89,7 +89,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
               Multi-tenant isolation backed by software-enforced Row-Level Security, demographic balance assertions, and offline field sync caches.
             </p>
             <div className="p-3 rounded-lg bg-emerald-900/50 border border-emerald-700/60 text-[11px] space-y-1.5">
-              <div className="flex items-center gap-1.5 text-[#D4AF37] font-semibold">
+              <div className="flex items-center gap-1.5 text-[#F59E0B] font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Strict Tenant Sandboxing</span>
               </div>
@@ -115,7 +115,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
               <button
                 key={lga.id}
                 onClick={() => onSelectLga && onSelectLga(lga.id)}
-                className="text-[11px] px-2.5 py-1 rounded-md bg-emerald-900/55 hover:bg-[#D4AF37] hover:text-[#051F0E] text-emerald-100 font-medium transition-all duration-150 border border-emerald-700/40 hover:border-[#D4AF37] cursor-pointer"
+                className="text-[11px] px-2.5 py-1 rounded-md bg-emerald-900/55 hover:bg-[#D97706] hover:text-white text-emerald-100 font-medium transition-all duration-150 border border-emerald-700/40 hover:border-[#D97706] cursor-pointer"
               >
                 {lga.name}
               </button>

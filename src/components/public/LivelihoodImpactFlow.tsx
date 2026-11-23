@@ -73,7 +73,7 @@ const OUTCOME_NODES: Record<
   outcome_skilled: {
     label: 'Digital & Skilled Employment',
     shortLabel: 'Skilled Employment',
-    color: '#D4AF37',
+    color: '#D97706',
     accentColor: '#F4D97A',
     subtitle: 'Tech, engineering & artisanal labour placement',
   },
@@ -94,7 +94,7 @@ const OUTCOME_NODES: Record<
   outcome_readiness: {
     label: 'Productive Workforce Readiness',
     shortLabel: 'Workforce Readiness',
-    color: '#0B4619',
+    color: '#0F5C3A',
     accentColor: '#34D399',
     subtitle: 'Healthy, educated & resilient human capital',
   },
@@ -155,7 +155,7 @@ const DISTRICT_META: Record<
   'ikot-ekpene': {
     label: 'Ikot Ekpene District',
     shortLabel: 'Ikot Ekpene (NW · 10 LGAs)',
-    color: '#0B4619',
+    color: '#0F5C3A',
     accentColor: '#10B981',
     councils: 10,
   },
@@ -570,17 +570,17 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
     basis === 'youth' ? 'youth' : basis === 'female' ? 'women' : 'beneficiaries';
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E2D9] shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl border border-[#E2E8E5] shadow-sm overflow-hidden flex flex-col">
       {/* Top Emerald-Gold Header & Filter Controls */}
-      <div className="p-5 sm:p-6 border-b border-[#ECE8DD] bg-gradient-to-r from-[#062411] via-[#0B4619] to-[#072E14] text-white relative overflow-hidden">
+      <div className="p-5 sm:p-6 border-b border-[#EAEFED] bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#072E14] text-white relative overflow-hidden">
         <div
           aria-hidden="true"
-          className="no-print pointer-events-none absolute -right-20 -top-24 w-72 h-72 rounded-full bg-radial from-[#D4AF37]/20 via-emerald-400/10 to-transparent blur-2xl"
+          className="no-print pointer-events-none absolute -right-20 -top-24 w-72 h-72 rounded-full bg-radial from-[#D97706]/20 via-emerald-400/10 to-transparent blur-2xl"
         />
 
         <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-[#F0CC56] tracking-wide">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-[#FBBF24] tracking-wide">
               <span className="inline-flex items-center gap-1.5">
                 <GitBranch className="w-3.5 h-3.5" />
                 <span>D3.js Sankey Livelihood Transition Model</span>
@@ -614,14 +614,14 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                     aria-selected={active}
                     onClick={() => setScope(opt.id)}
                     className={`relative px-2.5 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer ${
-                      active ? 'text-[#051F0E]' : 'text-emerald-100 hover:text-white'
+                      active ? 'text-[#0A2E1F]' : 'text-emerald-100 hover:text-white'
                     }`}
                   >
                     {active && (
                       <motion.span
                         layoutId="livelihoodFlowScopeBg"
                         transition={{ duration: 0.22, ease: KINETIC_EASE }}
-                        className="absolute inset-0 bg-[#D4AF37] rounded-lg"
+                        className="absolute inset-0 bg-[#D97706] rounded-lg"
                       />
                     )}
                     <span className="relative z-10">{opt.label}</span>
@@ -704,10 +704,10 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
       </div>
 
       {/* 3-Stage Column Progression Headers */}
-      <div className="grid grid-cols-3 bg-[#FAF8F2] border-b border-[#ECE8DD] px-5 sm:px-7 py-2.5 text-[11px] font-bold uppercase tracking-wider">
+      <div className="grid grid-cols-3 bg-[#F6F8F7] border-b border-[#EAEFED] px-5 sm:px-7 py-2.5 text-[11px] font-bold uppercase tracking-wider">
         <div className="flex items-center gap-1.5 text-emerald-950">
-          <span className="font-mono text-[#0B4619]">01</span>
-          <Building2 className="w-3.5 h-3.5 text-[#0B4619] hidden sm:inline" />
+          <span className="font-mono text-[#0F5C3A]">01</span>
+          <Building2 className="w-3.5 h-3.5 text-[#0F5C3A] hidden sm:inline" />
           <span className="truncate">
             {scope === 'all' ? '31 LGAs (3 Districts)' : `${DISTRICT_META[scope].shortLabel.split(' ')[0]} Councils`}
           </span>
@@ -730,7 +730,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
       <div
         ref={containerRef}
         onMouseLeave={clearHover}
-        className="relative bg-gradient-to-b from-white via-[#FAF8F2]/55 to-emerald-50/25 px-3 sm:px-5 py-5 overflow-x-auto"
+        className="relative bg-gradient-to-b from-white via-[#F6F8F7]/55 to-emerald-50/25 px-3 sm:px-5 py-5 overflow-x-auto"
       >
         {nodes.length === 0 ? (
           <div className="py-16 text-center space-y-2">
@@ -747,7 +747,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                 setScope('all');
                 setBasis('all');
               }}
-              className="mt-2 px-4 py-2 rounded-xl bg-[#0B4619] text-white text-xs font-bold cursor-pointer"
+              className="mt-2 px-4 py-2 rounded-xl bg-[#0F5C3A] text-white text-xs font-bold cursor-pointer"
             >
               Reset Flow Filters
             </button>
@@ -767,12 +767,12 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                   const tgt = lk.target as ComputedNode;
                   const startColor =
                     lk.stageTransition === 'origin_to_capacity'
-                      ? src.color || '#0B4619'
+                      ? src.color || '#0F5C3A'
                       : '#0F766E';
                   const endColor =
                     lk.stageTransition === 'origin_to_capacity'
                       ? '#10B981'
-                      : tgt.color || '#D4AF37';
+                      : tgt.color || '#D97706';
 
                   return (
                     <linearGradient
@@ -811,7 +811,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                     x2={cx}
                     y1={8}
                     y2={svgHeight - 8}
-                    stroke="#E5E2D9"
+                    stroke="#E2E8E5"
                     strokeWidth="1"
                     strokeDasharray="4 6"
                   />
@@ -1000,7 +1000,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                         rx={5}
                         ry={5}
                         fill={node.color}
-                        stroke={isDirectlyHovered ? '#D4AF37' : '#ffffff'}
+                        stroke={isDirectlyHovered ? '#D97706' : '#ffffff'}
                         strokeWidth={isDirectlyHovered ? 2.5 : 1.25}
                         filter={isDirectlyHovered ? 'url(#livelihood-gold-glow)' : undefined}
                       />
@@ -1091,11 +1091,11 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                   })`,
                   transition: 'transform 160ms cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
-                className="w-[268px] rounded-xl bg-[#052110]/95 backdrop-blur-md border border-[#D4AF37]/45 text-white shadow-2xl shadow-emerald-950/35 overflow-hidden"
+                className="w-[268px] rounded-xl bg-[#052110]/95 backdrop-blur-md border border-[#D97706]/45 text-white shadow-2xl shadow-emerald-950/35 overflow-hidden"
               >
-                <div className="h-[2.5px] w-full bg-gradient-to-r from-[#D4AF37] via-amber-300 to-emerald-400" />
+                <div className="h-[2.5px] w-full bg-gradient-to-r from-[#D97706] via-amber-300 to-emerald-400" />
                 <div className="p-3.5 space-y-2">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#F0CC56]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#FBBF24]">
                     {tooltip.kicker}
                   </div>
                   <div className="font-display text-sm font-bold text-white leading-snug">
@@ -1104,13 +1104,13 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
 
                   <div className="flex items-baseline justify-between gap-2 pt-1.5 border-t border-white/12">
                     <div className="flex items-center gap-1.5 text-xs text-emerald-200">
-                      <Users className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <Users className="w-3.5 h-3.5 text-[#F59E0B]" />
                       <span className="font-mono tabular-nums font-bold text-white text-sm">
                         {formatCompact(tooltip.value)}
                       </span>
                       <span className="text-[11px]">{basisUnitLabel}</span>
                     </div>
-                    <span className="font-mono tabular-nums text-[11px] font-bold text-[#F4D97A] bg-[#D4AF37]/15 border border-[#D4AF37]/35 px-1.5 py-0.5 rounded">
+                    <span className="font-mono tabular-nums text-[11px] font-bold text-[#F4D97A] bg-[#D97706]/15 border border-[#D97706]/35 px-1.5 py-0.5 rounded">
                       {tooltip.sharePct}%
                     </span>
                   </div>
@@ -1139,14 +1139,14 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
       </div>
 
       {/* Footer Guidance & Interaction Legend */}
-      <div className="px-5 sm:px-6 py-3 bg-[#FAF8F2] border-t border-[#ECE8DD] flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">
+      <div className="px-5 sm:px-6 py-3 bg-[#F6F8F7] border-t border-[#EAEFED] flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1.5 font-semibold text-slate-800">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
             <span>Interactive Flow Pathways:</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-3 h-2 rounded-xs bg-[#0B4619]" />
+            <span className="w-3 h-2 rounded-xs bg-[#0F5C3A]" />
             <span>31-LGA Origin</span>
           </span>
           <ArrowRight className="w-3 h-3 text-slate-400" />
@@ -1156,7 +1156,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
           </span>
           <ArrowRight className="w-3 h-3 text-slate-400" />
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-3 h-2 rounded-xs bg-[#D4AF37]" />
+            <span className="w-3 h-2 rounded-xs bg-[#D97706]" />
             <span>Economic Empowerment</span>
           </span>
         </div>

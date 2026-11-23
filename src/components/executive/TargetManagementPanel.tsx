@@ -476,7 +476,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
             <div className="w-12 h-12 rounded-xl bg-emerald-900 text-white flex items-center justify-center shrink-0 shadow-md">
-              <Target className="w-6 h-6 text-[#D4AF37]" />
+              <Target className="w-6 h-6 text-[#F59E0B]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -511,7 +511,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
                 }}
                 className="px-4 py-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
               >
-                <Plus className="w-4 h-4 text-[#D4AF37]" />
+                <Plus className="w-4 h-4 text-[#F59E0B]" />
                 <span>Define Annual Target</span>
               </button>
             )}
@@ -900,9 +900,9 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in overflow-y-auto">
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-3xl my-8 overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white p-5 sm:p-6 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white p-5 sm:p-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-white/10 border border-white/20 text-[#D4AF37]">
+                <div className="p-2 rounded-xl bg-white/10 border border-white/20 text-[#F59E0B]">
                   <Target className="w-6 h-6" />
                 </div>
                 <div>
@@ -1215,7 +1215,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
                     </>
                   ) : (
                     <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#F59E0B]" />
                       <span>{editingTarget ? 'Save Changes' : 'Save as Draft Target'}</span>
                     </>
                   )}
@@ -1232,7 +1232,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden">
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
+                <ShieldCheck className="w-5 h-5 text-[#F59E0B]" />
                 <h3 className="font-extrabold text-sm text-white">Target Approval & Metadata</h3>
               </div>
               <button

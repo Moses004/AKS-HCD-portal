@@ -110,8 +110,8 @@ export const Header: React.FC<HeaderProps> = ({
     <header
       className={`sticky top-0 z-40 overflow-x-clip backdrop-blur-md border-b transition-[background-color,box-shadow,border-color] duration-300 ${
         isScrolled
-          ? 'bg-white/92 border-[#D4AF37]/45 shadow-lg shadow-emerald-950/10'
-          : 'bg-gradient-to-r from-[#FAF8F2]/95 via-white/95 to-emerald-50/85 border-emerald-200/80 shadow-xs'
+          ? 'bg-white/92 border-[#D97706]/45 shadow-lg shadow-emerald-950/10'
+          : 'bg-gradient-to-r from-[#F6F8F7]/95 via-white/95 to-emerald-50/85 border-emerald-200/80 shadow-xs'
       }`}
     >
       {/* Parallax Abstract Geometric Sheen Layer inside Header (uses <span> to preserve div:nth-of-type selectors) */}
@@ -124,11 +124,11 @@ export const Header: React.FC<HeaderProps> = ({
         }
         className="no-print pointer-events-none absolute inset-y-0 -inset-x-12 z-0 overflow-hidden opacity-60"
       >
-        <svg className="w-full h-full text-[#0B4619]/[0.055]" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-full h-full text-[#0F5C3A]/[0.055]" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="header-kinetic-geo" width="64" height="64" patternUnits="userSpaceOnUse">
               <path d="M 32 0 L 64 32 L 32 64 L 0 32 Z" fill="none" stroke="currentColor" strokeWidth="0.7" />
-              <circle cx="32" cy="32" r="1.1" fill="#D4AF37" opacity="0.55" />
+              <circle cx="32" cy="32" r="1.1" fill="#D97706" opacity="0.55" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#header-kinetic-geo)" />
@@ -139,21 +139,21 @@ export const Header: React.FC<HeaderProps> = ({
       <motion.span
         aria-hidden="true"
         style={prefersReduced ? undefined : { opacity: goldBorderOpacity }}
-        className="no-print pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] z-20 bg-gradient-to-r from-transparent via-[#D4AF37]/80 to-transparent"
+        className="no-print pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] z-20 bg-gradient-to-r from-transparent via-[#D97706]/80 to-transparent"
       />
 
       {/* Official State Government Top Utility Bar */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white text-[11px] py-1.5 px-4 sm:px-8 flex items-center justify-between border-b border-[#D4AF37]/30 z-10">
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] text-white text-[11px] py-1.5 px-4 sm:px-8 flex items-center justify-between border-b border-[#D97706]/30 z-10">
         {/* Scroll-Linked Parallax Gold Light Sweep across Utility Bar */}
         <motion.span
           aria-hidden="true"
           style={prefersReduced ? undefined : { x: utilitySheenX, willChange: 'transform' }}
-          className="no-print pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent skew-x-[-24deg]"
+          className="no-print pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-[#D97706]/20 to-transparent skew-x-[-24deg]"
         />
         <div className="relative z-10 flex items-center gap-3">
           <div className="flex items-center gap-1.5 font-medium tracking-wide">
-            <span className="w-2 h-2 rounded-full bg-[#D4AF37] inline-block" />
-            <span className="font-semibold text-[#D4AF37]">AKWA IBOM STATE GOVERNMENT</span>
+            <span className="w-2 h-2 rounded-full bg-[#D97706] inline-block" />
+            <span className="font-semibold text-[#F59E0B]">AKWA IBOM STATE GOVERNMENT</span>
             <span className="hidden sm:inline text-emerald-200">· Department of Human Capital Development (ARISE HCD) Portal</span>
           </div>
         </div>
@@ -195,7 +195,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
-            <div className="flex items-center justify-center p-1 pl-[4px] h-[44px] w-[44.3906px] -ml-[18px] mr-0 mt-0 mb-0 rounded-xl bg-white border border-[#D4AF37]/60 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+            <div className="flex items-center justify-center p-1 pl-[4px] h-[44px] w-[44.3906px] -ml-[18px] mr-0 mt-0 mb-0 rounded-xl bg-white border border-[#D97706]/60 shadow-xs group-hover:scale-105 transition-transform shrink-0">
               <HcdLogo className="h-10 w-auto object-contain" />
             </div>
           </button>
@@ -220,7 +220,7 @@ export const Header: React.FC<HeaderProps> = ({
               <motion.span
                 layoutId="headerActiveNavIndicator"
                 transition={{ duration: 0.24, ease: KINETIC_EASE }}
-                className="absolute left-2.5 right-2.5 -bottom-[1px] h-[2.5px] rounded-full bg-[#0B4619]"
+                className="absolute left-2.5 right-2.5 -bottom-[1px] h-[2.5px] rounded-full bg-[#0F5C3A]"
               />
             )}
           </button>
@@ -360,9 +360,9 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => onNavigate('/sign-in')}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#0F5C3A] hover:bg-[#0B472D] rounded-lg shadow-xs transition-colors cursor-pointer"
               >
-                <LogIn className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <LogIn className="w-3.5 h-3.5 text-[#F59E0B]" />
                 <span>Sign In</span>
               </button>
             </div>
@@ -373,9 +373,9 @@ export const Header: React.FC<HeaderProps> = ({
               {isLgaOfficer && onOpenCreateWizard && (
                 <button
                   onClick={onOpenCreateWizard}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#0F5C3A] hover:bg-[#0B472D] rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer"
                 >
-                  <PlusCircle className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <PlusCircle className="w-3.5 h-3.5 text-[#F59E0B]" />
                   <span>New LGA Activity</span>
                 </button>
               )}
@@ -398,7 +398,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors text-left cursor-pointer"
                 title="Account Details"
               >
-                <div className="w-7 h-7 rounded-lg bg-emerald-900 text-[#D4AF37] flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-emerald-900 text-[#F59E0B] flex items-center justify-center font-bold text-xs shrink-0">
                   {currentUser.role === 'state_admin' && currentUser.isPrivileged ? (
                     <ShieldCheck className="w-4 h-4" />
                   ) : currentUser.role === 'lga_admin' && currentUser.isPrivileged ? (
@@ -446,7 +446,7 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label="Toggle predictive LGA activity search"
               className={`md:hidden p-2 rounded-lg transition-colors cursor-pointer ${
                 mobileSearchOpen || publicSearchQuery.trim()
-                  ? 'text-[#0B4619] bg-emerald-50 border border-emerald-200'
+                  ? 'text-[#0F5C3A] bg-emerald-50 border border-emerald-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
@@ -549,7 +549,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
               >
                 <span>Access Requests Review</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-[#D4AF37]/30 text-emerald-950 font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-[#D97706]/30 text-emerald-950 font-bold">
                   Personnel
                 </span>
               </button>
@@ -624,7 +624,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onNavigate('/sign-in');
                   setMobileMenuOpen(false);
                 }}
-                className="w-full py-2.5 text-center text-xs font-bold text-white bg-emerald-800 rounded-lg cursor-pointer"
+                className="w-full py-2.5 text-center text-xs font-bold text-white bg-[#0F5C3A] hover:bg-[#0B472D] rounded-lg cursor-pointer"
               >
                 Official Sign In
               </button>

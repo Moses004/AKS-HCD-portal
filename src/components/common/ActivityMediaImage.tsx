@@ -274,7 +274,7 @@ export const ActivityMediaImage: React.FC<ActivityMediaImageProps> = ({
   // Uses authentic Akwa Ibom State green/gold styling with subtle pillar emblem
   return (
     <div
-      className={`relative ${aspectRatioClass} bg-gradient-to-br from-slate-900 via-[#0B4619] to-emerald-950 text-white overflow-hidden flex flex-col justify-between p-4 select-none ${className}`}
+      className={`relative ${aspectRatioClass} bg-gradient-to-br from-slate-900 via-[#0F5C3A] to-emerald-950 text-white overflow-hidden flex flex-col justify-between p-4 select-none ${className}`}
     >
       {/* Background seal pattern */}
       <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/5 pointer-events-none blur-xs" />
@@ -286,7 +286,7 @@ export const ActivityMediaImage: React.FC<ActivityMediaImageProps> = ({
 
       <div className="relative z-10 flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-800/80 border border-emerald-400/30 flex items-center justify-center text-[#D4AF37] font-bold text-xs shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-emerald-800/80 border border-emerald-400/30 flex items-center justify-center text-[#F59E0B] font-bold text-xs shadow-xs">
             AKS
           </div>
           <div>

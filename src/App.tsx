@@ -325,7 +325,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F2] flex flex-col font-sans text-slate-800">
+    <div className="min-h-screen bg-[#F6F8F7] flex flex-col font-sans text-slate-800">
       {/* Kinetic viewport scroll-progress hairline */}
       <ScrollProgressBar />
 

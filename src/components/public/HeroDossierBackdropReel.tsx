@@ -667,7 +667,7 @@ export const HeroDossierBackdropCanvas: React.FC<HeroDossierBackdropCanvasProps>
 
   if (!activeSlide) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-[#062611] via-[#0B4619] to-[#051F0E]" />
+      <div className="w-full h-full bg-gradient-to-br from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F]" />
     );
   }
 
@@ -678,7 +678,7 @@ export const HeroDossierBackdropCanvas: React.FC<HeroDossierBackdropCanvasProps>
   const exitX = direction === 1 ? '-1.8%' : '1.8%';
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#062611]">
+    <div className="relative w-full h-full overflow-hidden bg-[#0A2E1F]">
       <AnimatePresence mode="sync" initial={false} custom={direction}>
         <motion.div
           key={`${activeSlide.id}-${activeIndex}`}
@@ -790,7 +790,7 @@ export const HeroDossierBackdropCanvas: React.FC<HeroDossierBackdropCanvasProps>
                 },
                 exit: { opacity: 0, transition: { duration: 0.3 } },
               }}
-              className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-[#D4AF37]/25 to-transparent mix-blend-screen"
+              className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-[#D97706]/25 to-transparent mix-blend-screen"
             />
           )}
 
@@ -813,10 +813,10 @@ export const HeroDossierBackdropCanvas: React.FC<HeroDossierBackdropCanvasProps>
               }}
               className="hidden sm:block absolute inset-5 pointer-events-none"
             >
-              <span className="absolute top-0 left-0 w-5 h-5 border-t border-l border-[#D4AF37]/50" />
-              <span className="absolute top-0 right-0 w-5 h-5 border-t border-r border-[#D4AF37]/50" />
-              <span className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-[#D4AF37]/50" />
-              <span className="absolute bottom-0 right-0 w-5 h-5 border-b border-r border-[#D4AF37]/50" />
+              <span className="absolute top-0 left-0 w-5 h-5 border-t border-l border-[#D97706]/50" />
+              <span className="absolute top-0 right-0 w-5 h-5 border-t border-r border-[#D97706]/50" />
+              <span className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-[#D97706]/50" />
+              <span className="absolute bottom-0 right-0 w-5 h-5 border-b border-r border-[#D97706]/50" />
             </motion.div>
           )}
         </motion.div>
@@ -896,7 +896,7 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
 
   return (
     <div className="no-print mt-8 sm:mt-10">
-      <div className="relative overflow-hidden rounded-xl bg-[#041B0C]/68 backdrop-blur-md border border-white/18 px-4 py-3.5 shadow-xl">
+      <div className="relative overflow-hidden rounded-xl bg-[#0A2E1F]/68 backdrop-blur-md border border-white/18 px-4 py-3.5 shadow-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
           {/* Staggered Active Dossier Metadata */}
           <AnimatePresence mode="wait">
@@ -910,7 +910,7 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
             >
               <motion.div
                 variants={prefersReduced ? undefined : reelInfoItemVariants}
-                className="hidden w-9 h-9 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/45 text-[#D4AF37] items-center justify-center shrink-0"
+                className="hidden w-9 h-9 rounded-lg bg-[#D97706]/20 border border-[#D97706]/45 text-[#F59E0B] items-center justify-center shrink-0"
               >
                 {activeSlide.mediaType === 'video' ? (
                   <Video className="w-4 h-4" />
@@ -924,13 +924,13 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
                   variants={prefersReduced ? undefined : reelInfoItemVariants}
                   className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] font-semibold text-emerald-200/90"
                 >
-                  <span className="hidden items-center gap-1 text-[#D4AF37] uppercase tracking-wider">
+                  <span className="hidden items-center gap-1 text-[#F59E0B] uppercase tracking-wider">
                     <Film className="w-3 h-3" />
                     {isLiveDossierReel ? 'Cinematic Dossier Reel' : 'Field Showcase Reel'}
                   </span>
                   <span aria-hidden="true" className="hidden text-white/35">·</span>
                   <span className="inline-flex items-center gap-1 text-white/95">
-                    <MapPin className="w-3 h-3 text-[#D4AF37]" />
+                    <MapPin className="w-3 h-3 text-[#F59E0B]" />
                     {activeSlide.locationLabel}
                   </span>
                   {formattedCoords && (
@@ -1002,7 +1002,7 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
                       }`}
                     >
                       {thumb.mediaType === 'video' ? (
-                        <div className="w-full h-full bg-[#093218] flex items-center justify-center text-[#D4AF37]">
+                        <div className="w-full h-full bg-[#093218] flex items-center justify-center text-[#F59E0B]">
                           <Video className="w-3.5 h-3.5" />
                         </div>
                       ) : (
@@ -1018,7 +1018,7 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
                         <motion.span
                           layoutId="hero-cinematic-dossier-active"
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                          className="absolute inset-0 rounded-md ring-2 ring-[#D4AF37] ring-inset pointer-events-none"
+                          className="absolute inset-0 rounded-md ring-2 ring-[#D97706] ring-inset pointer-events-none"
                         />
                       )}
                     </motion.button>
@@ -1032,7 +1032,7 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
                 <button
                   type="button"
                   onClick={handleInspect}
-                  className="px-3 py-1.5 rounded-lg bg-[#D4AF37]/18 hover:bg-[#D4AF37]/30 border border-[#D4AF37]/40 text-[#F4D97A] hover:text-white text-xs font-semibold transition-colors inline-flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-lg bg-[#D97706]/18 hover:bg-[#D97706]/30 border border-[#D97706]/40 text-[#F4D97A] hover:text-white text-xs font-semibold transition-colors inline-flex items-center gap-1 cursor-pointer whitespace-nowrap"
                 >
                   Open Dossier
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1057,7 +1057,7 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
                     type="button"
                     onClick={togglePause}
                     aria-label={isPaused ? 'Resume background reel' : 'Pause background reel'}
-                    className="p-1.5 rounded-lg bg-white/10 hover:bg-white/22 text-[#D4AF37] transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg bg-white/10 hover:bg-white/22 text-[#F59E0B] transition-colors cursor-pointer"
                   >
                     {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
                   </button>
@@ -1084,10 +1084,10 @@ export const HeroDossierReelBar: React.FC<HeroDossierReelBarProps> = ({
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: slideDurationMs / 1000, ease: 'linear' }}
-                className="h-full w-full origin-left bg-gradient-to-r from-[#D4AF37] via-amber-300 to-emerald-400"
+                className="h-full w-full origin-left bg-gradient-to-r from-[#D97706] via-amber-300 to-emerald-400"
               />
             ) : (
-              <div className="h-full w-1/3 bg-[#D4AF37]/60" />
+              <div className="h-full w-1/3 bg-[#D97706]/60" />
             )}
           </div>
         )}

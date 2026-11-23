@@ -192,8 +192,8 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
     <div
       className={`relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2 ${
         variant === 'bar'
-          ? 'px-6 py-3.5 border-b border-[#ECE8DD] bg-[#FAF8F2]/65 overflow-hidden'
-          : 'px-4 py-2.5 rounded-xl border border-[#E5E2D9] bg-[#FAF8F2]/80'
+          ? 'px-6 py-3.5 border-b border-[#EAEFED] bg-[#F6F8F7]/65 overflow-hidden'
+          : 'px-4 py-2.5 rounded-xl border border-[#E2E8E5] bg-[#F6F8F7]/80'
       } ${className}`}
     >
       {/* Self-contained single-pass Emerald-Gold Resonance Shimmer along top edge when new data syncs */}
@@ -204,7 +204,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
           className="no-print pointer-events-none absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden"
         >
           <motion.div
-            className="w-2/3 h-full bg-gradient-to-r from-transparent via-[#D4AF37] to-[#0B4619]"
+            className="w-2/3 h-full bg-gradient-to-r from-transparent via-[#D97706] to-[#0F5C3A]"
             initial={{ x: '-100%', opacity: 0.9 }}
             animate={{ x: '220%', opacity: 0 }}
             transition={{ duration: 1.35, ease: KINETIC_EASE }}
@@ -223,7 +223,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
           {/* Ambient serene resting cadence (compositor-only) */}
           {!prefersReduced && (
             <motion.span
-              className="no-print absolute inset-1 rounded-full border border-[#0B4619]/30 pointer-events-none"
+              className="no-print absolute inset-1 rounded-full border border-[#0F5C3A]/30 pointer-events-none"
               animate={{
                 scale: activeSyncing ? [0.9, 1.85, 0.9] : [1, 1.55, 1],
                 opacity: activeSyncing ? [0.55, 0, 0.55] : [0.24, 0, 0.24],
@@ -243,7 +243,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
                 <React.Fragment key={pulseId}>
                   {/* Wave 1: Primary Deep Emerald */}
                   <motion.span
-                    className="no-print absolute inset-1.5 rounded-full border-[1.5px] border-[#0B4619] pointer-events-none"
+                    className="no-print absolute inset-1.5 rounded-full border-[1.5px] border-[#0F5C3A] pointer-events-none"
                     initial={{ scale: 0.72, opacity: 0.7 }}
                     animate={{ scale: 2.35, opacity: 0 }}
                     exit={{ opacity: 0 }}
@@ -252,7 +252,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
                   />
                   {/* Wave 2: Secondary Heritage Gold Harmonic */}
                   <motion.span
-                    className="no-print absolute inset-1.5 rounded-full border-[1.5px] border-[#D4AF37] pointer-events-none"
+                    className="no-print absolute inset-1.5 rounded-full border-[1.5px] border-[#D97706] pointer-events-none"
                     initial={{ scale: 0.72, opacity: 0.85 }}
                     animate={{ scale: 2.75, opacity: 0 }}
                     exit={{ opacity: 0 }}
@@ -261,7 +261,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
                   />
                   {/* Wave 3: Wide Botanical Halo Echo */}
                   <motion.span
-                    className="no-print absolute inset-1 rounded-full bg-[#D4AF37]/15 pointer-events-none"
+                    className="no-print absolute inset-1 rounded-full bg-[#D97706]/15 pointer-events-none"
                     initial={{ scale: 0.78, opacity: 0.5 }}
                     animate={{ scale: 2.25, opacity: 0 }}
                     exit={{ opacity: 0 }}
@@ -277,15 +277,15 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
           <span
             className={`absolute inset-1 rounded-full border transition-colors duration-300 ${
               isSurging || activeSyncing
-                ? 'border-[#D4AF37]/70 bg-emerald-50/70'
-                : 'border-[#0B4619]/20 bg-white'
+                ? 'border-[#D97706]/70 bg-emerald-50/70'
+                : 'border-[#0F5C3A]/20 bg-white'
             }`}
           />
 
           {/* Center Double-Beat Cardiac Core */}
           <motion.span
             key={`core-${pulseId}`}
-            className="relative z-10 w-3.5 h-3.5 rounded-full bg-[#0B4619] flex items-center justify-center shadow-xs"
+            className="relative z-10 w-3.5 h-3.5 rounded-full bg-[#0F5C3A] flex items-center justify-center shadow-xs"
             animate={
               prefersReduced
                 ? undefined
@@ -300,7 +300,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
             }}
             style={{ willChange: 'transform' }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
           </motion.span>
         </div>
 
@@ -315,17 +315,17 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
         >
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0B4619" stopOpacity="0.25" />
-              <stop offset="50%" stopColor="#0B4619" stopOpacity="1" />
-              <stop offset="82%" stopColor="#D4AF37" stopOpacity="1" />
-              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.2" />
+              <stop offset="0%" stopColor="#0F5C3A" stopOpacity="0.25" />
+              <stop offset="50%" stopColor="#0F5C3A" stopOpacity="1" />
+              <stop offset="82%" stopColor="#D97706" stopOpacity="1" />
+              <stop offset="100%" stopColor="#D97706" stopOpacity="0.2" />
             </linearGradient>
           </defs>
 
           {/* Subtle Resting Hairline Trace */}
           <path
             d={HEARTBEAT_TRACE_PATH}
-            stroke="#0B4619"
+            stroke="#0F5C3A"
             strokeOpacity="0.16"
             strokeWidth="1.4"
             strokeLinecap="round"
@@ -355,7 +355,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
           ) : (
             <path
               d={HEARTBEAT_TRACE_PATH}
-              stroke="#0B4619"
+              stroke="#0F5C3A"
               strokeOpacity="0.55"
               strokeWidth="1.6"
               strokeLinecap="round"
@@ -367,7 +367,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
         {/* Clean Unboxed Typographic Copy (Zero-Pill Discipline) */}
         <div className="min-w-0" aria-live="polite">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-            <span className="font-bold text-[#0B4619] tracking-tight whitespace-nowrap">
+            <span className="font-bold text-[#0F5C3A] tracking-tight whitespace-nowrap">
               {label}
             </span>
             <span aria-hidden="true" className="text-slate-300">
@@ -379,7 +379,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22, ease: KINETIC_EASE }}
               className={`font-medium truncate ${
-                isSurging || activeSyncing ? 'text-[#0B4619]' : 'text-slate-600'
+                isSurging || activeSyncing ? 'text-[#0F5C3A]' : 'text-slate-600'
               }`}
             >
               {statusPhrase}
@@ -409,11 +409,11 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
         type="button"
         onClick={handleSyncClick}
         disabled={activeSyncing}
-        className="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#0B4619] hover:text-emerald-950 bg-white hover:bg-emerald-50/80 border border-[#E5E2D9] hover:border-[#0B4619]/30 transition-colors cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B4619]/40"
+        className="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#0F5C3A] hover:text-emerald-950 bg-white hover:bg-emerald-50/80 border border-[#E2E8E5] hover:border-[#0F5C3A]/30 transition-colors cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5C3A]/40"
         title="Check for newly synced grassroots HCD project updates"
       >
         <RefreshCw
-          className={`w-3.5 h-3.5 text-[#0B4619] ${
+          className={`w-3.5 h-3.5 text-[#0F5C3A] ${
             activeSyncing && !prefersReduced ? 'animate-spin' : ''
           }`}
         />

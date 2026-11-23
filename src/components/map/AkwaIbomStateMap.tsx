@@ -249,7 +249,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
           beneficiaries,
           budgetM,
           projects,
-          color: PILLARS[p.pillar_code]?.color || '#0B4619',
+          color: PILLARS[p.pillar_code]?.color || '#0F5C3A',
         };
       })
       .sort((a, b) => b.value - a.value);
@@ -304,7 +304,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
       metrics,
       leadPillarCode,
       leadPillarName: leadPillarCode ? getPillarDisplayName(leadPillarCode) : null,
-      leadPillarColor: leadPillarCode ? PILLARS[leadPillarCode]?.color || '#10b981' : '#D4AF37',
+      leadPillarColor: leadPillarCode ? PILLARS[leadPillarCode]?.color || '#10b981' : '#D97706',
       leadProject,
       isSelected: selectedLgaId === hoveredLga.id,
     };
@@ -312,7 +312,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
 
   // Choropleth color interpolation
   const getLgaFillColor = (lga: LGA, isSelected: boolean, isHovered: boolean) => {
-    if (isSelected) return '#D4AF37';
+    if (isSelected) return '#D97706';
     if (isHovered) return '#10b981';
 
     if (districtFilter !== 'all') {
@@ -367,11 +367,11 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E2D9] shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl border border-[#E2E8E5] shadow-sm overflow-hidden flex flex-col">
       {/* Map Control Bar — Preserves Exact Required Title, Tag, and Subtitle */}
-      <div className="p-4 sm:p-5 border-b border-[#ECE8DD] bg-[#FAF8F2]/80 flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 border-b border-[#EAEFED] bg-[#F6F8F7]/80 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center bg-white p-1.5 rounded-xl border border-[#D4AF37]/70 shadow-xs shrink-0">
+          <div className="flex items-center justify-center bg-white p-1.5 rounded-xl border border-[#D97706]/70 shadow-xs shrink-0">
             <HcdLogo className="w-6 h-6 object-contain" />
           </div>
           <div>
@@ -393,7 +393,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
           <div
             role="tablist"
             aria-label="Filter map by senatorial district"
-            className="flex items-center gap-0.5 bg-white border border-[#E5E2D9] p-1 rounded-xl text-xs font-medium"
+            className="flex items-center gap-0.5 bg-white border border-[#E2E8E5] p-1 rounded-xl text-xs font-medium"
           >
             {districtOptions.map((opt) => {
               const active = districtFilter === opt.id;
@@ -411,7 +411,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                     <motion.span
                       layoutId="mapDistrictActiveBg"
                       transition={{ duration: 0.25, ease: KINETIC_EASE }}
-                      className="absolute inset-0 bg-[#0B4619] rounded-lg shadow-xs"
+                      className="absolute inset-0 bg-[#0F5C3A] rounded-lg shadow-xs"
                     />
                   )}
                   <span className="relative z-10">{opt.label}</span>
@@ -424,7 +424,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
           <div
             role="tablist"
             aria-label="Switch geospatial choropleth metric"
-            className="flex items-center gap-0.5 bg-white border border-[#E5E2D9] p-1 rounded-xl text-xs"
+            className="flex items-center gap-0.5 bg-white border border-[#E2E8E5] p-1 rounded-xl text-xs"
           >
             {metricOptions.map((opt) => {
               const active = metricView === opt.id;
@@ -442,7 +442,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                     <motion.span
                       layoutId="mapMetricActiveBg"
                       transition={{ duration: 0.25, ease: KINETIC_EASE }}
-                      className="absolute inset-0 bg-[#D4AF37]/30 border border-[#D4AF37]/60 rounded-lg"
+                      className="absolute inset-0 bg-[#D97706]/30 border border-[#D97706]/60 rounded-lg"
                     />
                   )}
                   <span className="relative z-10">{opt.label}</span>
@@ -458,7 +458,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
               aria-label="Jump to Local Government Area"
               value={selectedLgaId || ''}
               onChange={(e) => onSelectLga(e.target.value || null)}
-              className="text-xs pl-8 pr-7 py-2 rounded-xl border border-[#E5E2D9] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0B4619] cursor-pointer"
+              className="text-xs pl-8 pr-7 py-2 rounded-xl border border-[#E2E8E5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
             >
               <option value="">Jump to LGA…</option>
               {[...ALL_31_LGAS]
@@ -472,7 +472,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
           </div>
 
           {/* Zoom & Reset Controls */}
-          <div className="flex items-center gap-1 bg-white border border-[#E5E2D9] p-1 rounded-xl">
+          <div className="flex items-center gap-1 bg-white border border-[#E2E8E5] p-1 rounded-xl">
             <button
               onClick={() => setZoomLevel((z) => Math.min(Number((z + 0.18).toFixed(2)), 1.72))}
               title="Zoom In"
@@ -512,7 +512,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
         {/* LEFT COLUMN: Interactive 31-LGA Vector Canvas */}
         <div
           ref={mapCanvasRef}
-          className="lg:col-span-7 relative bg-gradient-to-b from-[#FAF8F2]/60 via-white to-emerald-50/30 p-4 sm:p-6 overflow-hidden min-h-[480px] flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-[#ECE8DD]"
+          className="lg:col-span-7 relative bg-gradient-to-b from-[#F6F8F7]/60 via-white to-emerald-50/30 p-4 sm:p-6 overflow-hidden min-h-[480px] flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-[#EAEFED]"
         >
           {/* Cartographic Coordinate Grid with Scroll Parallax */}
           <motion.div
@@ -523,7 +523,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
             <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern id="aks-grid-pattern" width="36" height="36" patternUnits="userSpaceOnUse">
-                  <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#e5e2d9" strokeWidth="0.75" />
+                  <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#E2E8E5" strokeWidth="0.75" />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#aks-grid-pattern)" />
@@ -538,7 +538,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                 ? undefined
                 : { y: compassParallaxY, rotate: compassRotate, willChange: 'transform' }
             }
-            className="no-print pointer-events-none absolute -right-12 -bottom-12 w-56 h-56 text-[#D4AF37]/18"
+            className="no-print pointer-events-none absolute -right-12 -bottom-12 w-56 h-56 text-[#F59E0B]/18"
             viewBox="0 0 200 200"
             fill="none"
           >
@@ -548,8 +548,8 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
           </motion.svg>
 
           {/* Floating Status Hint (Top-Left) */}
-          <div className="absolute top-3.5 left-4 z-10 flex items-center gap-2 text-[11px] font-medium text-slate-600 bg-white/90 backdrop-blur-sm border border-[#E5E2D9] rounded-lg px-3 py-1.5 shadow-xs">
-            <Compass className="w-3.5 h-3.5 text-[#0B4619]" />
+          <div className="absolute top-3.5 left-4 z-10 flex items-center gap-2 text-[11px] font-medium text-slate-600 bg-white/90 backdrop-blur-sm border border-[#E2E8E5] rounded-lg px-3 py-1.5 shadow-xs">
+            <Compass className="w-3.5 h-3.5 text-[#0F5C3A]" />
             <span>
               {selectedLgaObj
                 ? `Pinned: ${selectedLgaObj.name} LGA — click again to view all 31 councils`
@@ -666,7 +666,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                             cy={y + 8}
                             r={isHovered ? 5.5 : 4.5}
                             fill="none"
-                            stroke={isSelected ? '#072E14' : '#D4AF37'}
+                            stroke={isSelected ? '#072E14' : '#D97706'}
                             strokeWidth="1.5"
                             className="map-beacon-pulse"
                           />
@@ -681,7 +681,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                               ? 3.8
                               : 2.8
                           }
-                          fill={isSelected ? '#072E14' : '#D4AF37'}
+                          fill={isSelected ? '#072E14' : '#D97706'}
                           stroke="#ffffff"
                           strokeWidth="1.15"
                           style={{ transition: 'r 180ms ease' }}
@@ -762,17 +762,17 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                     })`,
                     transition: 'transform 180ms cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
-                  className="w-[268px] rounded-xl bg-[#052110]/95 backdrop-blur-md border border-[#D4AF37]/45 text-white shadow-2xl shadow-emerald-950/40 overflow-hidden"
+                  className="w-[268px] rounded-xl bg-[#052110]/95 backdrop-blur-md border border-[#D97706]/45 text-white shadow-2xl shadow-emerald-950/40 overflow-hidden"
                 >
                   {/* Crest Gold Accent Hairline */}
-                  <div className="h-[2.5px] w-full bg-gradient-to-r from-[#D4AF37] via-amber-300 to-emerald-400" />
+                  <div className="h-[2.5px] w-full bg-gradient-to-r from-[#D97706] via-amber-300 to-emerald-400" />
 
                   <div className="p-3.5 space-y-2.5">
                     {/* Tooltip Header */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#F0CC56]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0" />
+                        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#FBBF24]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" />
                           <span className="truncate">
                             {hoveredTarget === 'beacon'
                               ? `Investment Beacon · ${hoveredTooltipSummary.metrics.publishedCount} Dossiers`
@@ -793,7 +793,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                       </div>
 
                       {hoveredTooltipSummary.isSelected && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#051F0E] bg-[#D4AF37] px-1.5 py-0.5 rounded shrink-0">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-white bg-[#D97706] px-1.5 py-0.5 rounded shrink-0">
                           <Lock className="w-2.5 h-2.5" />
                           Pinned
                         </span>
@@ -805,7 +805,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                       <div
                         className={`rounded-lg px-2 py-1.5 border ${
                           metricView === 'beneficiaries'
-                            ? 'bg-[#D4AF37]/16 border-[#D4AF37]/45'
+                            ? 'bg-[#D97706]/16 border-[#D97706]/45'
                             : 'bg-white/6 border-white/10'
                         }`}
                       >
@@ -822,7 +822,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                       <div
                         className={`rounded-lg px-2 py-1.5 border ${
                           metricView === 'budget'
-                            ? 'bg-[#D4AF37]/16 border-[#D4AF37]/45'
+                            ? 'bg-[#D97706]/16 border-[#D97706]/45'
                             : 'bg-white/6 border-white/10'
                         }`}
                       >
@@ -839,7 +839,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                       <div
                         className={`rounded-lg px-2 py-1.5 border ${
                           metricView === 'activities'
-                            ? 'bg-[#D4AF37]/16 border-[#D4AF37]/45'
+                            ? 'bg-[#D97706]/16 border-[#D97706]/45'
                             : 'bg-white/6 border-white/10'
                         }`}
                       >
@@ -887,7 +887,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                           ? 'Click territory to reset view'
                           : 'Click to lock Side Inspector'}
                       </span>
-                      <ArrowUpRight className="w-3 h-3 text-[#D4AF37]" />
+                      <ArrowUpRight className="w-3 h-3 text-[#F59E0B]" />
                     </div>
                   </div>
                 </div>
@@ -908,10 +908,10 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
               className="space-y-5 flex-1 flex flex-col"
             >
               {/* Inspector Header */}
-              <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#ECE8DD]">
+              <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#EAEFED]">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <span className="font-semibold text-[#0B4619]">
+                    <span className="font-semibold text-[#0F5C3A]">
                       {inspectedLga ? 'Territorial Inspector' : 'Statewide Overview'}
                     </span>
                     <span aria-hidden="true">·</span>
@@ -946,9 +946,9 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                 {selectedLgaObj && (
                   <button
                     onClick={() => onSelectLga(null)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-950 bg-[#FAF8F2] hover:bg-emerald-50 border border-[#E5E2D9] rounded-lg transition-colors cursor-pointer shrink-0"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-emerald-950 bg-[#F6F8F7] hover:bg-emerald-50 border border-[#E2E8E5] rounded-lg transition-colors cursor-pointer shrink-0"
                   >
-                    <Lock className="w-3 h-3 text-[#D4AF37]" />
+                    <Lock className="w-3 h-3 text-[#F59E0B]" />
                     Unpin
                   </button>
                 )}
@@ -956,21 +956,21 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
 
               {/* 3 Tabular Territory KPIs */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 rounded-xl bg-[#FAF8F2] border border-[#ECE8DD]">
+                <div className="p-3 rounded-xl bg-[#F6F8F7] border border-[#EAEFED]">
                   <span className="text-[11px] font-medium text-slate-500 block">Beneficiaries</span>
-                  <div className="text-lg sm:text-xl font-bold text-[#0B4619] font-mono tabular-nums mt-0.5">
+                  <div className="text-lg sm:text-xl font-bold text-[#0F5C3A] font-mono tabular-nums mt-0.5">
                     {inspectedStats.totalBeneficiaries.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#FAF8F2] border border-[#ECE8DD]">
+                <div className="p-3 rounded-xl bg-[#F6F8F7] border border-[#EAEFED]">
                   <span className="text-[11px] font-medium text-slate-500 block">Capital</span>
                   <div className="text-lg sm:text-xl font-bold text-slate-900 font-mono tabular-nums mt-0.5">
                     ₦{(inspectedStats.totalBudget / 1_000_000).toFixed(1)}M
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#FAF8F2] border border-[#ECE8DD]">
+                <div className="p-3 rounded-xl bg-[#F6F8F7] border border-[#EAEFED]">
                   <span className="text-[11px] font-medium text-slate-500 block">Projects</span>
                   <div className="text-lg sm:text-xl font-bold text-slate-900 font-mono tabular-nums mt-0.5">
                     {inspectedStats.publishedCount}
@@ -990,7 +990,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                 </div>
 
                 {hasChartValues ? (
-                  <div className="h-[168px] w-full bg-[#FAF8F2]/60 rounded-xl border border-[#ECE8DD] px-2 pt-2 pb-1">
+                  <div className="h-[168px] w-full bg-[#F6F8F7]/60 rounded-xl border border-[#EAEFED] px-2 pt-2 pb-1">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={pillarChartData}
@@ -1007,10 +1007,10 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                           tickLine={false}
                         />
                         <Tooltip
-                          cursor={{ fill: 'rgba(11, 70, 25, 0.05)' }}
+                          cursor={{ fill: 'rgba(15, 92, 58, 0.05)' }}
                           contentStyle={{
                             backgroundColor: '#072E14',
-                            border: '1px solid rgba(212, 175, 55, 0.45)',
+                            border: '1px solid rgba(217, 119, 6, 0.45)',
                             borderRadius: '10px',
                             fontSize: '11px',
                             color: '#ffffff',
@@ -1035,7 +1035,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                     </ResponsiveContainer>
                   </div>
                 ) : (
-                  <div className="h-[120px] rounded-xl border border-dashed border-[#D8D3C5] bg-[#FAF8F2]/50 flex flex-col items-center justify-center text-center px-4">
+                  <div className="h-[120px] rounded-xl border border-dashed border-[#D8D3C5] bg-[#F6F8F7]/50 flex flex-col items-center justify-center text-center px-4">
                     <MapPin className="w-5 h-5 text-slate-400 mb-1" />
                     <p className="text-xs font-semibold text-slate-700">
                       No published activities recorded in {inspectedLga?.name || 'this selection'} yet
@@ -1054,7 +1054,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                 <div className="space-y-2 pt-1">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-slate-900 flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-[#0B4619]" />
+                      <Users className="w-3.5 h-3.5 text-[#0F5C3A]" />
                       Demographic Reach
                     </span>
                     <span className="text-[11px] font-mono tabular-nums text-slate-600">
@@ -1068,7 +1068,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                       animate={{ scaleX: 1 }}
                       transition={{ duration: prefersReduced ? 0 : 0.45, ease: KINETIC_EASE }}
                       style={{ width: `${malePct}%`, transformOrigin: 'left' }}
-                      className="bg-[#0B4619] h-full"
+                      className="bg-[#0F5C3A] h-full"
                       title={`Male: ${inspectedStats.maleBeneficiaries.toLocaleString()}`}
                     />
                     <motion.div
@@ -1076,7 +1076,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                       animate={{ scaleX: 1 }}
                       transition={{ duration: prefersReduced ? 0 : 0.45, delay: 0.08, ease: KINETIC_EASE }}
                       style={{ width: `${femalePct}%`, transformOrigin: 'left' }}
-                      className="bg-[#D4AF37] h-full"
+                      className="bg-[#D97706] h-full"
                       title={`Female: ${inspectedStats.femaleBeneficiaries.toLocaleString()}`}
                     />
                   </div>
@@ -1084,7 +1084,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
               )}
 
               {/* Clickable Verified Projects in Territory */}
-              <div className="space-y-2 pt-2 border-t border-[#ECE8DD] flex-1">
+              <div className="space-y-2 pt-2 border-t border-[#EAEFED] flex-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-slate-900">
                     {inspectedLga ? `Verified Projects in ${inspectedLga.name}` : 'Leading Verified Projects'}
@@ -1097,7 +1097,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                         }
                         onJumpToRegistry();
                       }}
-                      className="text-[11px] font-semibold text-[#0B4619] hover:text-emerald-700 inline-flex items-center gap-0.5 cursor-pointer"
+                      className="text-[11px] font-semibold text-[#0F5C3A] hover:text-emerald-700 inline-flex items-center gap-0.5 cursor-pointer"
                     >
                       Open all ({inspectedStats.publishedCount})
                       <ArrowUpRight className="w-3 h-3" />
@@ -1106,16 +1106,16 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                 </div>
 
                 {topProjects.length > 0 ? (
-                  <div className="divide-y divide-[#ECE8DD] border border-[#ECE8DD] rounded-xl overflow-hidden">
+                  <div className="divide-y divide-[#EAEFED] border border-[#EAEFED] rounded-xl overflow-hidden">
                     {topProjects.map((act) => (
                       <button
                         key={act.id}
                         type="button"
                         onClick={() => onViewActivity && onViewActivity(act)}
-                        className="w-full text-left px-3.5 py-2.5 bg-white hover:bg-[#FAF8F2] transition-colors flex items-center justify-between gap-3 group cursor-pointer"
+                        className="w-full text-left px-3.5 py-2.5 bg-white hover:bg-[#F6F8F7] transition-colors flex items-center justify-between gap-3 group cursor-pointer"
                       >
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold text-slate-900 group-hover:text-[#0B4619] truncate">
+                          <div className="text-xs font-semibold text-slate-900 group-hover:text-[#0F5C3A] truncate">
                             {act.title}
                           </div>
                           <div className="text-[11px] text-slate-500 flex items-center gap-1.5 truncate mt-0.5">
@@ -1126,7 +1126,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
                             </span>
                           </div>
                         </div>
-                        <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0B4619] shrink-0 transition-colors" />
+                        <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0F5C3A] shrink-0 transition-colors" />
                       </button>
                     ))}
                   </div>
@@ -1142,10 +1142,10 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
       </div>
 
       {/* Map Legend Footer */}
-      <div className="px-4 sm:px-6 py-3 bg-[#FAF8F2] border-t border-[#ECE8DD] flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+      <div className="px-4 sm:px-6 py-3 bg-[#F6F8F7] border-t border-[#EAEFED] flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
         <div className="flex items-center gap-4 flex-wrap">
           <span className="font-semibold text-slate-900 flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-[#0B4619]" />
+            <Layers className="w-3.5 h-3.5 text-[#0F5C3A]" />
             Intensity Legend:
           </span>
           <div className="flex items-center gap-1.5">
@@ -1165,7 +1165,7 @@ export const AkwaIbomStateMap: React.FC<AkwaIbomStateMapProps> = ({
             <span>High Concentration</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-[#D4AF37] border border-[#072E14]" />
+            <span className="w-3 h-3 rounded bg-[#D97706] border border-[#072E14]" />
             <span>Selected LGA</span>
           </div>
         </div>

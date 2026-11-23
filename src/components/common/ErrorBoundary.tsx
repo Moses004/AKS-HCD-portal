@@ -59,9 +59,9 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen bg-[#F8F9FA] flex flex-col justify-between font-sans text-slate-800">
           {/* Government Top Bar */}
-          <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white text-[11px] py-2 px-4 sm:px-8 flex items-center justify-between border-b border-[#D4AF37]/30">
-            <div className="flex items-center gap-2 font-semibold text-[#D4AF37]">
-              <span className="w-2 h-2 rounded-full bg-[#D4AF37] inline-block" />
+          <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-950 text-white text-[11px] py-2 px-4 sm:px-8 flex items-center justify-between border-b border-[#D97706]/30">
+            <div className="flex items-center gap-2 font-semibold text-[#F59E0B]">
+              <span className="w-2 h-2 rounded-full bg-[#D97706] inline-block" />
               <span>AKWA IBOM STATE GOVERNMENT · ARISE AGENDA</span>
             </div>
             <div className="text-emerald-200 text-[10px] hidden sm:block">
@@ -74,7 +74,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8 space-y-6">
               {/* Header Icon & Emblem */}
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white border border-[#D4AF37]/50 shadow-xs p-1.5 flex items-center justify-center shrink-0">
+                <div className="w-14 h-14 rounded-2xl bg-white border border-[#D97706]/50 shadow-xs p-1.5 flex items-center justify-center shrink-0">
                   <HcdLogo className="w-full h-full object-contain" />
                 </div>
                 <div>
@@ -109,7 +109,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={this.handleReset}
-                  className="px-5 py-2.5 bg-[#0B4619] hover:bg-emerald-900 text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 bg-[#0F5C3A] hover:bg-emerald-900 text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>Reload Platform</span>

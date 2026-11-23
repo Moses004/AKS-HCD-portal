@@ -187,7 +187,7 @@ export const ReportsExportsTab: React.FC<ReportsExportsTabProps> = ({
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="p-1 rounded-xl border border-[#D4AF37] bg-white shadow-2xs">
+                <span className="p-1 rounded-xl border border-[#D97706] bg-white shadow-2xs">
                   <HcdLogo className="w-7 h-7" />
                 </span>
               </div>

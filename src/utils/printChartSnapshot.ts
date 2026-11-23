@@ -75,7 +75,7 @@ function extractRechartsLegend(wrapper: HTMLElement): LegendEntry[] {
     const label = (textEl.textContent || '').trim();
     if (!label) return;
 
-    let color = '#0B4619';
+    let color = '#0F5C3A';
     const swatch = item.querySelector('path, rect, circle, line');
     if (swatch) {
       const style = window.getComputedStyle(swatch);

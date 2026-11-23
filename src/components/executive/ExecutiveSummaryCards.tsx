@@ -226,34 +226,34 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
         <button
           type="button"
           onClick={() => openTrendOverlay('activities')}
-          className="no-print inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B4619] hover:bg-emerald-900 text-white text-xs font-bold shadow-xs border border-[#D4AF37]/40 transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap shrink-0"
+          className="no-print inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0F5C3A] hover:bg-emerald-900 text-white text-xs font-bold shadow-xs border border-[#D97706]/40 transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap shrink-0"
           title="Open month-over-month Recharts growth overlay for capacity building activities"
         >
-          <TrendingUp className="w-4 h-4 text-[#D4AF37]" />
+          <TrendingUp className="w-4 h-4 text-[#F59E0B]" />
           <span>Historical Impact Trend</span>
-          <ArrowUpRight className="w-3.5 h-3.5 text-[#D4AF37]" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-[#F59E0B]" />
         </button>
       </div>
 
       {/* Executive KPI Summary Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-card-gap lg:gap-card-gap-lg">
         {/* CARD 1: YEAR-TO-DATE TOTAL PARTICIPANTS */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110" />
+        <div className="bg-white rounded-2xl border border-[#E2E8E5] p-card-pad shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#EFF4F1] rounded-bl-full pointer-events-none transition-transform group-hover:scale-110" />
 
           <div className="space-y-3 relative z-10">
             {/* Top Header & Icon */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-[#0B4619] shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-[#0F5C3A] shadow-xs">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
                     Verified Total Beneficiaries
                   </span>
-                  <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                    <Database className="w-3 h-3 text-emerald-600" />
+                  <span className="text-[10px] text-[#0F5C3A] font-semibold flex items-center gap-1">
+                    <Database className="w-3 h-3 text-[#0F5C3A]" />
                     Live Cloud Records
                   </span>
                 </div>
@@ -269,14 +269,14 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
                 >
                   <Sparkline
                     data={participantsSparkline}
-                    color="#059669"
+                    color="#0F5C3A"
                     gradientId="sparkline-participants"
                     width={96}
                     height={32}
                   />
                 </button>
-                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                <span className="text-[10px] font-bold text-[#0F5C3A] bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0F5C3A] animate-pulse" />
                   Live Sync
                 </span>
               </div>
@@ -292,9 +292,9 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
           </div>
 
           {/* Bottom Context Breakdown */}
-          <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600 relative z-10">
+          <div className="pt-3 mt-3 border-t border-[#EAEFED] flex items-center justify-between text-[11px] text-slate-600 relative z-10">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="w-2 h-2 rounded-full bg-[#0F5C3A]" />
               Published: <strong className="font-mono text-slate-800">{publishedActivities.length} projects</strong>
             </span>
             <span className="text-slate-500 font-medium font-mono">
@@ -306,22 +306,22 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
         </div>
 
         {/* CARD 2: ACTIVE PROJECTS */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110" />
+        <div className="bg-white rounded-2xl border border-[#E2E8E5] p-card-pad shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-teal-50/90 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110" />
 
           <div className="space-y-3 relative z-10">
             {/* Top Header & Icon */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-800 shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-teal-100/90 flex items-center justify-center text-[#0E7490] shadow-xs">
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
                     Active Projects
                   </span>
-                  <span className="text-[10px] text-blue-700 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-blue-600" />
+                  <span className="text-[10px] text-[#0E7490] font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-[#0E7490]" />
                     Database Entries
                   </span>
                 </div>
@@ -333,17 +333,17 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
                   type="button"
                   onClick={() => openTrendOverlay('activities')}
                   title="Inspect month-over-month capacity building activities growth trend"
-                  className="rounded-lg p-0.5 hover:bg-blue-50/80 transition-colors cursor-pointer"
+                  className="rounded-lg p-0.5 hover:bg-teal-50/80 transition-colors cursor-pointer"
                 >
                   <Sparkline
                     data={projectsSparkline}
-                    color="#2563eb"
+                    color="#0E7490"
                     gradientId="sparkline-projects"
                     width={96}
                     height={32}
                   />
                 </button>
-                <span className="text-[10px] font-bold text-blue-800 bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
+                <span className="text-[10px] font-bold text-teal-900 bg-teal-50 border border-teal-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
                   {activities.length} Total Rows
                 </span>
               </div>
@@ -359,12 +359,12 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
           </div>
 
           {/* Bottom Context Breakdown */}
-          <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600 relative z-10">
+          <div className="pt-3 mt-3 border-t border-[#EAEFED] flex items-center justify-between text-[11px] text-slate-600 relative z-10">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              <span className="w-2 h-2 rounded-full bg-[#0E7490]" />
               Published: <strong className="font-mono text-slate-800">{publishedActivities.length}</strong>
             </span>
-            <span className="flex items-center gap-1 font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70">
+            <span className="flex items-center gap-1 font-medium text-[#B45309] bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70">
               <Clock className="w-3 h-3" />
               Queue: {pendingActivities.length} in review
             </span>
@@ -372,22 +372,22 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
         </div>
 
         {/* CARD 3: PERCENTAGE OF LGA REPORTING COMPLIANCE */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110" />
+        <div className="bg-white rounded-2xl border border-[#E2E8E5] p-card-pad shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50/90 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110" />
 
           <div className="space-y-3 relative z-10">
             {/* Top Header & Icon */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-800 shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-amber-100/90 flex items-center justify-center text-[#B45309] shadow-xs">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
                     LGA Reporting Compliance
                   </span>
-                  <span className="text-[10px] text-purple-700 font-semibold flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-purple-600" />
+                  <span className="text-[10px] text-[#B45309] font-semibold flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-[#D97706]" />
                     Canonical 31 Councils
                   </span>
                 </div>
@@ -399,17 +399,17 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
                   type="button"
                   onClick={() => openTrendOverlay('lgaCoverage')}
                   title="Inspect month-over-month LGA coverage growth trend"
-                  className="rounded-lg p-0.5 hover:bg-purple-50/80 transition-colors cursor-pointer"
+                  className="rounded-lg p-0.5 hover:bg-amber-50/80 transition-colors cursor-pointer"
                 >
                   <Sparkline
                     data={complianceSparkline}
-                    color="#9333ea"
+                    color="#D97706"
                     gradientId="sparkline-compliance"
                     width={96}
                     height={32}
                   />
                 </button>
-                <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
+                <span className="text-[10px] font-bold text-amber-900 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full flex items-center gap-0.5 mt-1 shadow-2xs">
                   {reportingLgaCount} of 31 LGAs
                 </span>
               </div>
@@ -421,9 +421,9 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
                 <span>{compliancePercentage}%</span>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full font-sans ${
                   Number(compliancePercentage) >= 70
-                    ? 'text-emerald-700 bg-emerald-50'
+                    ? 'text-[#0F5C3A] bg-emerald-50'
                     : Number(compliancePercentage) >= 30
-                    ? 'text-amber-700 bg-amber-50'
+                    ? 'text-[#B45309] bg-amber-50'
                     : 'text-slate-600 bg-slate-100'
                 }`}>
                   {Number(compliancePercentage) >= 70
@@ -439,9 +439,9 @@ export const ExecutiveSummaryCards: React.FC<ExecutiveSummaryCardsProps> = ({ ac
           </div>
 
           {/* Bottom Context Breakdown */}
-          <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600 relative z-10">
+          <div className="pt-3 mt-3 border-t border-[#EAEFED] flex items-center justify-between text-[11px] text-slate-600 relative z-10">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-purple-500" />
+              <span className="w-2 h-2 rounded-full bg-[#D97706]" />
               Reporting LGAs: <strong className="font-mono text-slate-800">{reportingLgaCount} / 31</strong>
             </span>
             <span className="text-slate-400 font-medium">

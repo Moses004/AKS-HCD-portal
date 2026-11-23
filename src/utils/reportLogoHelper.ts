@@ -24,7 +24,7 @@ let cachedAriseLogoDataUrl: string | null = null;
 /**
  * Generates a high-contrast fallback seal on a canvas if image network loading is unavailable.
  */
-function createFallbackLogoDataUrl(label: string, primaryHex = '#0B4619', accentHex = '#D4AF37'): string {
+function createFallbackLogoDataUrl(label: string, primaryHex = '#0F5C3A', accentHex = '#D97706'): string {
   if (typeof document === 'undefined') return '';
   try {
     const canvas = document.createElement('canvas');
@@ -140,11 +140,11 @@ export async function drawPdfOfficialHeader(doc: jsPDF, options: PdfHeaderOption
   const [hcdLogo, ariseLogo] = await Promise.all([getSiteLogoDataUrl(), getAriseLogoDataUrl()]);
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Primary Emerald Banner (#0B4619)
+  // Primary Emerald Banner (#0F5C3A)
   doc.setFillColor(11, 70, 25);
   doc.rect(0, 0, pageWidth, 34, 'F');
 
-  // Gold Accent Bar (#D4AF37)
+  // Gold Accent Bar (#D97706)
   doc.setFillColor(212, 175, 55);
   doc.rect(0, 34, pageWidth, 2.2, 'F');
 

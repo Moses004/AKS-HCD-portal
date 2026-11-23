@@ -36,7 +36,7 @@ function renderHighlightedText(text: string, query: string): React.ReactNode {
     idx % 2 === 1 ? (
       <mark
         key={idx}
-        className="bg-[#D4AF37]/30 text-emerald-950 font-bold rounded-[3px] px-0.5"
+        className="bg-[#D97706]/30 text-emerald-950 font-bold rounded-[3px] px-0.5"
       >
         {part}
       </mark>
@@ -293,21 +293,21 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
           transition={{ duration: 0.2, ease: KINETIC_EASE }}
           className={
             variant === 'desktop'
-              ? 'absolute right-0 top-[calc(100%+8px)] w-[370px] sm:w-[420px] rounded-2xl bg-white/98 backdrop-blur-xl border border-[#D4AF37]/45 shadow-2xl shadow-emerald-950/18 overflow-hidden z-50'
-              : 'mt-2 w-full rounded-xl bg-white border border-[#D4AF37]/45 shadow-xl shadow-emerald-950/12 overflow-hidden'
+              ? 'absolute right-0 top-[calc(100%+8px)] w-[370px] sm:w-[420px] rounded-2xl bg-white/98 backdrop-blur-xl border border-[#D97706]/45 shadow-2xl shadow-emerald-950/18 overflow-hidden z-50'
+              : 'mt-2 w-full rounded-xl bg-white border border-[#D97706]/45 shadow-xl shadow-emerald-950/12 overflow-hidden'
           }
         >
           {/* Crest Gold Top Accent */}
-          <div className="h-[2px] w-full bg-gradient-to-r from-[#0B4619] via-[#D4AF37] to-emerald-500" />
+          <div className="h-[2px] w-full bg-gradient-to-r from-[#0F5C3A] via-[#D97706] to-emerald-500" />
 
           {/* Live Status & Filter Bar */}
-          <div className="px-3.5 py-2.5 bg-[#FAF8F2] border-b border-[#ECE8DD] flex items-center justify-between gap-2 text-[11px]">
+          <div className="px-3.5 py-2.5 bg-[#F6F8F7] border-b border-[#EAEFED] flex items-center justify-between gap-2 text-[11px]">
             <div className="flex items-center gap-1.5 text-slate-600 font-medium min-w-0">
-              <SlidersHorizontal className="w-3 h-3 text-[#0B4619] shrink-0" />
+              <SlidersHorizontal className="w-3 h-3 text-[#0F5C3A] shrink-0" />
               <span className="truncate">
                 {trimmedQuery ? (
                   <>
-                    <strong className="text-[#0B4619] font-mono tabular-nums">
+                    <strong className="text-[#0F5C3A] font-mono tabular-nums">
                       {totalActivityMatches}
                     </strong>{' '}
                     verified {totalActivityMatches === 1 ? 'activity' : 'activities'} filtered live
@@ -322,7 +322,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
               <button
                 type="button"
                 onClick={handleViewAllInRegistry}
-                className="text-[11px] font-bold text-[#0B4619] hover:text-emerald-700 inline-flex items-center gap-0.5 shrink-0 cursor-pointer"
+                className="text-[11px] font-bold text-[#0F5C3A] hover:text-emerald-700 inline-flex items-center gap-0.5 shrink-0 cursor-pointer"
               >
                 <span>Jump to Registry</span>
                 <ArrowUpRight className="w-3 h-3" />
@@ -332,7 +332,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
 
           {/* Matching Council Quick-Jump Strip */}
           {matchedLgas.length > 0 && (
-            <div className="px-3.5 py-2.5 border-b border-[#ECE8DD] bg-emerald-50/40">
+            <div className="px-3.5 py-2.5 border-b border-[#EAEFED] bg-emerald-50/40">
               <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-900/75 mb-1.5">
                 Matching Local Government Areas
               </div>
@@ -342,9 +342,9 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
                     key={lga.id}
                     type="button"
                     onClick={() => handleChooseLga(lga.id)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white hover:bg-[#0B4619] text-slate-800 hover:text-white border border-[#E5E2D9] hover:border-[#0B4619] text-xs font-semibold transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white hover:bg-[#0F5C3A] text-slate-800 hover:text-white border border-[#E2E8E5] hover:border-[#0F5C3A] text-xs font-semibold transition-colors cursor-pointer"
                   >
-                    <MapPin className="w-3 h-3 text-[#D4AF37]" />
+                    <MapPin className="w-3 h-3 text-[#D97706]" />
                     <span>{renderHighlightedText(lga.name, trimmedQuery)}</span>
                     <span className="text-[10px] opacity-70 font-normal">LGA</span>
                   </button>
@@ -354,11 +354,11 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
           )}
 
           {/* Real-Time Predicted LGA Activities List */}
-          <div className="max-h-[320px] overflow-y-auto divide-y divide-[#F0ECE1]">
+          <div className="max-h-[320px] overflow-y-auto divide-y divide-[#EAEFED]">
             {matchedActivities.length > 0 ? (
               matchedActivities.map((act, idx) => {
                 const isKeyboardActive = idx === activeResultIdx;
-                const pillarColor = PILLARS[act.pillar]?.color || '#0B4619';
+                const pillarColor = PILLARS[act.pillar]?.color || '#0F5C3A';
                 return (
                   <button
                     key={act.id}
@@ -368,7 +368,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
                     onMouseEnter={() => setActiveResultIdx(idx)}
                     onClick={() => handleChooseActivity(act)}
                     className={`w-full text-left px-3.5 py-2.5 transition-colors flex items-start justify-between gap-3 cursor-pointer ${
-                      isKeyboardActive ? 'bg-emerald-50/90' : 'hover:bg-[#FAF8F2]'
+                      isKeyboardActive ? 'bg-emerald-50/90' : 'hover:bg-[#F6F8F7]'
                     }`}
                   >
                     <div className="min-w-0 flex-1">
@@ -377,7 +377,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
                           className="w-2 h-2 rounded-full shrink-0"
                           style={{ backgroundColor: pillarColor }}
                         />
-                        <span className="text-[#0B4619] font-bold">
+                        <span className="text-[#0F5C3A] font-bold">
                           {renderHighlightedText(`${act.lgaName} LGA`, trimmedQuery)}
                         </span>
                         <span aria-hidden="true" className="text-slate-300">·</span>
@@ -406,7 +406,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
                     <ArrowUpRight
                       className={`w-4 h-4 shrink-0 mt-1 transition-transform ${
                         isKeyboardActive
-                          ? 'text-[#0B4619] translate-x-0.5 -translate-y-0.5'
+                          ? 'text-[#0F5C3A] translate-x-0.5 -translate-y-0.5'
                           : 'text-slate-300'
                       }`}
                     />
@@ -424,7 +424,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
                 <button
                   type="button"
                   onClick={() => onQueryChange('')}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FAF8F2] hover:bg-emerald-50 border border-[#E5E2D9] text-xs font-semibold text-[#0B4619] cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F6F8F7] hover:bg-emerald-50 border border-[#E2E8E5] text-xs font-semibold text-[#0F5C3A] cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                   Clear search filter
@@ -434,7 +434,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
           </div>
 
           {/* Keyboard Navigation Hint Footer */}
-          <div className="px-3.5 py-2 bg-[#FAF8F2] border-t border-[#ECE8DD] flex items-center justify-between text-[10px] text-slate-500">
+          <div className="px-3.5 py-2 bg-[#F6F8F7] border-t border-[#EAEFED] flex items-center justify-between text-[10px] text-slate-500">
             <span className="inline-flex items-center gap-1.5">
               <CornerDownLeft className="w-3 h-3 text-slate-400" />
               <span>Enter to open · ↑↓ to navigate · Esc to close</span>
@@ -443,7 +443,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
               <button
                 type="button"
                 onClick={handleViewAllInRegistry}
-                className="font-bold text-[#0B4619] hover:underline cursor-pointer"
+                className="font-bold text-[#0F5C3A] hover:underline cursor-pointer"
               >
                 +{totalActivityMatches - matchedActivities.length} more
               </button>
@@ -466,10 +466,10 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
             animate={prefersReduced ? { opacity: 1 } : { height: 'auto', opacity: 1, y: 0 }}
             exit={prefersReduced ? { opacity: 0 } : { height: 0, opacity: 0, y: -8 }}
             transition={{ duration: 0.24, ease: KINETIC_EASE }}
-            className="md:hidden border-t border-emerald-200/80 bg-[#FAF8F2]/98 px-4 py-3 overflow-hidden"
+            className="md:hidden border-t border-emerald-200/80 bg-[#F6F8F7]/98 px-4 py-3 overflow-hidden"
           >
             <div className="relative flex items-center">
-              <Search className="w-4 h-4 text-[#0B4619] absolute left-3 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#0F5C3A] absolute left-3 pointer-events-none" />
               <input
                 ref={inputRef}
                 type="text"
@@ -482,7 +482,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
                 onKeyDown={handleKeyDown}
                 placeholder="Filter LGA projects, communities, or pillars…"
                 aria-label="Search verified LGA activities"
-                className="w-full pl-9 pr-16 py-2 text-xs rounded-xl bg-white border border-[#0B4619]/30 focus:border-[#0B4619] focus:ring-2 focus:ring-[#0B4619]/15 focus:outline-none text-slate-900 placeholder:text-slate-400"
+                className="w-full pl-9 pr-16 py-2 text-xs rounded-xl bg-white border border-[#0F5C3A]/30 focus:border-[#0F5C3A] focus:ring-2 focus:ring-[#0F5C3A]/15 focus:outline-none text-slate-900 placeholder:text-slate-400"
               />
               {query && (
                 <button
@@ -527,7 +527,7 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
             transition={{ duration: 0.26, ease: KINETIC_EASE }}
             className="relative flex items-center"
           >
-            <Search className="w-3.5 h-3.5 text-[#0B4619] absolute left-3 pointer-events-none z-10" />
+            <Search className="w-3.5 h-3.5 text-[#0F5C3A] absolute left-3 pointer-events-none z-10" />
             <input
               ref={inputRef}
               type="text"
@@ -540,11 +540,11 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Search LGA activities…"
               aria-label="Predictive real-time search for LGA activities"
-              className="w-full pl-8.5 pr-14 py-1.5 text-xs rounded-xl bg-white border border-[#0B4619]/35 focus:border-[#0B4619] focus:ring-2 focus:ring-[#D4AF37]/30 focus:outline-none text-slate-900 placeholder:text-slate-400 shadow-xs transition-shadow"
+              className="w-full pl-8.5 pr-14 py-1.5 text-xs rounded-xl bg-white border border-[#0F5C3A]/35 focus:border-[#0F5C3A] focus:ring-2 focus:ring-[#D97706]/30 focus:outline-none text-slate-900 placeholder:text-slate-400 shadow-xs transition-shadow"
             />
 
             {trimmedQuery && (
-              <span className="absolute right-7 text-[10px] font-mono font-bold text-[#0B4619] bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded pointer-events-none">
+              <span className="absolute right-7 text-[10px] font-mono font-bold text-[#0F5C3A] bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded pointer-events-none">
                 {totalActivityMatches}
               </span>
             )}
@@ -578,12 +578,12 @@ export const HeaderPredictiveSearch: React.FC<HeaderPredictiveSearchProps> = ({
               setIsExpanded(true);
               setIsDropdownOpen(true);
             }}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-950 bg-white/85 hover:bg-white border border-[#E5E2D9] hover:border-[#0B4619]/40 rounded-xl shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-950 bg-white/85 hover:bg-white border border-[#E2E8E5] hover:border-[#0F5C3A]/40 rounded-xl shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
             title="Search verified LGA activities (Press / or ⌘K)"
           >
-            <Search className="w-3.5 h-3.5 text-[#0B4619]" />
+            <Search className="w-3.5 h-3.5 text-[#0F5C3A]" />
             <span>Search LGAs…</span>
-            <kbd className="hidden xl:inline-flex items-center px-1.5 py-0.2 rounded bg-[#FAF8F2] border border-[#E5E2D9] font-mono text-[10px] font-semibold text-slate-400">
+            <kbd className="hidden xl:inline-flex items-center px-1.5 py-0.2 rounded bg-[#F6F8F7] border border-[#E2E8E5] font-mono text-[10px] font-semibold text-slate-400">
               /
             </kbd>
           </motion.button>

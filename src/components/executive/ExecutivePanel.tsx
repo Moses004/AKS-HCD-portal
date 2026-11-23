@@ -549,14 +549,14 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       className="executive-print-briefing-root max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg py-dashboard-y space-y-section"
     >
       {/* Print-Only Official Akwa Ibom Executive Briefing Letterhead */}
-      <header className="executive-print-only print-letterhead items-center justify-between gap-4 border-b-2 border-[#0B4619] pb-4 mb-5">
+      <header className="executive-print-only print-letterhead items-center justify-between gap-4 border-b-2 border-[#0F5C3A] pb-4 mb-5">
         <div className="flex items-center gap-3.5">
           <div className="flex items-center gap-2 shrink-0">
             <HcdLogo className="report-logo w-12 h-12 object-contain" />
             <AriseLogo className="report-logo w-12 h-12 object-contain" />
           </div>
           <div>
-            <div className="text-[9pt] font-bold tracking-wide text-[#0B4619]">
+            <div className="text-[9pt] font-bold tracking-wide text-[#0F5C3A]">
               Akwa Ibom State Government · Governor&apos;s Council on Human Capital Development
             </div>
             <h1 className="text-[15pt] font-black text-slate-950 leading-tight mt-0.5">
@@ -568,21 +568,21 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
           </div>
         </div>
         <div className="text-right text-[8.5pt] text-slate-600 shrink-0 font-mono tabular-nums">
-          <div className="font-bold text-[#0B4619]">OFFICIAL CABINET BRIEF</div>
+          <div className="font-bold text-[#0F5C3A]">OFFICIAL CABINET BRIEF</div>
           <div>Prepared by: {currentUser.name}</div>
           <div>Generated: {printTimestamp || new Date().toLocaleDateString('en-NG')}</div>
         </div>
       </header>
 
       {/* Executive Command Header (Screen Chrome) */}
-      <div className="no-print bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white rounded-2xl p-card-pad sm:p-card-pad-lg shadow-md border border-[#D4AF37]/40 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="no-print bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] text-white rounded-2xl p-card-pad sm:p-card-pad-lg shadow-md border border-[#D97706]/40 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
-          <div className="p-1.5 bg-white rounded-2xl border-2 border-[#D4AF37] shadow-sm shrink-0 mt-0.5">
+          <div className="p-1.5 bg-white rounded-2xl border-2 border-[#D97706] shadow-sm shrink-0 mt-0.5">
             <HcdLogo className="w-12 h-12 sm:w-14 sm:h-14" />
           </div>
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 State Executive Cabinet Oversight
               </span>
@@ -605,7 +605,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={onOpenReportExport}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#D97706] hover:bg-[#B45309] text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer"
           >
             <Download className="w-4 h-4" />
             Generate Executive Briefing
@@ -613,10 +613,10 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
           <button
             onClick={handleExportQuarterlyCouncilBrief}
-            className="flex items-center gap-2 px-3.5 py-2.5 bg-emerald-800/90 hover:bg-emerald-700 text-white border border-[#D4AF37]/50 rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 whitespace-nowrap cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2.5 bg-emerald-800/90 hover:bg-emerald-700 text-white border border-[#D97706]/50 rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 whitespace-nowrap cursor-pointer"
             title="Download 1-Click Quarterly ARISE Council Cabinet Brief PDF with Statewide KPIs, Pillar Breakdown, and Top LGAs"
           >
-            <FileText className="w-4 h-4 text-[#D4AF37]" />
+            <FileText className="w-4 h-4 text-[#F59E0B]" />
             <span>Quarterly Council Brief PDF</span>
           </button>
 
@@ -624,10 +624,10 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
             type="button"
             onClick={handlePrintDashboard}
             disabled={isPreparingPrint}
-            className="flex items-center gap-2 px-3.5 py-2.5 bg-white text-[#0B4619] hover:bg-[#FAF8F2] border border-[#D4AF37]/70 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 whitespace-nowrap cursor-pointer disabled:opacity-65"
+            className="flex items-center gap-2 px-3.5 py-2.5 bg-white text-[#0F5C3A] hover:bg-[#F6F8F7] border border-[#D97706]/70 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 whitespace-nowrap cursor-pointer disabled:opacity-65"
             title="Render all currently viewed charts as static high-DPI images and open print-optimized Executive Briefing layout"
           >
-            <Printer className={`w-4 h-4 text-[#0B4619] ${isPreparingPrint ? 'animate-pulse' : ''}`} />
+            <Printer className={`w-4 h-4 text-[#0F5C3A] ${isPreparingPrint ? 'animate-pulse' : ''}`} />
             <span>{isPreparingPrint ? 'Preparing Charts…' : 'Print Dashboard'}</span>
           </button>
 
@@ -639,7 +639,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                 : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
             }`}
           >
-            <History className="w-4 h-4 text-[#D4AF37]" />
+            <History className="w-4 h-4 text-[#F59E0B]" />
             <span>Audit Trail Ledger</span>
           </button>
 
@@ -695,7 +695,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
         <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950 to-slate-900 text-white border border-emerald-800 shadow-md space-y-3 animate-in fade-in">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] block">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#F59E0B] block">
                 Database Initialization Active
               </span>
               <h3 className="text-base font-bold text-white mt-1">
@@ -720,7 +720,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                   setIsSeeding(false);
                 }
               }}
-              className="px-4 py-2.5 bg-[#D4AF37] hover:bg-amber-400 text-emerald-950 text-xs font-black rounded-xl transition-all shadow-sm flex items-center gap-2 shrink-0 active:scale-95 disabled:opacity-50"
+              className="px-4 py-2.5 bg-[#D97706] hover:bg-[#B45309] text-white text-xs font-black rounded-xl transition-all shadow-sm flex items-center gap-2 shrink-0 active:scale-95 disabled:opacity-50"
             >
               <Sparkles className="w-4 h-4" />
               {isSeeding ? 'Seeding Baseline...' : 'Seed 31-LGA Baseline Dataset'}
@@ -882,7 +882,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
             <button
               onClick={handleTriggerDatabaseSync}
               disabled={!isOnline || isSyncing}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0B4619] hover:bg-emerald-900 text-white rounded-lg text-xs font-bold shadow-xs transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0F5C3A] hover:bg-emerald-900 text-white rounded-lg text-xs font-bold shadow-xs transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
               title="Revalidate and fetch latest activities from Supabase cloud database"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
@@ -1763,7 +1763,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       <div className="executive-print-only mt-8 pt-4 border-t border-slate-300 break-inside-avoid">
         <div className="flex items-end justify-between gap-6 text-[8.5pt] text-slate-600">
           <div className="max-w-lg leading-relaxed">
-            <div className="font-bold text-[#0B4619]">
+            <div className="font-bold text-[#0F5C3A]">
               ARISE Agenda Human Capital Development Transparency Portal
             </div>
             <div>

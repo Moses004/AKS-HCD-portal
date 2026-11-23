@@ -248,10 +248,10 @@ export const AccessRequestsPanel: React.FC = () => {
   return (
     <div className="space-y-subsection">
       {/* Executive Header Banner */}
-      <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-950 text-white rounded-2xl p-card-pad sm:p-card-pad-lg shadow-md border border-[#D4AF37]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-950 text-white rounded-2xl p-card-pad sm:p-card-pad-lg shadow-md border border-[#D97706]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <ShieldCheck className="w-3 h-3" />
               Executive Authorization Registry
             </span>
@@ -606,9 +606,9 @@ export const AccessRequestsPanel: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
             {/* Header */}
-            <div className="bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white p-5 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white p-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-[#D4AF37]">
+                <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-[#F59E0B]">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
@@ -799,7 +799,7 @@ export const AccessRequestsPanel: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                      <ShieldCheck className="w-4 h-4 text-[#F59E0B]" />
                       <span>Confirm {decision.toUpperCase()} Decision</span>
                     </>
                   )}

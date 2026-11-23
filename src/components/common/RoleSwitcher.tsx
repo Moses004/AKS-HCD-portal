@@ -40,9 +40,9 @@ export const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ isOpen, onClose, onN
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 flex flex-col">
         {/* Header */}
-        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white flex items-center justify-between shrink-0">
+        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-[#D4AF37]">
+            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-[#F59E0B]">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>

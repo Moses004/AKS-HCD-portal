@@ -116,7 +116,7 @@ export const AksHcdDualLogo: React.FC<{
       }`}
     >
       {/* HCD Logo with Crest Border */}
-      <div className="flex items-center justify-center bg-white/95 p-1.5 rounded-xl border border-[#D4AF37]/50 shadow-xs">
+      <div className="flex items-center justify-center bg-white/95 p-1.5 rounded-xl border border-[#D97706]/50 shadow-xs">
         <HcdLogo className={sizeClasses.hcd} />
       </div>
 
@@ -131,7 +131,7 @@ export const AksHcdDualLogo: React.FC<{
           </span>
           <span
             className={`uppercase tracking-wider font-semibold block ${sizeClasses.sub} ${
-              isDark ? 'text-[#D4AF37]' : 'text-emerald-800'
+              isDark ? 'text-[#F59E0B]' : 'text-emerald-800'
             }`}
           >
             ARISE Agenda · 31 LGAs
@@ -160,14 +160,14 @@ export const OfficialPrintLetterhead: React.FC<{
     <div
       className={`print-letterhead ${
         alwaysVisible ? 'flex' : 'hidden print:flex'
-      } items-center justify-between gap-4 border-b-2 border-[#0B4619] bg-white px-4 py-3 mb-4`}
+      } items-center justify-between gap-4 border-b-2 border-[#0F5C3A] bg-white px-4 py-3 mb-4`}
     >
       <div className="flex items-center gap-3">
-        <div className="p-1 rounded-xl border border-[#D4AF37] bg-white shadow-2xs shrink-0">
+        <div className="p-1 rounded-xl border border-[#D97706] bg-white shadow-2xs shrink-0">
           <HcdLogo className="w-12 h-12" />
         </div>
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#0B4619]">
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#0F5C3A]">
             Government of Akwa Ibom State • ARISE Agenda
           </p>
           <h1 className="text-sm sm:text-base font-black text-slate-900 leading-tight">

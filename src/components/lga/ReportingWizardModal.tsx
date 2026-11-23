@@ -529,7 +529,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
           particleCount: 80,
           spread: 60,
           origin: { y: 0.6 },
-          colors: ['#0B4619', '#D4AF37', '#10b981'],
+          colors: ['#0F5C3A', '#D97706', '#10b981'],
         });
       } catch {
         // ignore
@@ -548,10 +548,10 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
         {/* Modal Header */}
-        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white flex items-center justify-between">
+        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2 py-0.5 rounded">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2 py-0.5 rounded">
                 Reporting Wizard · 4 Steps
               </span>
               <span className="text-xs font-semibold text-emerald-200">
@@ -748,7 +748,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
                 <div className="p-4 bg-emerald-50/70 border border-emerald-300 rounded-2xl space-y-4 animate-in fade-in">
                   <div className="flex items-center justify-between border-b border-emerald-200 pb-2">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                      <Sparkles className="w-4 h-4 text-[#B45309]" />
                       <span className="text-xs font-black uppercase tracking-wider text-emerald-950">
                         Frontline Setting Selection (Active Indicators)
                       </span>
@@ -785,7 +785,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
                           }`}
                         >
                           <div className="flex items-center justify-between w-full mb-1">
-                            <div className={isSelected ? 'text-[#D4AF37]' : 'text-emerald-700'}>
+                            <div className={isSelected ? 'text-[#F59E0B]' : 'text-emerald-700'}>
                               {opt.icon}
                             </div>
                             <span

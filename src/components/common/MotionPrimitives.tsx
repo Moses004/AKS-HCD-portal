@@ -31,7 +31,7 @@ export const ScrollProgressBar: React.FC = () => {
   return (
     <motion.div
       aria-hidden="true"
-      className="no-print fixed top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#0B4619] via-[#D4AF37] to-emerald-500 origin-left z-50 pointer-events-none"
+      className="no-print fixed top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#0F5C3A] via-[#D97706] to-emerald-500 origin-left z-50 pointer-events-none"
       style={{ scaleX }}
     />
   );
@@ -229,7 +229,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Far Plane: Concentric Crest Contours */}
           <motion.svg
             style={prefersReduced ? undefined : { y: yFar, rotate: rotateCw, willChange: 'transform' }}
-            className="absolute -right-24 -top-16 w-[480px] h-[480px] text-[#D4AF37]/20"
+            className="absolute -right-24 -top-16 w-[480px] h-[480px] text-[#F59E0B]/20"
             viewBox="0 0 400 400"
             fill="none"
           >
@@ -243,7 +243,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Mid Plane: Floating Isometric Civic Diamond */}
           <motion.svg
             style={prefersReduced ? undefined : { y: yMid, rotate: rotateCcw, willChange: 'transform' }}
-            className="absolute left-6 top-20 w-44 h-44 text-[#0B4619]/[0.09]"
+            className="absolute left-6 top-20 w-44 h-44 text-[#0F5C3A]/[0.09]"
             viewBox="0 0 180 180"
             fill="none"
           >
@@ -255,7 +255,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Near Plane: Crisp Floating Accent Rhombus & Soft Aura */}
           <motion.div
             style={prefersReduced ? undefined : { y: yNear, rotate: rotateCw, willChange: 'transform' }}
-            className="absolute right-[14%] bottom-16 w-14 h-14 border border-[#D4AF37]/30 rounded-lg rotate-45 bg-[#D4AF37]/[0.04]"
+            className="absolute right-[14%] bottom-16 w-14 h-14 border border-[#D97706]/30 rounded-lg rotate-45 bg-[#D97706]/[0.04]"
           />
           <motion.div
             style={prefersReduced ? undefined : { y: yMid, willChange: 'transform' }}
@@ -269,7 +269,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Far Plane: Compass & Architectural Vector Arcs */}
           <motion.svg
             style={prefersReduced ? undefined : { y: yMid, rotate: rotateCw, willChange: 'transform' }}
-            className="absolute -left-20 top-8 w-[440px] h-[440px] text-[#0B4619]/[0.09]"
+            className="absolute -left-20 top-8 w-[440px] h-[440px] text-[#0F5C3A]/[0.09]"
             viewBox="0 0 400 400"
             fill="none"
           >
@@ -282,7 +282,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Mid Plane: Layered Geometric Chevron Stack */}
           <motion.svg
             style={prefersReduced ? undefined : { y: yFar, rotate: rotateCcw, willChange: 'transform' }}
-            className="absolute right-8 top-12 w-52 h-52 text-[#D4AF37]/24"
+            className="absolute right-8 top-12 w-52 h-52 text-[#F59E0B]/24"
             viewBox="0 0 200 200"
             fill="none"
           >
@@ -294,7 +294,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Near Plane: Soft Gold Ambient Wash */}
           <motion.div
             style={prefersReduced ? undefined : { y: yNear, willChange: 'transform' }}
-            className="absolute right-0 -bottom-16 w-96 h-96 rounded-full bg-radial from-[#D4AF37]/[0.1] via-[#D4AF37]/[0.03] to-transparent blur-2xl"
+            className="absolute right-0 -bottom-16 w-96 h-96 rounded-full bg-radial from-[#D97706]/[0.1] via-[#D97706]/[0.03] to-transparent blur-2xl"
           />
         </>
       )}
@@ -304,7 +304,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Far Plane: Asymmetric Faceted Prism Wireframe */}
           <motion.svg
             style={prefersReduced ? undefined : { y: yFar, rotate: rotateCcw, willChange: 'transform' }}
-            className="absolute -right-16 top-16 w-[440px] h-[440px] text-[#0B4619]/[0.08]"
+            className="absolute -right-16 top-16 w-[440px] h-[440px] text-[#0F5C3A]/[0.08]"
             viewBox="0 0 400 400"
             fill="none"
           >
@@ -316,7 +316,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Mid Plane: Floating Crest Gold Isometric Rings */}
           <motion.svg
             style={prefersReduced ? undefined : { y: yMid, rotate: rotateCw, willChange: 'transform' }}
-            className="absolute -left-16 bottom-12 w-72 h-72 text-[#D4AF37]/22"
+            className="absolute -left-16 bottom-12 w-72 h-72 text-[#F59E0B]/22"
             viewBox="0 0 260 260"
             fill="none"
           >
@@ -328,7 +328,7 @@ export const ParallaxDecorativeField: React.FC<ParallaxDecorativeFieldProps> = (
           {/* Near Plane: Crisp Geometric Floating Accents */}
           <motion.div
             style={prefersReduced ? undefined : { y: yNear, rotate: rotateCw, willChange: 'transform' }}
-            className="absolute left-[12%] top-28 w-10 h-10 border border-[#0B4619]/20 rounded-md rotate-12 bg-emerald-900/[0.03]"
+            className="absolute left-[12%] top-28 w-10 h-10 border border-[#0F5C3A]/20 rounded-md rotate-12 bg-emerald-900/[0.03]"
           />
           <motion.div
             style={prefersReduced ? undefined : { y: yMid, willChange: 'transform' }}
@@ -367,7 +367,7 @@ export const AmbientParallaxGeometry: React.FC = () => {
       {/* Distant Architectural Diagonal Mesh */}
       <motion.svg
         style={prefersReduced ? undefined : { y: yLayerA, willChange: 'transform' }}
-        className="absolute -top-24 left-0 w-full h-[130vh] text-[#0B4619]/[0.035]"
+        className="absolute -top-24 left-0 w-full h-[130vh] text-[#0F5C3A]/[0.035]"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -381,7 +381,7 @@ export const AmbientParallaxGeometry: React.FC = () => {
       {/* Slow-Drifting Gold Geometric Crest Polygon (Top-Right Ambient) */}
       <motion.svg
         style={prefersReduced ? undefined : { y: yLayerB, rotate: rotA, willChange: 'transform' }}
-        className="absolute top-[22vh] -right-32 w-[420px] h-[420px] text-[#D4AF37]/[0.11]"
+        className="absolute top-[22vh] -right-32 w-[420px] h-[420px] text-[#F59E0B]/[0.11]"
         viewBox="0 0 360 360"
         fill="none"
       >
@@ -392,7 +392,7 @@ export const AmbientParallaxGeometry: React.FC = () => {
       {/* Counter-Drifting Emerald Abstract Prism (Lower-Left Ambient) */}
       <motion.svg
         style={prefersReduced ? undefined : { y: yLayerA, rotate: rotB, willChange: 'transform' }}
-        className="absolute bottom-[-8vh] -left-28 w-[380px] h-[380px] text-[#0B4619]/[0.06]"
+        className="absolute bottom-[-8vh] -left-28 w-[380px] h-[380px] text-[#0F5C3A]/[0.06]"
         viewBox="0 0 360 360"
         fill="none"
       >
@@ -459,13 +459,13 @@ export const KineticSectionHeader: React.FC<KineticSectionHeaderProps> = ({
   const descOpacity = useTransform(smooth, [0.28, 0.96], [0.1, 1]);
   const descY = useTransform(smooth, [0.28, 0.96], [34, 0]);
 
-  const kickerColor = theme === 'dark' ? 'text-[#D4AF37]' : 'text-[#0B4619]';
+  const kickerColor = theme === 'dark' ? 'text-[#F59E0B]' : 'text-[#0F5C3A]';
   const titleColor = theme === 'dark' ? 'text-white' : 'text-slate-950';
   const descColor = theme === 'dark' ? 'text-emerald-100/85' : 'text-slate-600';
   const ruleGradient =
     theme === 'dark'
-      ? 'from-[#D4AF37] via-[#D4AF37]/50 to-transparent'
-      : 'from-[#0B4619] via-[#D4AF37] to-transparent';
+      ? 'from-[#D97706] via-[#D97706]/50 to-transparent'
+      : 'from-[#0F5C3A] via-[#D97706] to-transparent';
 
   const HeadingTag = headingAs === 'h3' ? motion.h3 : motion.h2;
 
@@ -572,20 +572,20 @@ export const KineticActivityCard: React.FC<KineticActivityCardProps> = ({
   const hoverEffect = prefersReduced
     ? {
         boxShadow:
-          'inset 0 1px 0 0 rgba(255, 255, 255, 0.96), inset 0 0 0 1px rgba(212, 175, 55, 0.24), 0 12px 24px -8px rgba(6, 78, 59, 0.18), 0 0 0 1px rgba(11, 70, 25, 0.24)',
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.96), inset 0 0 0 1px rgba(217, 119, 6, 0.24), 0 12px 24px -8px rgba(6, 78, 59, 0.18), 0 0 0 1px rgba(15, 92, 58, 0.24)',
       }
     : variant === 'compact'
     ? {
         scale: 1.008,
         y: -2,
         boxShadow:
-          'inset 0 1px 0 0 rgba(255, 255, 255, 0.98), inset 0 0 0 1px rgba(212, 175, 55, 0.26), 0 18px 34px -12px rgba(6, 78, 59, 0.22), 0 6px 14px -6px rgba(212, 175, 55, 0.18), 0 0 0 1px rgba(11, 70, 25, 0.22)',
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.98), inset 0 0 0 1px rgba(217, 119, 6, 0.26), 0 18px 34px -12px rgba(6, 78, 59, 0.22), 0 6px 14px -6px rgba(217, 119, 6, 0.18), 0 0 0 1px rgba(15, 92, 58, 0.22)',
       }
     : {
         scale: 1.016,
         y: -4,
         boxShadow:
-          'inset 0 1px 0 0 rgba(255, 255, 255, 0.98), inset 0 0 0 1px rgba(212, 175, 55, 0.30), 0 26px 46px -14px rgba(6, 78, 59, 0.26), 0 10px 24px -8px rgba(212, 175, 55, 0.20), 0 0 0 1px rgba(11, 70, 25, 0.26)',
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.98), inset 0 0 0 1px rgba(217, 119, 6, 0.30), 0 26px 46px -14px rgba(6, 78, 59, 0.26), 0 10px 24px -8px rgba(217, 119, 6, 0.20), 0 0 0 1px rgba(15, 92, 58, 0.26)',
       };
 
   const tapEffect =
@@ -629,7 +629,7 @@ export const KineticActivityCard: React.FC<KineticActivityCardProps> = ({
       />
       <span
         aria-hidden="true"
-        className="no-print pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full bg-radial from-[#D4AF37]/[0.11] via-emerald-400/[0.07] to-transparent blur-xl opacity-70 group-hover:opacity-100 transition-opacity duration-300 z-0"
+        className="no-print pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full bg-radial from-[#D97706]/[0.11] via-emerald-400/[0.07] to-transparent blur-xl opacity-70 group-hover:opacity-100 transition-opacity duration-300 z-0"
       />
 
       {children}
@@ -660,10 +660,10 @@ export const ShowcaseImage: React.FC<ShowcaseImageProps> = ({
   if (failed || !src) {
     return (
       <div
-        className={`relative overflow-hidden bg-gradient-to-br from-[#072E14] via-[#0B4619] to-emerald-900 flex flex-col items-center justify-center p-6 text-center ${className}`}
+        className={`relative overflow-hidden bg-gradient-to-br from-[#072E14] via-[#0F5C3A] to-emerald-900 flex flex-col items-center justify-center p-6 text-center ${className}`}
       >
-        <div className="w-12 h-12 rounded-2xl bg-white/10 border border-[#D4AF37]/40 flex items-center justify-center mb-3">
-          <Compass className="w-6 h-6 text-[#D4AF37]" />
+        <div className="w-12 h-12 rounded-2xl bg-white/10 border border-[#D97706]/40 flex items-center justify-center mb-3">
+          <Compass className="w-6 h-6 text-[#F59E0B]" />
         </div>
         <p className="font-display text-base font-semibold text-white/95 max-w-xs text-balance">
           {fallbackTitle}
@@ -843,24 +843,24 @@ export const KineticGlowCursor: React.FC = () => {
 
   const auraBackground =
     mode === 'button'
-      ? 'radial-gradient(circle, rgba(212, 175, 55, 0.24) 0%, rgba(16, 185, 129, 0.11) 42%, rgba(11, 70, 25, 0) 72%)'
+      ? 'radial-gradient(circle, rgba(217, 119, 6, 0.24) 0%, rgba(16, 185, 129, 0.11) 42%, rgba(15, 92, 58, 0) 72%)'
       : mode === 'card'
-      ? 'radial-gradient(circle, rgba(212, 175, 55, 0.20) 0%, rgba(11, 70, 25, 0.12) 45%, rgba(11, 70, 25, 0) 74%)'
-      : 'radial-gradient(circle, rgba(212, 175, 55, 0.14) 0%, rgba(16, 185, 129, 0.08) 44%, rgba(11, 70, 25, 0) 72%)';
+      ? 'radial-gradient(circle, rgba(217, 119, 6, 0.20) 0%, rgba(15, 92, 58, 0.12) 45%, rgba(15, 92, 58, 0) 74%)'
+      : 'radial-gradient(circle, rgba(217, 119, 6, 0.14) 0%, rgba(16, 185, 129, 0.08) 44%, rgba(15, 92, 58, 0) 72%)';
 
   const ringBorderColor =
     mode === 'button'
-      ? 'rgba(212, 175, 55, 0.72)'
+      ? 'rgba(217, 119, 6, 0.72)'
       : mode === 'card'
-      ? 'rgba(11, 70, 25, 0.34)'
-      : 'rgba(212, 175, 55, 0.38)';
+      ? 'rgba(15, 92, 58, 0.34)'
+      : 'rgba(217, 119, 6, 0.38)';
 
   const ringFill =
     mode === 'button'
-      ? 'rgba(212, 175, 55, 0.12)'
+      ? 'rgba(217, 119, 6, 0.12)'
       : mode === 'card'
-      ? 'rgba(212, 175, 55, 0.06)'
-      : 'rgba(11, 70, 25, 0.02)';
+      ? 'rgba(217, 119, 6, 0.06)'
+      : 'rgba(15, 92, 58, 0.02)';
 
   return (
     <div
@@ -904,10 +904,10 @@ export const KineticGlowCursor: React.FC = () => {
           backgroundColor: ringFill,
           boxShadow:
             mode === 'button'
-              ? '0 0 18px 2px rgba(212, 175, 55, 0.26), inset 0 0 8px rgba(212, 175, 55, 0.16)'
+              ? '0 0 18px 2px rgba(217, 119, 6, 0.26), inset 0 0 8px rgba(217, 119, 6, 0.16)'
               : mode === 'card'
-              ? '0 0 22px 2px rgba(11, 70, 25, 0.14), inset 0 0 10px rgba(212, 175, 55, 0.12)'
-              : '0 0 10px 0px rgba(212, 175, 55, 0.14)',
+              ? '0 0 22px 2px rgba(15, 92, 58, 0.14), inset 0 0 10px rgba(217, 119, 6, 0.12)'
+              : '0 0 10px 0px rgba(217, 119, 6, 0.14)',
         }}
         transition={{
           scale: { type: 'spring', stiffness: 360, damping: 26 },
@@ -984,7 +984,7 @@ export const SectionSnapRail: React.FC<SectionSnapRailProps> = ({ sections }) =>
       aria-label="Section quick navigation"
       className="no-print hidden xl:flex fixed right-3.5 top-1/2 -translate-y-1/2 z-30 flex-col items-end gap-2"
     >
-      <div className="bg-white/80 backdrop-blur-md border border-[#E5E2D9] rounded-xl py-2.5 px-2 shadow-sm flex flex-col items-center gap-2">
+      <div className="bg-white/80 backdrop-blur-md border border-[#E2E8E5] rounded-xl py-2.5 px-2 shadow-sm flex flex-col items-center gap-2">
         {sections.map((section, idx) => {
           const isActive = activeId === section.id;
           return (
@@ -997,8 +997,8 @@ export const SectionSnapRail: React.FC<SectionSnapRailProps> = ({ sections }) =>
               className="group relative flex items-center justify-center w-5 h-5 cursor-pointer"
             >
               {/* Hover Editorial Label */}
-              <span className="pointer-events-none absolute right-7 px-2.5 py-1 rounded-md bg-[#062611] text-white text-[11px] font-semibold tracking-wide whitespace-nowrap opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0 transition-all duration-200 shadow-md border border-[#D4AF37]/35">
-                <span className="font-mono text-[#D4AF37] mr-1.5">0{idx + 1}</span>
+              <span className="pointer-events-none absolute right-7 px-2.5 py-1 rounded-md bg-[#0A2E1F] text-white text-[11px] font-semibold tracking-wide whitespace-nowrap opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0 transition-all duration-200 shadow-md border border-[#D97706]/35">
+                <span className="font-mono text-[#F59E0B] mr-1.5">0{idx + 1}</span>
                 {section.label}
               </span>
 
@@ -1006,15 +1006,15 @@ export const SectionSnapRail: React.FC<SectionSnapRailProps> = ({ sections }) =>
               <span
                 className={`relative block rounded-full transition-all duration-200 ${
                   isActive
-                    ? 'w-1.5 h-4 bg-[#0B4619]'
-                    : 'w-1.5 h-1.5 bg-slate-300 group-hover:bg-[#D4AF37] group-hover:scale-125'
+                    ? 'w-1.5 h-4 bg-[#0F5C3A]'
+                    : 'w-1.5 h-1.5 bg-slate-300 group-hover:bg-[#D97706] group-hover:scale-125'
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="section-snap-rail-active"
                     transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-                    className="absolute -inset-[2px] rounded-full ring-2 ring-[#D4AF37]/75"
+                    className="absolute -inset-[2px] rounded-full ring-2 ring-[#D97706]/75"
                   />
                 )}
               </span>

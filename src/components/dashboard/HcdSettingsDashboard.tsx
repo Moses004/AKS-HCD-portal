@@ -368,7 +368,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
                 onClick={() => onRecordInitiative()}
                 className="px-4 py-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                <Sparkles className="w-4 h-4 text-[#F59E0B]" />
                 <span>Record HCD Initiative</span>
               </button>
             )}

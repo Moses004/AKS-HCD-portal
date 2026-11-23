@@ -109,7 +109,7 @@ export const StateActivityDetailModal: React.FC<StateActivityDetailModalProps> =
         {/* Modal Header */}
         <div className="sticky top-0 z-10 print-keep-header bg-white border-b border-slate-200 p-5 flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="p-1 rounded-xl border border-[#D4AF37] bg-white shadow-2xs shrink-0">
+            <div className="p-1 rounded-xl border border-[#D97706] bg-white shadow-2xs shrink-0">
               <HcdLogo className="w-10 h-10" />
             </div>
             <div>

@@ -120,7 +120,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-700/60 text-emerald-200 text-xs font-semibold uppercase tracking-wider mb-2 border border-emerald-500/40">
-              <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#D97706] animate-pulse" />
               State Executive Governance
             </div>
             <h2 className="text-2xl font-black tracking-tight text-white">
@@ -134,7 +134,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => onNavigateTab('create')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#D4AF37] text-slate-950 font-bold text-xs hover:bg-[#E5C158] transition-all shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#D97706] text-slate-950 font-bold text-xs hover:bg-[#E5C158] transition-all shadow-sm cursor-pointer"
             >
               <PlusCircle className="w-4 h-4 text-slate-950" />
               <span>Record State Activity</span>
@@ -167,7 +167,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
               placeholder="Search title, venue, code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37]"
+              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#D97706]"
             />
           </div>
 
@@ -176,7 +176,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37]"
+              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white focus:outline-hidden focus:ring-1 focus:ring-[#D97706]"
             >
               <option value="all">All Reporting Years</option>
               {availableYears.map((yr) => (
@@ -192,7 +192,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as any)}
-              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37]"
+              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white focus:outline-hidden focus:ring-1 focus:ring-[#D97706]"
             >
               <option value="all">All 6 Categories</option>
               <option value="monitoring_evaluation">Monitoring & Evaluation</option>
@@ -209,7 +209,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as any)}
-              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37]"
+              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white focus:outline-hidden focus:ring-1 focus:ring-[#D97706]"
             >
               <option value="all">All Statuses</option>
               <option value="draft">Draft ({draftCount})</option>
@@ -226,7 +226,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
               placeholder="Filter by Lead MDA..."
               value={selectedLeadInstitution}
               onChange={(e) => setSelectedLeadInstitution(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37]"
+              className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#D97706]"
             />
           </div>
         </div>

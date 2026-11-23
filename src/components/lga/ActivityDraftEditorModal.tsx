@@ -1163,10 +1163,10 @@ export const ActivityDraftEditorModal: React.FC<ActivityDraftEditorModalProps> =
     >
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0B4619] to-emerald-900 text-white flex items-center justify-between gap-4">
+        <div className="p-5 bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white flex items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-white/10 px-2.5 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2.5 py-0.5 rounded-full">
                 {activity.lgaName} LGA Desk Workspace
               </span>
               <span
