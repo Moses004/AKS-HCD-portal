@@ -124,11 +124,11 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
         </div>
 
         {/* Copyright & Meta */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-emerald-300/60">
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-emerald-300/60 text-center sm:text-left">
           <p>© {new Date().getFullYear()} Government of Akwa Ibom State, Federal Republic of Nigeria. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-3 gap-y-1">
             <span>ARISE Agenda Implementation</span>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <span>Single-Database / Shared-Schema Architecture</span>
           </div>
         </div>

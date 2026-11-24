@@ -121,27 +121,27 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-[#F8F9FA]">
+    <div className="min-h-[calc(100vh-8rem)] py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-[#F6F8F7]">
       <div className="w-full max-w-xl">
         {/* Navigation Breadcrumb / Return */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between gap-3">
           <button
             onClick={() => onNavigate('/')}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-900 hover:text-emerald-700 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-900 hover:text-emerald-700 transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 shrink-0" />
             <span>Return to Public Transparency Portal</span>
           </button>
 
-          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
             Akwa Ibom State · ARISE
           </span>
         </div>
 
         {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200/90 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-[#E2E8E5] overflow-hidden">
           {/* Header Banner */}
-          <div className="bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white p-6 sm:p-7 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] text-white p-6 sm:p-7 relative overflow-hidden">
             <div className="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-emerald-500/10 pointer-events-none" />
             <div className="flex items-center gap-3.5 mb-2">
               <div className="p-1.5 rounded-xl bg-white border border-[#D97706]/50 shadow-xs shrink-0">

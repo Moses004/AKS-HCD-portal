@@ -80,8 +80,8 @@ const OUTCOME_NODES: Record<
   outcome_agro: {
     label: 'Agro-Enterprise & Value Chains',
     shortLabel: 'Agro-Enterprise',
-    color: '#B88917',
-    accentColor: '#E8C55B',
+    color: '#B45309',
+    accentColor: '#FBBF24',
     subtitle: 'Cooperative smallholder yields & agro-commerce',
   },
   outcome_micro: {
@@ -148,22 +148,22 @@ const DISTRICT_META: Record<
   uyo: {
     label: 'Uyo Senatorial District',
     shortLabel: 'Uyo (NE · 9 LGAs)',
-    color: '#064E3B',
+    color: '#0F5C3A',
     accentColor: '#34D399',
     councils: 9,
   },
   'ikot-ekpene': {
     label: 'Ikot Ekpene District',
     shortLabel: 'Ikot Ekpene (NW · 10 LGAs)',
-    color: '#0F5C3A',
-    accentColor: '#10B981',
+    color: '#0E7490',
+    accentColor: '#38BDF8',
     councils: 10,
   },
   eket: {
     label: 'Eket Senatorial District',
     shortLabel: 'Eket (South · 12 LGAs)',
-    color: '#047857',
-    accentColor: '#6EE7B7',
+    color: '#D97706',
+    accentColor: '#FBBF24',
     councils: 12,
   },
 };
@@ -614,7 +614,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
                     aria-selected={active}
                     onClick={() => setScope(opt.id)}
                     className={`relative px-2.5 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer ${
-                      active ? 'text-[#0A2E1F]' : 'text-emerald-100 hover:text-white'
+                      active ? 'text-white' : 'text-emerald-100 hover:text-white'
                     }`}
                   >
                     {active && (
@@ -720,8 +720,8 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
         </div>
 
         <div className="flex items-center justify-end gap-1.5 text-amber-900">
-          <span className="font-mono text-[#B88917]">03</span>
-          <TrendingUp className="w-3.5 h-3.5 text-[#B88917] hidden sm:inline" />
+          <span className="font-mono text-[#B45309]">03</span>
+          <TrendingUp className="w-3.5 h-3.5 text-[#B45309] hidden sm:inline" />
           <span className="truncate">Economic Empowerment</span>
         </div>
       </div>
@@ -1142,7 +1142,7 @@ export const LivelihoodImpactFlow: React.FC<LivelihoodImpactFlowProps> = ({
       <div className="px-5 sm:px-6 py-3 bg-[#F6F8F7] border-t border-[#EAEFED] flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1.5 font-semibold text-slate-800">
-            <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#B45309]" />
             <span>Interactive Flow Pathways:</span>
           </span>
           <span className="inline-flex items-center gap-1.5">

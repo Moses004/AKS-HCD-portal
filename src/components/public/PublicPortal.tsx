@@ -364,7 +364,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         beneficiaries: 0,
         budgetNgn: 0,
         projects: 0,
-        color: '#047857',
+        color: '#0E7490',
       },
       {
         id: 'eket',
@@ -374,7 +374,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         beneficiaries: 0,
         budgetNgn: 0,
         projects: 0,
-        color: '#B89226',
+        color: '#D97706',
       },
     ];
 
@@ -770,8 +770,8 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             beneficiariesTotal={totalBeneficiaries}
           />
 
-          <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:divide-x lg:divide-[#EAEFED]">
-            <div className="space-y-1">
+          <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x lg:divide-[#EAEFED]">
+            <div className="space-y-1 lg:pr-6">
               <span className="text-xs font-semibold text-slate-500 block">
                 Verified Beneficiaries
               </span>
@@ -783,7 +783,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               </p>
             </div>
 
-            <div className="space-y-1 lg:pl-6">
+            <div className="space-y-1 lg:px-6">
               <span className="text-xs font-semibold text-slate-500 block">
                 Published Grassroots Projects
               </span>
@@ -795,7 +795,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               </p>
             </div>
 
-            <div className="space-y-1 lg:pl-6">
+            <div className="space-y-1 lg:px-6">
               <span className="text-xs font-semibold text-slate-500 block">
                 Active Local Governments
               </span>
@@ -877,7 +877,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       {/* =====================================================================
           3. INTERACTIVE 6-PILLAR SPOTLIGHT STAGE (01. – 06.)
           ===================================================================== */}
-      <section id="pillars-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-16">
+      <section id="pillars-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-24">
         <ParallaxDecorativeField variant="gold-contours" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E2E8E5] pb-4">
@@ -902,7 +902,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         <ScrollReveal delay={0.06}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Left: Numbered Interactive Pillar Selector Rail (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col gap-2">
+            <div className="lg:col-span-5 flex flex-col justify-between gap-2.5 h-full">
               {pillars.map((p, index) => {
                 const isSpotlight = activeSpotlightPillar?.pillar.pillar_code === p.pillar_code;
                 const pActs = publishedActivities.filter((a) => a.pillar === p.pillar_code);
@@ -914,7 +914,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     key={p.pillar_code}
                     type="button"
                     onClick={() => setSpotlightPillarCode(p.pillar_code)}
-                    className={`relative text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
+                    className={`relative flex-1 text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
                       isSpotlight
                         ? 'border-[#0F5C3A] bg-white shadow-md shadow-emerald-950/6'
                         : 'border-[#E2E8E5] bg-white/70 hover:bg-white hover:border-slate-300'
@@ -1015,22 +1015,22 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       </p>
 
                       {/* 3 Crisp Tabular Metrics */}
-                      <div className="grid grid-cols-3 gap-4 py-4 border-y border-[#EAEFED]">
-                        <div>
-                          <span className="text-xs text-slate-500 block">Beneficiaries</span>
-                          <strong className="text-xl sm:text-2xl font-bold text-[#0F5C3A] font-mono tabular-nums">
+                      <div className="grid grid-cols-3 gap-3 sm:gap-4 py-4 border-y border-[#EAEFED]">
+                        <div className="min-w-0">
+                          <span className="text-[11px] sm:text-xs text-slate-500 block truncate">Beneficiaries</span>
+                          <strong className="text-lg sm:text-2xl font-bold text-[#0F5C3A] font-mono tabular-nums block truncate">
                             {activeSpotlightPillar.totalBen.toLocaleString()}
                           </strong>
                         </div>
-                        <div>
-                          <span className="text-xs text-slate-500 block">Capital Deployed</span>
-                          <strong className="text-xl sm:text-2xl font-bold text-slate-900 font-mono tabular-nums">
+                        <div className="min-w-0">
+                          <span className="text-[11px] sm:text-xs text-slate-500 block truncate">Capital Deployed</span>
+                          <strong className="text-lg sm:text-2xl font-bold text-slate-900 font-mono tabular-nums block truncate">
                             ₦{(activeSpotlightPillar.budgetNgn / 1_000_000).toFixed(1)}M
                           </strong>
                         </div>
-                        <div>
-                          <span className="text-xs text-slate-500 block">Verified Projects</span>
-                          <strong className="text-xl sm:text-2xl font-bold text-slate-900 font-mono tabular-nums">
+                        <div className="min-w-0">
+                          <span className="text-[11px] sm:text-xs text-slate-500 block truncate">Verified Projects</span>
+                          <strong className="text-lg sm:text-2xl font-bold text-slate-900 font-mono tabular-nums block truncate">
                             {activeSpotlightPillar.activitiesCount}
                           </strong>
                         </div>
@@ -1046,7 +1046,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                             Male {activeSpotlightPillar.malePct}% · Female {activeSpotlightPillar.femalePct}% · Youth {activeSpotlightPillar.youthPct}%
                           </span>
                         </div>
-                        <div className="h-2.5 w-full rounded-full overflow-hidden bg-[#F1EEE5] flex">
+                        <div className="h-2.5 w-full rounded-full overflow-hidden bg-[#EAEFED] flex">
                           <motion.div
                             initial={{ scaleX: 0 }}
                             animate={{ scaleX: 1 }}
@@ -1113,7 +1113,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       {/* =====================================================================
           4. SENATORIAL DISTRICT LIVE ANALYTICS STRIP
           ===================================================================== */}
-      <section id="districts-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-16">
+      <section id="districts-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-24">
         <ParallaxDecorativeField variant="emerald-compass" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
         <ScrollReveal>
@@ -1164,9 +1164,9 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6 items-stretch">
               {/* Recharts Animated District Bar Chart (7 cols) */}
-              <div className="lg:col-span-7 h-[240px] w-full">
+              <div className="lg:col-span-7 h-[260px] w-full flex items-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={districtAnalytics}
@@ -1219,7 +1219,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               </div>
 
               {/* Interactive Senatorial District Cards (5 cols) */}
-              <div className="lg:col-span-5 space-y-3">
+              <div className="lg:col-span-5 flex flex-col justify-between gap-3">
                 {districtAnalytics.map((dist) => {
                   const isActive = districtFilter === dist.id;
                   return (
@@ -1231,15 +1231,21 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                         setPortalScope('lga');
                         scrollToSection('registry-section');
                       }}
-                      className={`w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
+                      className={`w-full flex-1 text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
                         isActive
                           ? 'border-[#0F5C3A] bg-emerald-50/60 shadow-xs'
                           : 'border-[#EAEFED] bg-[#F6F8F7]/60 hover:bg-[#F6F8F7] hover:border-slate-300'
                       }`}
                     >
-                      <div>
-                        <div className="text-sm font-bold text-slate-900">{dist.label}</div>
-                        <div className="text-xs text-slate-500 mt-0.5 font-mono tabular-nums">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: dist.color }}
+                          />
+                          <div className="text-sm font-bold text-slate-900 truncate">{dist.label}</div>
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5 font-mono tabular-nums truncate">
                           {dist.councils} LGAs · {dist.projects} projects · ₦{dist.budgetM.toFixed(1)}M
                         </div>
                       </div>
@@ -1264,7 +1270,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           ===================================================================== */}
       <section
         id="livelihood-flow-section"
-        className="kinetic-snap-section relative overflow-x-clip scroll-mt-20"
+        className="kinetic-snap-section relative overflow-x-clip scroll-mt-24"
       >
         <ParallaxDecorativeField variant="gold-contours" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
@@ -1296,7 +1302,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           ===================================================================== */}
       <section
         id="map-section"
-        className="kinetic-snap-section relative overflow-x-clip scroll-mt-20"
+        className="kinetic-snap-section relative overflow-x-clip scroll-mt-24"
       >
         <ParallaxDecorativeField variant="civic-prism" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
@@ -1337,7 +1343,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           ===================================================================== */}
       <section
         id="registry-section"
-        className="kinetic-snap-section relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 scroll-mt-20"
+        className="kinetic-snap-section relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 scroll-mt-24"
       >
         <ScrollReveal>
           {/* Scope Selector: 31-LGA Grassroots vs State-Level Executive */}
@@ -1423,7 +1429,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search community, title, or skill…"
-                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]"
+                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#E2E8E5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]"
                   />
                 </div>
 
@@ -1431,7 +1437,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   aria-label="Filter by Senatorial District"
                   value={districtFilter}
                   onChange={(e) => setDistrictFilter(e.target.value)}
-                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#E2E8E5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
                 >
                   <option value="all">All Senatorial Districts</option>
                   <option value="uyo">Uyo District (North-East)</option>
@@ -1443,7 +1449,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   aria-label="Filter by HCD Pillar"
                   value={selectedPillar}
                   onChange={(e) => setSelectedPillar(e.target.value)}
-                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#E2E8E5] bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0F5C3A] cursor-pointer"
                 >
                   <option value="all">All 6 Pillars</option>
                   {pillars.map((p) => (
@@ -1454,7 +1460,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 </select>
 
                 {/* Grid vs List View Switcher */}
-                <div className="flex items-center gap-0.5 p-1 bg-white border border-[#D8D3C5] rounded-xl">
+                <div className="flex items-center gap-0.5 p-1 bg-white border border-[#E2E8E5] rounded-xl">
                   <button
                     type="button"
                     aria-label="Grid View"
@@ -1602,7 +1608,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                             )}
                           </div>
 
-                          <h3 className="font-display text-base sm:text-lg font-bold text-slate-950 line-clamp-2 leading-snug group-hover:text-[#0F5C3A] transition-colors">
+                          <h3 className="font-display text-base sm:text-lg font-bold text-slate-950 line-clamp-2 min-h-[2.75rem] leading-snug group-hover:text-[#0F5C3A] transition-colors">
                             {activity.title}
                           </h3>
 
@@ -1701,14 +1707,14 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                       </h3>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-5 shrink-0 text-xs">
-                      <div className="text-right">
+                    <div className="flex flex-wrap items-center justify-between md:justify-end gap-5 shrink-0 text-xs pt-3 md:pt-0 border-t md:border-t-0 border-[#EAEFED]">
+                      <div className="text-left md:text-right">
                         <span className="text-[11px] text-slate-500 block">Beneficiaries</span>
                         <strong className="font-mono tabular-nums text-slate-900">
                           {activity.beneficiariesTotal.toLocaleString()}
                         </strong>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left md:text-right">
                         <span className="text-[11px] text-slate-500 block">Capital</span>
                         <strong className="font-mono tabular-nums text-[#0F5C3A]">
                           ₦{(activity.budgetNgn / 1_000_000).toFixed(1)}M
@@ -1748,7 +1754,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     value={stateSearchQuery}
                     onChange={(e) => setStateSearchQuery(e.target.value)}
                     placeholder="Search state activity or MDA…"
-                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]"
+                    className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-[#E2E8E5] bg-white focus:outline-none focus:ring-2 focus:ring-[#0F5C3A]"
                   />
                 </div>
 
@@ -1756,7 +1762,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                   aria-label="Filter by state activity category"
                   value={selectedStateCategory}
                   onChange={(e) => setSelectedStateCategory(e.target.value as StateActivityCategory | 'all')}
-                  className="text-xs px-3 py-2.5 rounded-xl border border-[#D8D3C5] bg-white font-medium text-slate-700 cursor-pointer"
+                  className="text-xs px-3 py-2.5 rounded-xl border border-[#E2E8E5] bg-white font-medium text-slate-700 cursor-pointer"
                 >
                   <option value="all">All State Categories</option>
                   <option value="monitoring_evaluation">Monitoring & Evaluation (M&E)</option>
@@ -1822,7 +1828,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                           <div className="text-xs font-semibold text-emerald-800 mb-1">
                             {STATE_CATEGORY_LABELS[act.category]}
                           </div>
-                          <h3 className="font-display text-base font-bold text-slate-950 group-hover:text-[#0F5C3A] transition-colors line-clamp-2 leading-snug">
+                          <h3 className="font-display text-base font-bold text-slate-950 group-hover:text-[#0F5C3A] transition-colors line-clamp-2 min-h-[2.75rem] leading-snug">
                             {act.title}
                           </h3>
                         </div>
@@ -1899,7 +1905,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       <section
         id="assurance-section"
         ref={assuranceRef}
-        className="kinetic-snap-section relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 scroll-mt-16"
+        className="kinetic-snap-section relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 scroll-mt-24"
       >
         <ScrollReveal>
           <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0D3B27] text-white rounded-2xl p-7 sm:p-10 border border-[#D97706]/35 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-md">

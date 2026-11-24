@@ -211,17 +211,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
         {/* Header */}
-        <div className="print-letterhead p-5 bg-gradient-to-r from-emerald-950 via-[#0F5C3A] to-emerald-900 text-white flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="print-letterhead p-5 bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] text-white flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="p-1 bg-white rounded-xl border border-[#D97706] shadow-xs shrink-0">
               <HcdLogo className="w-10 h-10" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] bg-white/10 px-2 py-0.5 rounded whitespace-nowrap">
                   {activity.lgaName} LGA Workspace
                 </span>
-                <span className="text-xs font-semibold text-emerald-200">
+                <span className="text-xs font-semibold text-emerald-200 truncate">
                   {getPillarDisplayName(activity.pillar)}
                 </span>
               </div>
@@ -314,7 +314,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 </span>
               )}
               {activity.category && (
-                <span className="text-[11px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded">
+                <span className="text-[11px] font-bold text-teal-900 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
                   Category: {activity.category === 'values_ethics_social_behaviour' ? 'Values/Ethics' : 'Cross-cutting Enablers'}
                 </span>
               )}
@@ -392,9 +392,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               </div>
 
               {/* Action and Progress indicator */}
-              <div className="flex items-center gap-2">
-                <div className="text-right">
-                  <div className="flex items-center gap-1.5 justify-end">
+              <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2">
+                <div className="text-left sm:text-right">
+                  <div className="flex items-center gap-1.5 sm:justify-end">
                     <TrendingUp className="w-3.5 h-3.5 text-emerald-700" />
                     <span className="text-xs font-black text-emerald-950 font-mono tabular-nums">
                       {currentOverallProgress}%
@@ -777,18 +777,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           </div>
 
           {/* Biometric Attendance Registry File Card */}
-          <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200 flex items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-3">
+          <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
                 <FileText className="w-5 h-5" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <strong className="text-slate-900 font-bold">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong className="text-slate-900 font-bold truncate">
                     {activity.attendanceSheetFileName || 'Beneficiary_Attendance_Registry.pdf'}
                   </strong>
                   {isCanonicalStorageReference(activity.attendanceRegistryUrl) && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
                       Vault Stored
                     </span>
                   )}
@@ -799,7 +799,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
               {evaluateActivityEditPermission(activity, currentUser).canEdit && onEditDraft && (
                 <button
                   type="button"

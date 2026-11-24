@@ -1281,8 +1281,8 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                             <Square className="w-4 h-4" />
                           )}
                         </button>
-                        <div>
-                          <div className="flex items-center gap-2 text-xs">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                             <span className="font-bold text-emerald-950">
                               {activity.lgaName} LGA
                             </span>
@@ -1304,14 +1304,14 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                         </div>
                       </div>
 
-                      <div className="text-right sm:shrink-0 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      <div className="text-left sm:text-right sm:shrink-0 bg-[#F6F8F7] p-2.5 rounded-xl border border-[#EAEFED]">
                         <span className="text-[10px] text-slate-500 block uppercase font-semibold">
                           Budget & Beneficiaries
                         </span>
                         <div className="text-sm font-black text-slate-900 font-mono tabular-nums">
                           {activity.beneficiariesTotal.toLocaleString()} Beneficiaries
                         </div>
-                        <div className="text-xs text-emerald-800 font-bold font-mono tabular-nums">
+                        <div className="text-xs text-[#0F5C3A] font-bold font-mono tabular-nums">
                           ₦ {(activity.budgetNgn / 1000000).toFixed(1)}M NGN
                         </div>
                       </div>
@@ -1427,15 +1427,15 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                     )}
 
                     {/* Super-Admin Action Buttons */}
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-500 font-mono">
+                    <div className="pt-2.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <span className="text-[11px] text-slate-500 font-mono tabular-nums">
                         Equation: ♂ {activity.beneficiariesMale} + ♀ {activity.beneficiariesFemale} = {activity.beneficiariesTotal} (Verified)
                       </span>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => setRejectingId(activity.id)}
-                          className="px-3.5 py-2 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5"
+                          className="px-3.5 py-2 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
                           <XCircle className="w-3.5 h-3.5" />
                           Return with Feedback
@@ -1443,7 +1443,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
                         <button
                           onClick={() => handleApprove(activity.id, activity.title)}
-                          className="px-5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+                          className="px-5 py-2 bg-[#0F5C3A] hover:bg-[#0B472D] text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Approve & Publish
@@ -1472,21 +1472,21 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
           <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+              <thead className="bg-[#F6F8F7] text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-[#E2E8E5]">
                 <tr>
-                  <th className="py-3 px-4">LGA</th>
-                  <th className="py-3 px-4">Activity Title</th>
-                  <th className="py-3 px-4">Pillar</th>
-                  <th className="py-3 px-4">Beneficiaries</th>
-                  <th className="py-3 px-4">Budget</th>
-                  <th className="py-3 px-4">Reviewed By</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4 whitespace-nowrap">LGA</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Activity Title</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Pillar</th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">Beneficiaries</th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">Budget</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Reviewed By</th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#EAEFED]">
                 {publishedActivities.map((act) => (
-                  <tr key={act.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">
+                  <tr key={act.id} className="hover:bg-[#F6F8F7]/70 transition-colors">
+                    <td className="py-3 px-4 font-bold text-slate-900 whitespace-nowrap">
                       {act.lgaName}
                     </td>
                     <td className="py-3 px-4 max-w-xs font-medium text-slate-900">
@@ -1496,13 +1496,13 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                     <td className="py-3 px-4 text-slate-600">
                       {getPillarDisplayName(act.pillar)}
                     </td>
-                    <td className="py-3 px-4 font-mono font-bold text-slate-900 tabular-nums">
+                    <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 tabular-nums whitespace-nowrap">
                       {act.beneficiariesTotal.toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 font-mono text-emerald-800 font-semibold tabular-nums">
+                    <td className="py-3 px-4 text-right font-mono text-[#0F5C3A] font-semibold tabular-nums whitespace-nowrap">
                       ₦ {(act.budgetNgn / 1000000).toFixed(1)}M
                     </td>
-                    <td className="py-3 px-4 text-slate-500 text-[11px]">
+                    <td className="py-3 px-4 text-slate-500 text-[11px] whitespace-nowrap">
                       {act.reviewedBy || 'State Executive'}
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -1633,19 +1633,19 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+              <thead className="bg-[#F6F8F7] text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-[#E2E8E5]">
                 <tr>
-                  <th className="py-2.5 px-3">Rank</th>
-                  <th className="py-2.5 px-3">LGA Council</th>
-                  <th className="py-2.5 px-3">Senatorial District</th>
-                  <th className="py-2.5 px-3">Population Est.</th>
-                  <th className="py-2.5 px-3">Published Projects</th>
-                  <th className="py-2.5 px-3">Beneficiaries Reached</th>
-                  <th className="py-2.5 px-3">Capital Invested</th>
-                  <th className="py-2.5 px-3 text-right">Data Status</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Rank</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">LGA Council</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Senatorial District</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">Population Est.</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">Published Projects</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">Beneficiaries Reached</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">Capital Invested</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">Data Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 font-sans">
+              <tbody className="divide-y divide-[#EAEFED] font-sans">
                 {filteredRankedLgas.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-8 text-center text-slate-400">
@@ -1654,24 +1654,24 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                   </tr>
                 ) : (
                   filteredRankedLgas.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-2.5 px-3 font-mono font-bold text-slate-500 tabular-nums">
+                    <tr key={item.id} className="hover:bg-[#F6F8F7]/70 transition-colors">
+                      <td className="py-2.5 px-3 font-mono font-bold text-slate-500 tabular-nums whitespace-nowrap">
                         {item.rank !== '—' ? (
-                          <span className="text-emerald-900 font-black">{item.rank}</span>
+                          <span className="text-[#0F5C3A] font-black">{item.rank}</span>
                         ) : (
                           <span className="text-slate-300 font-normal">—</span>
                         )}
                       </td>
-                      <td className="py-2.5 px-3 font-bold text-slate-900">
+                      <td className="py-2.5 px-3 font-bold text-slate-900 whitespace-nowrap">
                         {item.name}
                       </td>
-                      <td className="py-2.5 px-3 text-slate-600">
+                      <td className="py-2.5 px-3 text-slate-600 whitespace-nowrap">
                         {item.senatorialDistrict}
                       </td>
-                      <td className="py-2.5 px-3 font-mono text-slate-600 tabular-nums">
+                      <td className="py-2.5 px-3 text-right font-mono text-slate-600 tabular-nums whitespace-nowrap">
                         {item.populationEstimate.toLocaleString()}
                       </td>
-                      <td className="py-2.5 px-3 font-mono tabular-nums">
+                      <td className="py-2.5 px-3 text-right font-mono tabular-nums whitespace-nowrap">
                         <span
                           className={`px-2 py-0.5 rounded font-bold ${
                             item.hasData
@@ -1682,13 +1682,13 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
                           {item.projectCount}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 font-mono font-bold text-slate-900 tabular-nums">
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900 tabular-nums whitespace-nowrap">
                         {item.hasData ? item.totalBen.toLocaleString() : '—'}
                       </td>
-                      <td className="py-2.5 px-3 font-mono text-emerald-800 font-semibold tabular-nums">
+                      <td className="py-2.5 px-3 text-right font-mono text-[#0F5C3A] font-semibold tabular-nums whitespace-nowrap">
                         {item.totalBudget > 0 ? `₦ ${(item.totalBudget / 1000000).toFixed(1)}M` : '—'}
                       </td>
-                      <td className="py-2.5 px-3 text-right">
+                      <td className="py-2.5 px-3 text-right whitespace-nowrap">
                         {item.hasData ? (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />

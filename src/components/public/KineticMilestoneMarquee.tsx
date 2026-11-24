@@ -299,7 +299,7 @@ export const KineticMilestoneMarquee: React.FC<KineticMilestoneMarqueeProps> = (
                     baseX.set(0);
                   }}
                   className={`relative px-2.5 py-1 rounded-md font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                    active ? 'text-[#0A2E1F]' : 'text-emerald-100/85 hover:text-white'
+                    active ? 'text-white' : 'text-emerald-100/85 hover:text-white'
                   }`}
                 >
                   {active && (

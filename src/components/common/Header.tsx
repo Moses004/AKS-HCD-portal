@@ -143,43 +143,45 @@ export const Header: React.FC<HeaderProps> = ({
       />
 
       {/* Official State Government Top Utility Bar */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] text-white text-[11px] py-1.5 px-4 sm:px-8 flex items-center justify-between border-b border-[#D97706]/30 z-10">
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0A2E1F] text-white text-[11px] py-1.5 border-b border-[#D97706]/30 z-10">
         {/* Scroll-Linked Parallax Gold Light Sweep across Utility Bar */}
         <motion.span
           aria-hidden="true"
           style={prefersReduced ? undefined : { x: utilitySheenX, willChange: 'transform' }}
           className="no-print pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-[#D97706]/20 to-transparent skew-x-[-24deg]"
         />
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-medium tracking-wide">
-            <span className="w-2 h-2 rounded-full bg-[#D97706] inline-block" />
-            <span className="font-semibold text-[#F59E0B]">AKWA IBOM STATE GOVERNMENT</span>
-            <span className="hidden sm:inline text-emerald-200">· Department of Human Capital Development (ARISE HCD) Portal</span>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-1.5 font-medium tracking-wide min-w-0">
+              <span className="w-2 h-2 rounded-full bg-[#D97706] inline-block shrink-0" />
+              <span className="font-semibold text-[#F59E0B] whitespace-nowrap">AKWA IBOM STATE GOVERNMENT</span>
+              <span className="hidden sm:inline text-emerald-200 truncate">· Department of Human Capital Development (ARISE HCD) Portal</span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-4 text-emerald-100">
-          {/* Offline/Online Status Pill */}
-          <div className="flex items-center gap-1.5">
-            {isOnline ? (
-              <span className="flex items-center gap-1 text-emerald-300">
-                <Wifi className="w-3 h-3 text-emerald-400" />
-                <span className="hidden md:inline text-[10px]">Cloud Repository Online</span>
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 text-amber-300 font-semibold animate-pulse">
-                <WifiOff className="w-3 h-3" />
-                <span className="text-[10px]">
-                  Field Offline Mode {pendingSyncCount > 0 ? `(${pendingSyncCount} queued)` : ''}
+          <div className="flex items-center gap-4 text-emerald-100 shrink-0">
+            {/* Offline/Online Status Pill */}
+            <div className="flex items-center gap-1.5">
+              {isOnline ? (
+                <span className="flex items-center gap-1 text-emerald-300 whitespace-nowrap">
+                  <Wifi className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span className="hidden md:inline text-[10px]">Cloud Repository Online</span>
                 </span>
-              </span>
-            )}
-          </div>
+              ) : (
+                <span className="flex items-center gap-1 text-amber-300 font-semibold animate-pulse whitespace-nowrap">
+                  <WifiOff className="w-3 h-3 shrink-0" />
+                  <span className="text-[10px]">
+                    Field Offline Mode {pendingSyncCount > 0 ? `(${pendingSyncCount} queued)` : ''}
+                  </span>
+                </span>
+              )}
+            </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-emerald-200">
-            <span>31 Local Governments</span>
-            <span>·</span>
-            <span>Uyo · Ikot Ekpene · Eket</span>
+            <div className="hidden sm:flex items-center gap-2 text-emerald-200 whitespace-nowrap">
+              <span>31 Local Governments</span>
+              <span>·</span>
+              <span>Uyo · Ikot Ekpene · Eket</span>
+            </div>
           </div>
         </div>
       </div>

@@ -108,11 +108,11 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg py-dashboard-y space-y-section">
       {/* Workspace Header & Tenant Banner */}
-      <div className="bg-white rounded-2xl p-card-pad sm:p-card-pad-lg border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <Building2 className="w-3.5 h-3.5" />
+      <div className="bg-white rounded-2xl p-card-pad sm:p-card-pad-lg border border-[#E2E8E5] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2.5 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap">
+              <Building2 className="w-3.5 h-3.5 shrink-0" />
               Local Government Area Workspace
             </span>
             <span className="text-xs text-slate-500 font-medium">
@@ -171,7 +171,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
           {isAssignedTenant && (
             <button
               onClick={onOpenCreateWizard}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 whitespace-nowrap"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0F5C3A] hover:bg-[#0B472D] text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               New Activity Entry
@@ -266,11 +266,11 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
 
           {/* Metric Cards Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-card-gap lg:gap-card-gap-lg">
-        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-slate-200/90 shadow-sm">
+        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-[#E2E8E5] shadow-sm">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
             Verified Beneficiaries
           </span>
-          <span className="text-2xl font-black text-emerald-900 font-mono tabular-nums block mt-1">
+          <span className="text-2xl font-black text-[#0F5C3A] font-mono tabular-nums block mt-1">
             {totalBeneficiaries.toLocaleString()}
           </span>
           <span className="text-[11px] text-emerald-700 font-medium mt-1 block">
@@ -278,7 +278,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
           </span>
         </div>
 
-        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-slate-200/90 shadow-sm">
+        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-[#E2E8E5] shadow-sm">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
             Published Records
           </span>
@@ -290,19 +290,19 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
           </span>
         </div>
 
-        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-slate-200/90 shadow-sm">
+        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-[#E2E8E5] shadow-sm">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
             State Review Queue
           </span>
-          <span className="text-2xl font-black text-blue-900 font-mono tabular-nums block mt-1">
+          <span className="text-2xl font-black text-[#0E7490] font-mono tabular-nums block mt-1">
             {pendingCount}
           </span>
-          <span className="text-[11px] text-blue-600 font-medium mt-1 block">
+          <span className="text-[11px] text-[#0E7490] font-medium mt-1 block">
             Pending Super-Admin sign-off
           </span>
         </div>
 
-        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-slate-200/90 shadow-sm">
+        <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-2xl border border-[#E2E8E5] shadow-sm">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
             Internal Drafts / Issues
           </span>
@@ -421,19 +421,19 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                   {/* Card Details */}
                   <div className="p-5 space-y-3">
                     {/* Status and Unboxed Metadata */}
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
-                        <span>{getPillarDisplayName(activity.pillar)}</span>
+                    <div className="flex items-start justify-between gap-2 text-xs">
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-slate-500 text-[11px] min-w-0">
+                        <span className="truncate">{getPillarDisplayName(activity.pillar)}</span>
                         <span>·</span>
-                        <span>{new Date(activity.completionDate).toLocaleDateString()}</span>
+                        <span className="whitespace-nowrap">{new Date(activity.completionDate).toLocaleDateString()}</span>
                       </div>
 
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold whitespace-nowrap shrink-0 ${
                           isPublished
                             ? 'bg-emerald-100 text-emerald-800'
                             : isPending
-                            ? 'bg-blue-100 text-blue-800'
+                            ? 'bg-cyan-100 text-cyan-900'
                             : isRejected
                             ? 'bg-red-100 text-red-800'
                             : 'bg-slate-100 text-slate-700'
@@ -443,7 +443,7 @@ export const LgaDashboard: React.FC<LgaDashboardProps> = ({
                       </span>
                     </div>
 
-                    <h4 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug">
+                    <h4 className="text-sm font-bold text-slate-900 line-clamp-2 min-h-[2.5rem] leading-snug">
                       {activity.title}
                     </h4>
 
