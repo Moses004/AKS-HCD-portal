@@ -51,7 +51,7 @@ export const AccessPendingPage: React.FC<AccessPendingPageProps> = ({ onNavigate
   const status = currentUser.profileStatus || 'pending';
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-[#F6F8F7]">
+    <div className="min-h-[calc(100vh-8rem)] py-dashboard-y px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex flex-col justify-center items-center bg-[#F6F8F7]">
       <div className="w-full max-w-xl">
         {/* Navigation Breadcrumb / Return */}
         <div className="mb-6 flex items-center justify-between gap-3">

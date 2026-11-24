@@ -192,7 +192,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
   }, [lgaComparisonData]);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-card-pad sm:p-card-pad-lg space-y-subsection">
       {/* Header with Title and Executive Context */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
@@ -280,7 +280,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
       </div>
 
       {/* KPI Performance Highlight Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-card-gap lg:gap-card-gap-lg">
         {/* Top Performing Region */}
         <div className="p-3.5 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 border border-emerald-200">
           <div className="flex items-center justify-between">
@@ -535,7 +535,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
               <BarChart
                 data={lgaComparisonData}
                 layout="vertical"
-                margin={{ top: 10, right: 35, left: 20, bottom: 20 }}
+                margin={{ top: 10, right: 35, left: 0, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
                 <XAxis
@@ -795,7 +795,7 @@ export const ExecutiveLgaComparisonChart: React.FC<ExecutiveLgaComparisonChartPr
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-card-gap lg:gap-card-gap-lg pt-2">
           {/* Insight 1: Top LGA Velocity */}
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
             <div className="flex items-center gap-1.5 font-bold text-slate-800 mb-1">

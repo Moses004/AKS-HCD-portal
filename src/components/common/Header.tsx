@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={prefersReduced ? undefined : { x: utilitySheenX, willChange: 'transform' }}
           className="no-print pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-[#D97706]/20 to-transparent skew-x-[-24deg]"
         />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="relative z-10 max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-1.5 font-medium tracking-wide min-w-0">
               <span className="w-2 h-2 rounded-full bg-[#D97706] inline-block shrink-0" />
@@ -187,7 +187,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Top Bar */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="relative z-10 max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg h-16 flex items-center justify-between gap-4">
         {/* Zone 1: Single text element wordmark with official HCD emblem */}
         <div className="flex items-center gap-3">
           <button
@@ -485,7 +485,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-emerald-200/80 bg-gradient-to-b from-white via-emerald-50/40 to-emerald-50/80 p-4 space-y-2">
+        <div className="lg:hidden border-t border-emerald-200/80 bg-gradient-to-b from-white via-emerald-50/40 to-emerald-50/80 px-dashboard-x py-4 space-y-2">
           {/* Always: Public portal */}
           <button
             onClick={() => {

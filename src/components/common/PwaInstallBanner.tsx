@@ -88,9 +88,9 @@ export const PwaInstallBanner: React.FC = () => {
       <div 
         role="region" 
         aria-label="Install App Notice"
-        className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white px-4 py-2.5 border-b border-emerald-700/60 shadow-sm"
+        className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white py-2.5 border-b border-emerald-700/60 shadow-sm"
       >
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-emerald-800 border border-emerald-600/50 flex items-center justify-center shrink-0 text-[#F59E0B]">
               <Smartphone className="w-4 h-4" />

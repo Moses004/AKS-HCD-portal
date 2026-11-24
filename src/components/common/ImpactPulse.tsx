@@ -192,7 +192,7 @@ export const ImpactPulse: React.FC<ImpactPulseProps> = ({
     <div
       className={`relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2 ${
         variant === 'bar'
-          ? 'px-6 py-3.5 border-b border-[#EAEFED] bg-[#F6F8F7]/65 overflow-hidden'
+          ? 'px-card-pad py-3.5 border-b border-[#EAEFED] bg-[#F6F8F7]/65 overflow-hidden'
           : 'px-4 py-2.5 rounded-xl border border-[#E2E8E5] bg-[#F6F8F7]/80'
       } ${className}`}
     >

@@ -699,7 +699,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-800 block mb-1 flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
                     <span>3. Reporting Category</span>
                     <span className="text-[10px] text-slate-400 font-normal">Optional</span>
                   </label>
@@ -981,7 +981,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
               )}
 
               <div>
-                <label className="text-xs font-bold text-slate-800 block mb-1 flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
                   <span>{pillar === 'cross_cutting_enablers' ? '4' : '4'}. Project Description <span className="text-red-500">*</span></span>
                   <span className="text-[10px] text-slate-400 font-normal">Preset or custom initiative title</span>
                 </label>
@@ -1131,7 +1131,7 @@ export const ReportingWizardModal: React.FC<ReportingWizardModalProps> = ({
           {step === 2 && (
             <div className="space-y-4">
               <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-xl p-3.5 text-xs text-emerald-950">
-                <strong className="block mb-1 flex items-center gap-1.5 font-bold">
+                <strong className="mb-1 flex items-center gap-1.5 font-bold">
                   <ShieldCheck className="w-4 h-4 text-emerald-700" />
                   Mandatory Mathematical Demographics Check:
                 </strong>

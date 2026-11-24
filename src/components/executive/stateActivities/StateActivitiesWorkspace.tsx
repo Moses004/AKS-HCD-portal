@@ -212,9 +212,9 @@ export const StateActivitiesWorkspace: React.FC<StateActivitiesWorkspaceProps> =
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-subsection">
       {/* Workspace Header Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-card-pad flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-card-pad sm:p-card-pad-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block animate-pulse" />

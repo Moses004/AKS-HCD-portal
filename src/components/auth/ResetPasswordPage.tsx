@@ -279,7 +279,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onNavigate
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-[#F6F8F7]">
+    <div className="min-h-[calc(100vh-8rem)] py-dashboard-y px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex flex-col justify-center items-center bg-[#F6F8F7]">
       <div className="w-full max-w-lg">
         {/* Navigation Breadcrumb / Return */}
         <div className="mb-5 flex items-center justify-between gap-3">

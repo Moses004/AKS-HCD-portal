@@ -121,7 +121,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] py-10 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-[#F6F8F7]">
+    <div className="min-h-[calc(100vh-8rem)] py-dashboard-y px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex flex-col justify-center items-center bg-[#F6F8F7]">
       <div className="w-full max-w-xl">
         {/* Navigation Breadcrumb / Return */}
         <div className="mb-6 flex items-center justify-between gap-3">
@@ -352,7 +352,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                   {/* Required LGA Dropdown when LGA Desk Worker is selected */}
                   {requestedRole === 'lga_admin' && (
                     <div className="animate-in fade-in duration-150 pt-2 border-t border-slate-200">
-                      <label htmlFor="reg-lga" className="block text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
+                      <label htmlFor="reg-lga" className="text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
                         <span>Assigned Local Government Area <span className="text-rose-600">*</span></span>
                         <span className="text-[10px] text-emerald-800 font-semibold">31 LGAs Canonical</span>
                       </label>

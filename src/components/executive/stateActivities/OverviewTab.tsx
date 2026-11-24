@@ -114,9 +114,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-subsection">
       {/* Top Banner & Quick Controls */}
-      <div className="bg-gradient-to-r from-emerald-900 via-emerald-800 to-slate-900 rounded-2xl p-6 text-white shadow-md border border-emerald-700/40">
+      <div className="bg-gradient-to-r from-emerald-900 via-emerald-800 to-slate-900 rounded-2xl p-card-pad sm:p-card-pad-lg text-white shadow-md border border-emerald-700/40">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-700/60 text-emerald-200 text-xs font-semibold uppercase tracking-wider mb-2 border border-emerald-500/40">
@@ -261,7 +261,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
 
         {/* 13 Summary Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-card-gap">
           {/* 1. Total State-Level Activities */}
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-emerald-300 transition-colors">
             <div className="flex items-center justify-between">
@@ -428,9 +428,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
       </div>
 
       {/* Two-Column Detail Section: Recent Activities & Urgent Action Points */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-card-gap lg:gap-card-gap-lg">
         {/* Left Column: Recent State Activities */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200 p-card-pad shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -519,7 +519,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
 
         {/* Right Column: Urgent Follow-Up Action Points */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200 p-card-pad shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">

@@ -429,7 +429,7 @@ export const HcdEvolutionTimeline: React.FC<HcdEvolutionTimelineProps> = ({
             : 'py-8'
         }
       >
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-6">
+        <div className="max-w-7xl mx-auto w-full px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg space-y-subsection">
           {/* Editorial Header + Era Quick-Jump Segmented Controls */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 border-b border-[#E2E8E5] pb-5">
             <div className="space-y-2 max-w-2xl">

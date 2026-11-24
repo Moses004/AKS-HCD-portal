@@ -355,7 +355,7 @@ export const AccessRequestsPanel: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-card-pad-sm sm:p-card-pad rounded-xl border border-slate-200 shadow-xs">
         {/* Status Filters */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
           <button
@@ -723,7 +723,7 @@ export const AccessRequestsPanel: React.FC = () => {
 
                   {assignedRole === 'lga_admin' && (
                     <div>
-                      <label className="block text-xs font-bold text-emerald-950 mb-1 flex items-center justify-between">
+                      <label className="text-xs font-bold text-emerald-950 mb-1 flex items-center justify-between">
                         <span>Assigned LGA Territory Jurisdiction <span className="text-rose-600">*</span></span>
                         <span className="text-[10px] text-emerald-800 font-semibold">Strict Boundary</span>
                       </label>

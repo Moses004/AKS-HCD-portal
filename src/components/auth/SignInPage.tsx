@@ -68,7 +68,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-[#F6F8F7]">
+    <div className="min-h-[calc(100vh-8rem)] py-dashboard-y px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex flex-col justify-center items-center bg-[#F6F8F7]">
       <div className="w-full max-w-md">
         {/* Navigation Breadcrumb / Return to Portal */}
         <div className="mb-6 flex items-center justify-between gap-3">

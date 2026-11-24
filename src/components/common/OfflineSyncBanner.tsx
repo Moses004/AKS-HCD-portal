@@ -39,8 +39,8 @@ export const OfflineSyncBanner: React.FC = () => {
   }
 
   return (
-    <aside aria-label="Field Synchronization Notice" className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 text-xs">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <aside aria-label="Field Synchronization Notice" className="bg-amber-500/10 border-b border-amber-500/30 py-2 text-xs">
+      <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           {!isOnline ? (
             <div className="w-6 h-6 rounded-md bg-amber-500 text-white flex items-center justify-center shrink-0">

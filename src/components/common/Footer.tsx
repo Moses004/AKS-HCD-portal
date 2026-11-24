@@ -16,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectLga }) => {
     <footer className="snap-end relative overflow-hidden bg-gradient-to-br from-[#0A2E1F] via-[#0D3B27] to-[#0A2E1F] text-slate-300 pt-12 pb-8 border-t-4 border-[#D97706]">
       {/* Subtle White & Sovereign Emerald Government Identity Gradient Sheen */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.05] via-transparent to-[#0A2E1F]/60" />
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-emerald-800/60">
           {/* Col 1: Government Identity */}
           <div className="space-y-4">

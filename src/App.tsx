@@ -363,7 +363,7 @@ function AppContent() {
       <main className="flex-1">
         <Suspense
           fallback={
-            <div className="max-w-7xl mx-auto px-4 py-12">
+            <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg py-dashboard-y">
               <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-xs text-slate-600 font-semibold">
                 Loading AKS-HCD Workspace...
               </div>

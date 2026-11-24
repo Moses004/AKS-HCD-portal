@@ -848,7 +848,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             {/* 1. LGA Selector */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <label className="font-semibold text-slate-700 mb-1 flex items-center gap-1">
                 <Building2 className="w-3.5 h-3.5 text-emerald-700" />
                 <span>Local Government Area (LGA)</span>
               </label>
@@ -874,7 +874,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
 
             {/* 2. Reporting Category Selector (All 6 Live Categories including HCD Settings) */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <label className="font-semibold text-slate-700 mb-1 flex items-center gap-1">
                 <BarChart3 className="w-3.5 h-3.5 text-emerald-700" />
                 <span>Reporting Category</span>
               </label>
@@ -897,7 +897,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
 
             {/* 3. Strategic Pillar Selector */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <label className="font-semibold text-slate-700 mb-1 flex items-center gap-1">
                 <Layers className="w-3.5 h-3.5 text-emerald-700" />
                 <span>Strategic HCD Pillar</span>
               </label>
@@ -938,7 +938,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
 
             {/* 5. Reporting Year Selector */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <label className="font-semibold text-slate-700 mb-1 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-emerald-700" />
                 <span>Reporting Year</span>
               </label>
@@ -1000,7 +1000,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
             {/* 7. Date Range: Start & End */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1 text-[11px] flex items-center gap-1">
+                <label className="font-semibold text-slate-700 mb-1 text-[11px] flex items-center gap-1">
                   <Calendar className="w-3 h-3 text-slate-500" />
                   <span>Start Period</span>
                 </label>
@@ -1012,7 +1012,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1 text-[11px] flex items-center gap-1">
+                <label className="font-semibold text-slate-700 mb-1 text-[11px] flex items-center gap-1">
                   <Calendar className="w-3 h-3 text-slate-500" />
                   <span>End Period</span>
                 </label>
@@ -1027,7 +1027,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
 
             {/* 8. Search Filter */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <label className="font-semibold text-slate-700 mb-1 flex items-center gap-1">
                 <Search className="w-3.5 h-3.5 text-slate-500" />
                 <span>Search Keyword / Reference</span>
               </label>
@@ -1630,7 +1630,7 @@ export const LgaReportExportCentre: React.FC<LgaReportExportCentreProps> = ({
 
   if (isPageMode) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg py-dashboard-y">
         {containerContent}
       </div>
     );

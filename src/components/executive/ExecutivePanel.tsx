@@ -739,7 +739,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
       {/* REAL-TIME CLOUD DATA SYNC GATEWAY (RENTORA-INSPIRED LIVE ARCHITECTURE) */}
       <section
         aria-label="Executive Real-Time Cloud Data Sync Gateway"
-        className={`no-print rounded-2xl p-4 sm:p-5 border transition-all ${
+        className={`no-print rounded-2xl p-card-pad-sm sm:p-card-pad border transition-all ${
           !isOnline
             ? 'bg-amber-500/10 border-amber-300/80 text-amber-950 shadow-xs'
             : isSyncing
@@ -1068,7 +1068,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
       {/* TAB 1: PENDING APPROVAL QUEUE */}
       {activeTab === 'queue' && (
-        <div className="space-y-5">
+        <div className="space-y-subsection">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -1470,9 +1470,9 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-[#F6F8F7] text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-[#E2E8E5]">
+          <div className="bg-white rounded-2xl border border-[#E2E8E5] shadow-sm max-h-[540px] overflow-auto">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead className="sticky top-0 z-10 bg-[#F6F8F7] text-slate-600 uppercase font-bold text-[10px] tracking-wider shadow-[inset_0_-1px_0_#E2E8E5]">
                 <tr>
                   <th className="py-3 px-4 whitespace-nowrap">LGA</th>
                   <th className="py-3 px-4 whitespace-nowrap">Activity Title</th>
@@ -1536,7 +1536,7 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
 
       {/* TAB 3: 31-LGA COMPARATIVE HUMAN CAPITAL INDEX (STRICTLY DATABASE GROUNDED) */}
       {activeTab === 'comparative' && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-card-pad sm:p-card-pad-lg space-y-subsection">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
               <div className="flex items-center gap-2">
@@ -1631,9 +1631,9 @@ export const ExecutivePanel: React.FC<ExecutivePanelProps> = ({
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-[#F6F8F7] text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-[#E2E8E5]">
+          <div className="max-h-[540px] overflow-auto rounded-xl border border-[#E2E8E5]">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead className="sticky top-0 z-10 bg-[#F6F8F7] text-slate-600 uppercase font-bold text-[10px] tracking-wider shadow-[inset_0_-1px_0_#E2E8E5]">
                 <tr>
                   <th className="py-2.5 px-3 whitespace-nowrap">Rank</th>
                   <th className="py-2.5 px-3 whitespace-nowrap">LGA Council</th>

@@ -327,9 +327,9 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in">
+    <div className="space-y-subsection animate-in fade-in">
       {/* Header Banner */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 overflow-hidden relative">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-card-pad sm:p-card-pad-lg overflow-hidden relative">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -395,7 +395,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
         <div className="mt-6 pt-5 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {/* LGA Selector */}
           <div>
-            <label className="block font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Building2 className="w-3.5 h-3.5 text-emerald-700" />
               <span>Local Government Area</span>
             </label>
@@ -421,7 +421,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
 
           {/* Reporting Year */}
           <div>
-            <label className="block font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-emerald-700" />
               <span>Reporting Fiscal Year</span>
             </label>
@@ -440,7 +440,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
 
           {/* Setting / Indicator Filter */}
           <div>
-            <label className="block font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Filter className="w-3.5 h-3.5 text-emerald-700" />
               <span>Frontline Setting Filter</span>
             </label>
@@ -475,8 +475,8 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
       </div>
 
       {/* KPI Summary Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-card-gap lg:gap-card-gap-lg">
+        <div className="bg-white border border-slate-200 rounded-xl p-card-pad-sm sm:p-card-pad shadow-xs">
           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
             Approved Targets Total
           </span>
@@ -488,7 +488,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-card-pad-sm sm:p-card-pad shadow-xs">
           <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
             Verified Actuals Implemented
           </span>
@@ -500,7 +500,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-card-pad-sm sm:p-card-pad shadow-xs">
           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
             Aggregate Achievement Rate
           </span>
@@ -512,7 +512,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-card-pad-sm sm:p-card-pad shadow-xs">
           <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider block">
             Active Settings Catalogue
           </span>
@@ -526,7 +526,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
       </div>
 
       {/* The 4 Distinct Setting Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-card-gap lg:gap-card-gap-lg">
         {visibleCards.map((card) => {
           const rec = card.performanceRecord;
           const rateInfo = formatAchievementRate(rec);
@@ -536,7 +536,7 @@ export const HcdSettingsDashboard: React.FC<HcdSettingsDashboardProps> = ({
           return (
             <div
               key={card.indicatorCode}
-              className={`bg-gradient-to-br ${card.bgGradient} rounded-2xl border ${card.accentColor} p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-4`}
+              className={`bg-gradient-to-br ${card.bgGradient} rounded-2xl border ${card.accentColor} p-card-pad shadow-xs flex flex-col justify-between space-y-4`}
             >
               {/* Card Header */}
               <div className="flex items-start justify-between gap-3">

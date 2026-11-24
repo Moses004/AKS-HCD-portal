@@ -571,15 +571,15 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           <div className="absolute -left-24 bottom-0 w-96 h-96 rounded-full bg-radial from-[#D97706]/14 via-emerald-500/8 to-transparent blur-3xl" />
         </motion.div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-16 lg:pb-24 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
+        <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-8 pb-14 lg:pt-10 lg:pb-16 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
             {/* Left Dominant Focal Carrier (7 cols) with Subtle Foreground Parallax */}
             <motion.div
               initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               style={prefersReduced ? undefined : { y: heroLeftY, willChange: 'transform' }}
               transition={{ duration: 0.6, ease: KINETIC_EASE }}
-              className="lg:col-span-7 flex flex-col justify-center space-y-6"
+              className="lg:col-span-7 flex flex-col justify-center space-y-4 lg:space-y-5"
             >
               {/* Clean Editorial Kicker (Zero-Pill Discipline) */}
               <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-[#FBBF24] drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
@@ -592,12 +592,12 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
               <h1
                 className="font-display font-bold text-white tracking-tight leading-[1.08] text-balance drop-shadow-[0_2px_16px_rgba(0,0,0,0.68)]"
-                style={{ fontSize: 'clamp(2.25rem, 4.2vw, 3.75rem)' }}
+                style={{ fontSize: 'clamp(2.125rem, 3.85vw, 3.5rem)' }}
               >
                 ARISE Human Capital Development Implementation Dashboard
               </h1>
 
-              <p className="text-sm sm:text-base text-white/95 leading-relaxed max-w-2xl drop-shadow-[0_1px_10px_rgba(0,0,0,0.7)]">
+              <p className="text-sm sm:text-[15px] text-white/95 leading-relaxed max-w-2xl drop-shadow-[0_1px_10px_rgba(0,0,0,0.7)]">
                 Track Cabinet-verified grassroots investments in Education, Healthcare, Technical Skills, Agriculture, Cross-Cutting Enablers, and Civic Values—complete with geospatial coordinates, photographic proof, and biometric beneficiary rolls.
               </p>
 
@@ -633,10 +633,10 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
               onMouseLeave={() => setHeroPaused(false)}
               className="lg:col-span-5 flex flex-col"
             >
-              <div className="h-full bg-[#0A2E1F]/62 backdrop-blur-md rounded-2xl border border-white/20 p-6 sm:p-7 shadow-2xl flex flex-col justify-between gap-6">
+              <div className="h-full bg-[#0A2E1F]/62 backdrop-blur-md rounded-2xl border border-white/20 p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 sm:gap-5">
                 {/* Official ARISE Agenda Crest Header */}
-                <div className="flex items-center gap-4 pb-5 border-b border-white/12">
-                  <div className="w-20 h-20 sm:w-22 sm:h-22 aspect-square rounded-full bg-white p-2.5 shadow-xl border-[3px] border-[#D97706] flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-105">
+                <div className="flex items-center gap-4 pb-4 border-b border-white/12">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 aspect-square rounded-full bg-white p-2 shadow-xl border-[3px] border-[#D97706] flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-105">
                     <AriseLogo className="w-full h-full object-contain" />
                   </div>
                   <div className="min-w-0">
@@ -760,7 +760,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       {/* =====================================================================
           2. ROLLING SPRING KPI STRIP + IMPACT PULSE + GRASSROOTS MARQUEE
           ===================================================================== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20 space-y-4">
+      <section className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg -mt-8 relative z-20 space-y-4">
         <div className="relative bg-white rounded-2xl shadow-lg shadow-emerald-950/8 border border-[#E2E8E5] overflow-hidden">
           {/* Grassroots HCD Heartbeat Bar */}
           <ImpactPulse
@@ -768,9 +768,10 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
             projectCount={publishedActivities.length}
             activeLgasCount={activeLgasCount}
             beneficiariesTotal={totalBeneficiaries}
+            className="hidden!"
           />
 
-          <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x lg:divide-[#EAEFED]">
+          <div className="p-card-pad grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-0 lg:divide-x lg:divide-[#EAEFED]">
             <div className="space-y-1 lg:pr-6">
               <span className="text-xs font-semibold text-slate-500 block">
                 Verified Beneficiaries
@@ -821,7 +822,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           </div>
 
           {/* Historical Impact Trend Overlay Trigger Bar */}
-          <div className="no-print px-6 py-3 bg-[#F6F8F7]/80 border-t border-[#EAEFED] flex flex-wrap items-center justify-between gap-3">
+          <div className="no-print px-card-pad py-3 bg-[#F6F8F7]/80 border-t border-[#EAEFED] flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
               <TrendingUp className="w-3.5 h-3.5 text-[#0F5C3A] shrink-0" />
               <span className="font-semibold text-slate-800">Historical Impact Trend</span>
@@ -879,7 +880,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           ===================================================================== */}
       <section id="pillars-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-24">
         <ParallaxDecorativeField variant="gold-contours" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-16 space-y-subsection relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E2E8E5] pb-4">
           <KineticSectionHeader
             kicker="Strategic Mandate · Six Pillars"
@@ -900,7 +901,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         </div>
 
         <ScrollReveal delay={0.06}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-card-gap lg:gap-card-gap-lg items-stretch">
             {/* Left: Numbered Interactive Pillar Selector Rail (5 cols) */}
             <div className="lg:col-span-5 flex flex-col justify-between gap-2.5 h-full">
               {pillars.map((p, index) => {
@@ -1005,7 +1006,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                     </div>
 
                     {/* Spotlight Body & Live Metrics */}
-                    <div className="p-6 space-y-6 flex-1 flex flex-col justify-between">
+                    <div className="p-card-pad space-y-subsection flex-1 flex flex-col justify-between">
                       <p className="text-sm text-slate-600 leading-relaxed">
                         {activeSpotlightPillar.pillar.pillar_code === 'agriculture'
                           ? 'Building Human Capital Development in Homes, Communities, Learning Institutions & Workplaces through modern agricultural empowerment and food security skills.'
@@ -1115,9 +1116,9 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           ===================================================================== */}
       <section id="districts-section" className="kinetic-snap-section relative overflow-x-clip scroll-mt-24">
         <ParallaxDecorativeField variant="emerald-compass" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-16 space-y-subsection relative z-10">
         <ScrollReveal>
-          <div className="bg-white rounded-2xl border border-[#E2E8E5] p-6 sm:p-8 shadow-sm">
+          <div className="bg-white rounded-2xl border border-[#E2E8E5] p-card-pad sm:p-card-pad-lg shadow-sm">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#EAEFED]">
               <KineticSectionHeader
                 kicker={
@@ -1273,7 +1274,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         className="kinetic-snap-section relative overflow-x-clip scroll-mt-24"
       >
         <ParallaxDecorativeField variant="gold-contours" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-16 space-y-subsection relative z-10">
           <KineticSectionHeader
             kicker="Livelihood Transition · D3.js Impact Flow"
             title="From Capacity Building to Economic Empowerment"
@@ -1305,7 +1306,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
         className="kinetic-snap-section relative overflow-x-clip scroll-mt-24"
       >
         <ParallaxDecorativeField variant="civic-prism" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-16 space-y-subsection relative z-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <KineticSectionHeader
             kicker="Territorial Intelligence · Live Spatial Workbench"
@@ -1343,7 +1344,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
           ===================================================================== */}
       <section
         id="registry-section"
-        className="kinetic-snap-section relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 space-y-6 scroll-mt-24"
+        className="kinetic-snap-section relative z-10 max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-16 space-y-subsection scroll-mt-24"
       >
         <ScrollReveal>
           {/* Scope Selector: 31-LGA Grassroots vs State-Level Executive */}
@@ -1408,7 +1409,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
         {/* SECTION 6A: 31-LGA COMMUNITY PROJECTS */}
         {portalScope === 'lga' && (
-          <div className="space-y-6">
+          <div className="space-y-subsection">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
               <KineticSectionHeader
                 kicker="Grassroots Audit Trail · Open Registry"
@@ -1562,7 +1563,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 </button>
               </div>
             ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-gap lg:gap-card-gap-lg">
                 {filteredActivities.map((activity, idx) => {
                   const progressPct =
                     activity.overallProgress !== undefined
@@ -1738,7 +1739,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
 
         {/* SECTION 6B: STATE-LEVEL EXECUTIVE INITIATIVES & RESOLUTIONS */}
         {portalScope === 'state' && (
-          <div className="space-y-6">
+          <div className="space-y-subsection">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <KineticSectionHeader
                 kicker="Executive Register · Official Communiques"
@@ -1801,7 +1802,7 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-gap lg:gap-card-gap-lg">
                 {filteredStateActivities.map((act, idx) => {
                   const stakeholderCount = Array.isArray(act.participating_stakeholders)
                     ? act.participating_stakeholders.length
@@ -1905,10 +1906,10 @@ export const PublicPortal: React.FC<PublicPortalProps> = ({
       <section
         id="assurance-section"
         ref={assuranceRef}
-        className="kinetic-snap-section relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 scroll-mt-24"
+        className="kinetic-snap-section relative max-w-7xl mx-auto px-dashboard-x sm:px-dashboard-x-sm lg:px-dashboard-x-lg pt-16 scroll-mt-24"
       >
         <ScrollReveal>
-          <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0D3B27] text-white rounded-2xl p-7 sm:p-10 border border-[#D97706]/35 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-md">
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#0A2E1F] via-[#0F5C3A] to-[#0D3B27] text-white rounded-2xl p-card-pad sm:p-card-pad-lg border border-[#D97706]/35 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-md">
             {/* Scroll-Triggered Decorative Crest Arcs & Luminous Glow */}
             <motion.div
               aria-hidden="true"

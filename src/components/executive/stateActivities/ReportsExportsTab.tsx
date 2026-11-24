@@ -121,11 +121,11 @@ export const ReportsExportsTab: React.FC<ReportsExportsTabProps> = ({
   const stateRecordsCount = overviewItems.filter((i) => i.reporting_level === 'state').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-subsection">
       {/* Export Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-card-gap lg:gap-card-gap-lg">
         {/* Card 1: State Activities Register */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-card-pad rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
@@ -154,7 +154,7 @@ export const ReportsExportsTab: React.FC<ReportsExportsTabProps> = ({
         </div>
 
         {/* Card 2: Action Points & Commitments */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-card-pad rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="p-2 rounded-xl bg-amber-50 text-amber-700">
@@ -183,7 +183,7 @@ export const ReportsExportsTab: React.FC<ReportsExportsTabProps> = ({
         </div>
 
         {/* Card 3: Official Executive Briefing */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-card-pad rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">

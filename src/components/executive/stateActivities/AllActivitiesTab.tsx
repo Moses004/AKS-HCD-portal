@@ -97,9 +97,9 @@ export const AllActivitiesTab: React.FC<AllActivitiesTabProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-subsection">
       {/* Search and Action Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white p-card-pad-sm sm:p-card-pad rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex-1 w-full flex flex-col sm:flex-row items-center gap-3">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />

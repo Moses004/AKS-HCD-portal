@@ -550,7 +550,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
         )}
 
         {/* KPI Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-slate-100">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-card-gap mt-5 pt-5 border-t border-slate-100">
           <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
               Total Targets
@@ -594,11 +594,11 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-card-pad space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-card-gap">
           {/* LGA Filter */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Building2 className="w-3.5 h-3.5 text-emerald-700" />
               <span>Local Government Area</span>
             </label>
@@ -619,7 +619,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
 
           {/* Reporting Year */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-emerald-700" />
               <span>Reporting Year</span>
             </label>
@@ -638,7 +638,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
 
           {/* Status Filter */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Filter className="w-3.5 h-3.5 text-emerald-700" />
               <span>Target Status</span>
             </label>
@@ -656,7 +656,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
 
           {/* Category Filter */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
               <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
               <span>Reporting Category</span>
             </label>
@@ -677,7 +677,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
 
           {/* Search Query */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1">
               <Search className="w-3.5 h-3.5 text-emerald-700" />
               <span>Search Target or Code</span>
             </label>
@@ -697,7 +697,7 @@ export const TargetManagementPanel: React.FC<TargetManagementPanelProps> = ({
 
       {/* Target Register Table */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between">
+        <div className="p-card-pad border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
               <span>Annual Target Register</span>

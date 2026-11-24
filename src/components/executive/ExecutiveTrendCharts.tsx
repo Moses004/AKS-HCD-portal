@@ -453,10 +453,10 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-subsection">
       {/* Top Analytical Overview Strip - STRICTLY REAL DATABASE AGGREGATES */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs flex items-center gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-card-gap lg:gap-card-gap-lg">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad-sm sm:p-card-pad shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-800 shrink-0">
             <TrendingUp className="w-6 h-6" />
           </div>
@@ -474,7 +474,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs flex items-center gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad-sm sm:p-card-pad shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
             <Sparkles className="w-6 h-6" />
           </div>
@@ -492,7 +492,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs flex items-center gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad-sm sm:p-card-pad shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-800 shrink-0">
             <Building2 className="w-6 h-6" />
           </div>
@@ -512,7 +512,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs flex items-center gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-card-pad-sm sm:p-card-pad shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-800 shrink-0">
             <Layers className="w-6 h-6" />
           </div>
@@ -536,7 +536,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
       {/* ========================================================================= */}
       {/* CHART 1: MONTHLY CAPACITY BUILDING ACTIVITY GROWTH ACROSS THE 31 LGAS     */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7 space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-card-pad sm:p-card-pad-lg space-y-subsection">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
@@ -986,7 +986,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
       {/* ========================================================================= */}
       {/* CHART 2: YEAR-OVER-YEAR HUMAN CAPITAL DEVELOPMENT PROGRESS (31 LGAs)      */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7 space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-card-pad sm:p-card-pad-lg space-y-subsection">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
@@ -1089,7 +1089,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
               {yoyViewMode === 'pillars' ? (
                 <LineChart
                   data={yoyDataByPillars}
-                  margin={{ top: 15, right: 30, left: 10, bottom: 15 }}
+                  margin={{ top: 15, right: 30, left: 0, bottom: 15 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis
@@ -1208,7 +1208,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
               ) : yoyViewMode === 'districts' ? (
                 <LineChart
                   data={yoyDataByDistricts}
-                  margin={{ top: 15, right: 30, left: 10, bottom: 15 }}
+                  margin={{ top: 15, right: 30, left: 0, bottom: 15 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis
@@ -1299,7 +1299,7 @@ export const ExecutiveTrendCharts: React.FC<ExecutiveTrendChartsProps> = ({ acti
               ) : (
                 <LineChart
                   data={yoyLgaCoverageData}
-                  margin={{ top: 15, right: 30, left: 10, bottom: 15 }}
+                  margin={{ top: 15, right: 30, left: 0, bottom: 15 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis

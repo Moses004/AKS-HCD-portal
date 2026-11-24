@@ -658,7 +658,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
   }, [selectedLog, activities]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-subsection">
       {/* Top Executive Accountability Header */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-card-pad sm:p-card-pad-lg">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -751,8 +751,8 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
       </div>
 
       {/* 4 Accountability KPI Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-card-gap">
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-card-gap lg:gap-card-gap-lg">
+        <div className="bg-white rounded-2xl p-card-pad-sm sm:p-card-pad border border-slate-200/90 shadow-xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Total Logged Events
@@ -771,7 +771,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-card-pad-sm sm:p-card-pad border border-slate-200/90 shadow-xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Executive Approvals
@@ -786,7 +786,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-card-pad-sm sm:p-card-pad border border-slate-200/90 shadow-xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Data Edits & Reversals
@@ -801,7 +801,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-2">
+        <div className="bg-white rounded-2xl p-card-pad-sm sm:p-card-pad border border-slate-200/90 shadow-xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               RBAC & Security Governance
@@ -818,7 +818,7 @@ export const AuditLogPanel: React.FC<AuditLogPanelProps> = ({ onViewActivity }) 
       </div>
 
       {/* Multi-Dimensional Filter Console */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-card-pad-sm sm:p-card-pad space-y-4">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
